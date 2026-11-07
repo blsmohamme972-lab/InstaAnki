@@ -92,6 +92,31 @@ def changed_paths(repo: Path, base_ref: str | None) -> list[str]:
     return [line.strip().replace("\\", "/") for line in result.stdout.splitlines() if line.strip()]
 
 
+def changed_gallery_lessons(repo: Path, base_ref: str | None, paths: list[str]) -> set[str]:
+    if not base_ref or "web/data/lessons.json" not in paths:
+        return set()
+    try:
+        previous = json.loads(subprocess.run(
+            ["git", "show", f"{base_ref}:web/data/lessons.json"],
+            cwd=repo, check=True, capture_output=True, text=True,
+        ).stdout)
+    except (OSError, ValueError, subprocess.CalledProcessError) as exc:
+        raise ProvenanceError(f"Cannot compare the previous lesson gallery: {exc}") from exc
+    if not isinstance(previous, list):
+        raise ProvenanceError("The previous lesson file is not a lesson list")
+    previous_by_id = {lesson.get("id"): lesson for lesson in previous if isinstance(lesson, dict)}
+    current = read_json(repo / "web/data/lessons.json")
+    changed = set()
+    for lesson in current:
+        if not isinstance(lesson, dict) or not isinstance(lesson.get("id"), str):
+            continue
+        current_gallery = (lesson.get("presentation") or {}).get("clinicalGallery")
+        previous_gallery = (previous_by_id.get(lesson["id"], {}).get("presentation") or {}).get("clinicalGallery")
+        if current_gallery != previous_gallery and current_gallery is not None:
+            changed.add(lesson["id"])
+    return changed
+
+
 def validate_focus_region(item: dict, label: str) -> None:
     focus = item.get("focusRegion")
     if not isinstance(focus, dict) or not isinstance(focus.get("coordinates"), str):
@@ -159,16 +184,18 @@ def validate_receipt(repo: Path, lesson: dict, poster: str, asset: Path, digest:
     validate_gallery_layout(lesson)
 
 
-def validate(repo: Path = ROOT, *, changed: list[str] | None = None) -> dict:
+def validate(repo: Path = ROOT, *, changed: list[str] | None = None,
+             changed_gallery_lessons: set[str] | None = None) -> dict:
     repo = Path(repo).resolve()
     lessons = read_json(repo / "web/data/lessons.json")
     if not isinstance(lessons, list):
         raise ProvenanceError("web/data/lessons.json must contain a lesson list")
     changed = changed or []
+    changed_gallery_lessons = changed_gallery_lessons or set()
     changed_posters = {path.removeprefix("web/") for path in changed if path.startswith("web/media/mnemonic/")}
     changed_posters |= {path for path in changed if path.startswith("media/mnemonic/")}
-    if not changed_posters:
-        return {"lessons": len(lessons), "changedPosters": 0, "verifiedGenerated": 0}
+    if not changed_posters and not changed_gallery_lessons:
+        return {"lessons": len(lessons), "changedPosters": 0, "changedGalleries": 0, "verifiedGenerated": 0}
     by_poster = {}
     for lesson in lessons:
         if not isinstance(lesson, dict) or not isinstance(lesson.get("id"), str):
@@ -178,6 +205,12 @@ def validate(repo: Path = ROOT, *, changed: list[str] | None = None) -> dict:
             raise ProvenanceError(f"{lesson['id']} has an unsafe poster path")
         by_poster.setdefault(poster, []).append(lesson)
     checked = 0
+    by_id = {lesson["id"]: lesson for lesson in lessons}
+    for lesson_id in sorted(changed_gallery_lessons):
+        lesson = by_id.get(lesson_id)
+        if lesson is None:
+            raise ProvenanceError(f"Changed gallery belongs to a missing lesson: {lesson_id}")
+        validate_gallery_layout(lesson)
     for poster in sorted(changed_posters):
         lessons_for_poster = by_poster.get(poster, [])
         if not lessons_for_poster:
@@ -189,7 +222,8 @@ def validate(repo: Path = ROOT, *, changed: list[str] | None = None) -> dict:
         for lesson in lessons_for_poster:
             validate_receipt(repo, lesson, poster, asset, digest)
             checked += 1
-    return {"lessons": len(lessons), "changedPosters": len(changed_posters), "verifiedGenerated": checked}
+    return {"lessons": len(lessons), "changedPosters": len(changed_posters),
+            "changedGalleries": len(changed_gallery_lessons), "verifiedGenerated": checked}
 
 
 def main() -> None:
@@ -199,8 +233,10 @@ def main() -> None:
     parser.add_argument("--changed-poster", action="append", default=[], help="Direct poster path for local checks")
     args = parser.parse_args()
     try:
-        paths = args.changed_poster + changed_paths(args.repo.resolve(), args.base_ref)
-        result = validate(args.repo, changed=paths)
+        repo = args.repo.resolve()
+        paths = args.changed_poster + changed_paths(repo, args.base_ref)
+        gallery_ids = changed_gallery_lessons(repo, args.base_ref, paths)
+        result = validate(repo, changed=paths, changed_gallery_lessons=gallery_ids)
     except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as exc:
         raise SystemExit(f"Mnemonic provenance check failed: {exc}") from exc
     print(json.dumps(result, indent=2, sort_keys=True))

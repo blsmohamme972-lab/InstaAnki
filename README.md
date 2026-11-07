@@ -9,8 +9,10 @@ The user explicitly requested a fresh start without the old videos. **InstaAnki 
 ```bash
 npm ci
 npm run build:web:fresh
+npm run source:check:fresh
 npx playwright install --with-deps chromium --only-shell
 npm run test:fresh
+npm run test:imports
 python android/bootstrap_sdk.py
 npm run build:apk:fresh -- --unsigned
 ```
@@ -109,8 +111,10 @@ These commands are read-only. Claims, narration and new-lesson production fail w
 
 The [production ledger](production/books/shahzad-raja-2015-200-practice-questions.json) records each question separately, so completing Q182 does not skip earlier questions. Follow the [production workflow](docs/production-workflow.md), [visual rules](docs/visual-production-rules.md) and [tagging policy](taxonomy/README.md). New lessons require source, visual, audio-decode and timeline checks before marking them produced; device and human-listening checks are recorded separately.
 
-Verified extracted source data is preserved in the privately delivered `InstaAnki-Source-Archive.zip`, outside GitHub. Raw source extracts, encrypted vault files and vault metadata are excluded from Git. Restore the private archive into the project before producing later batches; see [source recovery](source-vault/README.md). Signing keys and optional vault keys remain separate and private. The original uploaded PDF is not retained in the repository, archive or application.
+Verified extracted source data is preserved in private backups outside GitHub. Inspect the actual available backup and its manifest before assuming it contains only text or lacks the original PDF; later private checkpoints may include additional source evidence. Raw source extracts, source PDFs, encrypted vault files and vault metadata stay outside Git and the application. Restore and verify the relevant private source evidence before producing later batches; see [source recovery](source-vault/README.md). Signing keys and optional vault keys remain separate and private.
 
 ## Original-book source checks
 
-The active publication is the 2015 Raja book already recorded in the production ledger. Run `npm run source:check` to validate the catalog. Production, narration, assembly, packaging, and the actual web/Android builders now check the same source policy. New work requires readable source evidence and a reviewed authored-content fingerprint; exact published starter lessons can be repackaged from their existing public verification records. See [source scope](docs/SOURCE_SCOPE.md) and [production workflow](docs/production-workflow.md).
+The active publication is the 2015 Raja book already recorded in the production ledger. For Fresh work, run `npm run build:web:fresh` followed by `npm run source:check:fresh`; these checks need no old lesson media. `npm run source:check` validates the separate legacy bundle and requires its pinned existing assets. A missing legacy asset is not a Fresh build failure.
+
+Production, narration, assembly, packaging, and the actual web/Android builders check the same source policy. New work requires readable source evidence and a reviewed authored-content fingerprint; exact published starter lessons can be repackaged from their existing public verification records. See [source scope](docs/SOURCE_SCOPE.md), [production workflow](docs/production-workflow.md), and the [mandatory mnemonic prompt checkpoint](docs/mnemonic-image-prompt.md).

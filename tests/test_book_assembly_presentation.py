@@ -1,13 +1,17 @@
-"""New lesson endings use measured narration and complete image provenance."""
+"""Book assembly preserves source identities and measured presentation evidence."""
 from copy import deepcopy
+import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 from assemble_book_batch import assemble_presentation, normalized_real_images, validate_presentation_plan
+import assemble_book_batch as assembly
 from presentation import validate_presentation
 
 
@@ -166,6 +170,91 @@ class BookAssemblyPresentationTests(unittest.TestCase):
             change(timing)
             with self.subTest(index=index), self.assertRaises(ValueError):
                 assemble_presentation(self.draft, timing, self.images)
+
+
+class BookMergeSafetyTests(unittest.TestCase):
+    def lesson(self, number, *, identity=None, version=1):
+        return {'id': identity or f'synthetic-q{number}', 'version': version,
+                'source': {'bookId': assembly.BOOK_ID, 'questionNumber': number}}
+
+    def test_mixed_book_inputs_fail_without_discarding_existing_data(self):
+        original = [self.lesson(1)]
+        other = self.lesson(2)
+        other['source']['bookId'] = 'unapproved-independent-collection'
+        for current, incoming in (([other], original), (original, [other])):
+            before = deepcopy((current, incoming))
+            with self.subTest(current=current), self.assertRaisesRegex(ValueError, 'original book only'):
+                assembly.merge_lessons(current, incoming)
+            self.assertEqual((current, incoming), before)
+
+    def test_duplicate_or_reassigned_source_identities_fail_before_merge(self):
+        original = self.lesson(1)
+        invalid = [
+            ([original, deepcopy(original)], []),
+            ([], [original, deepcopy(original)]),
+            ([original, self.lesson(1, identity='renamed-q1')], []),
+            ([], [original, self.lesson(1, identity='renamed-q1')]),
+            ([original], [self.lesson(1, identity='renamed-q1')]),
+            ([original], [self.lesson(2, identity=original['id'])]),
+        ]
+        for current, incoming in invalid:
+            before = deepcopy((current, incoming))
+            with self.subTest(current=current, incoming=incoming), self.assertRaises(ValueError):
+                assembly.merge_lessons(current, incoming)
+            self.assertEqual((current, incoming), before)
+
+    def test_valid_append_and_revision_keep_ids_and_require_explicit_version_changes(self):
+        first, second = self.lesson(1), self.lesson(2)
+        before = deepcopy([first])
+        self.assertEqual(assembly.merge_lessons([first], [second]), [first, second])
+        self.assertEqual(assembly.merge_lessons([first], [deepcopy(first)]), [first])
+        corrected = {**deepcopy(first), 'version': 2, 'title': 'Reviewed correction fixture'}
+        self.assertEqual(assembly.merge_lessons([first, second], [corrected]), [corrected, second])
+        with self.assertRaisesRegex(ValueError, 'revision increment'):
+            assembly.merge_lessons([first], [{**first, 'title': 'Changed without a revision'}])
+        with self.assertRaisesRegex(ValueError, 'downgrade'):
+            assembly.merge_lessons([corrected], [first])
+        self.assertEqual([first], before)
+
+    def test_cli_output_aliases_cannot_overwrite_inputs_or_other_outputs(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / 'production').mkdir()
+            policy = root / 'production/source-policy.json'
+            policy.write_bytes((ROOT / 'production/source-policy.json').read_bytes())
+            draft, guidance, registry, output = [root / name for name in (
+                'draft.json', 'visual-guidance.json', 'registry.json', 'existing-output.json')]
+            for path in (draft, guidance, registry, output):
+                path.write_text(json.dumps({'synthetic': path.name}))
+            base = ['assemble_book_batch', '--input', str(draft), '--guidance', str(guidance), '--registry', str(registry)]
+            cases = [
+                ['--output', str(output), '--validation-output', str(output)],
+                ['--prepare-audio', str(draft)],
+                ['--output', str(guidance)],
+                ['--validation-output', str(draft)],
+                ['--output', str(policy)],
+                ['--output', str(output), '--merge', '--app-lessons', str(output)],
+            ]
+            before = {path: path.read_bytes() for path in (policy, draft, guidance, registry, output)}
+            for args in cases:
+                with self.subTest(args=args), patch.object(assembly, 'ROOT', root), patch.object(sys, 'argv', base + args), \
+                        patch.object(assembly, 'load_draft') as load, self.assertRaisesRegex(ValueError, 'outputs must use distinct|output must not overwrite'):
+                    assembly.main()
+                load.assert_not_called()
+                self.assertEqual({path: path.read_bytes() for path in before}, before)
+
+    def test_write_failure_preserves_existing_output_and_an_unrelated_dot_tmp_file(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            output = root / 'lessons.json'
+            unrelated = root / 'lessons.json.tmp'
+            output.write_text('Existing reviewed output')
+            unrelated.write_text('Another retained input must remain intact')
+            with patch.object(assembly.os, 'replace', side_effect=OSError('Synthetic write failure')), self.assertRaises(OSError):
+                assembly.write(output, [])
+            self.assertEqual(output.read_text(), 'Existing reviewed output')
+            self.assertEqual(unrelated.read_text(), 'Another retained input must remain intact')
+            self.assertFalse(list(root.glob('.book-assembly-*')))
 
 
 if __name__ == "__main__":

@@ -10,8 +10,10 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import os
 import re
 from pathlib import Path, PurePosixPath
+import tempfile
 from urllib.parse import urlparse
 
 from guidance import assemble_guidance, validate_plan
@@ -31,11 +33,26 @@ def read(path: Path):
 
 
 def write(path: Path, value) -> None:
+    payload = json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2,
-                                    allow_nan=False) + "\n", encoding="utf-8")
-    temporary.replace(path)
+    descriptor, name = tempfile.mkstemp(prefix=".book-assembly-", dir=path.parent)
+    temporary = Path(name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def check_output_paths(outputs, inputs):
+    resolved = [path.resolve() for path in outputs]
+    if len(set(resolved)) != len(resolved):
+        raise ValueError("Assembly outputs must use distinct paths; lesson data and validation cannot overwrite each other")
+    if set(resolved).intersection(path.resolve() for path in inputs):
+        raise ValueError("Assembly output must not overwrite an authoring input, source evidence, policy or ledger")
 
 
 def text(value, label: str) -> str:
@@ -133,6 +150,7 @@ def audio_input(document: dict) -> dict:
     for lesson in document["lessons"]:
         output.append({
             "id": lesson["audioLessonId"],
+            "lessonId": lesson["id"],
             "title": lesson["title"],
             "source_question_number": lesson["source_question_number"],
             "sourceEvidence": copy.deepcopy(lesson["sourceEvidence"]),
@@ -407,18 +425,42 @@ def assemble(document: dict, guidance_document: dict, web_root: Path, registry_p
 
 
 def merge_lessons(current: list, additions: list) -> list:
-    if not isinstance(current, list) or len({lesson["id"] for lesson in current}) != len(current):
-        raise ValueError("Existing lessons must be an array with unique identities")
+    for label, lessons in (("Existing", current), ("Incoming", additions)):
+        if not isinstance(lessons, list):
+            raise ValueError(f"{label} lessons must be an array")
+        ids, numbers = set(), set()
+        for lesson in lessons:
+            if not isinstance(lesson, dict) or not isinstance(lesson.get("source"), dict):
+                raise ValueError(f"{label} lesson source identity is missing")
+            identity = text(lesson.get("id"), f"{label} lesson.id")
+            source = lesson["source"]
+            if source.get("bookId") != BOOK_ID:
+                raise ValueError("Merge requires the original book only; incompatible existing collections are left unchanged")
+            number = source.get("questionNumber")
+            if type(number) is not int or number < 1 or identity in ids or number in numbers:
+                raise ValueError(f"{label} lessons require unique lesson IDs and source question numbers")
+            version = lesson.get("version", 1)
+            if type(version) is not int or version < 1:
+                raise ValueError(f"{label} lesson version must be a positive integer")
+            ids.add(identity)
+            numbers.add(number)
+    current_ids = {lesson["id"]: lesson for lesson in current}
+    current_questions = {lesson["source"]["questionNumber"]: lesson["id"] for lesson in current}
+    for lesson in additions:
+        previous = current_ids.get(lesson["id"])
+        number = lesson["source"]["questionNumber"]
+        if previous is not None and previous["source"]["questionNumber"] != number:
+            raise ValueError("A lesson ID cannot be reassigned to another source question")
+        if number in current_questions and current_questions[number] != lesson["id"]:
+            raise ValueError("Preserve the existing lesson ID for this source question; a repair must not create a duplicate")
     incoming = {lesson["id"]: lesson for lesson in additions}
     merged = []
     for lesson in current:
         replacement = incoming.pop(lesson["id"], None)
         if replacement is not None:
-            if lesson.get("source", {}).get("bookId") != BOOK_ID:
-                raise ValueError(f"Refusing to replace another collection's lesson: {lesson['id']}")
-            if replacement["version"] < lesson.get("version", 1):
+            if replacement.get("version", 1) < lesson.get("version", 1):
                 raise ValueError(f"Refusing a revision downgrade: {lesson['id']}")
-            if replacement != lesson and replacement["version"] == lesson.get("version", 1):
+            if replacement != lesson and replacement.get("version", 1) == lesson.get("version", 1):
                 raise ValueError(f"Changed assembled lesson requires an explicit revision increment: {lesson['id']}")
             merged.append(replacement)
         else:
@@ -440,14 +482,23 @@ def main() -> None:
     parser.add_argument("--validation-output", type=Path,
                         help="Defaults to technical-validation.json beside --input")
     parser.add_argument("--prepare-audio", type=Path, help="Only write a compatible narration input at this path; do not assemble")
-    parser.add_argument("--merge", action="store_true", help="Also merge into the app lesson array, preserving other collections")
+    parser.add_argument("--merge", action="store_true", help="Merge original-book lessons while preserving existing stable source identities")
     parser.add_argument("--app-lessons", type=Path, default=ROOT / "web/data/lessons.json")
     args = parser.parse_args()
     batch_directory = args.input.parent
     args.guidance = args.guidance or batch_directory / "visual-guidance.json"
     args.output = args.output or batch_directory / "lessons-assembled.json"
     args.validation_output = args.validation_output or batch_directory / "technical-validation.json"
-    SourcePolicy(ROOT).require_book(BOOK_ID)
+    policy = SourcePolicy(ROOT)
+    policy.require_book(BOOK_ID)
+    protected = [args.input, args.registry, ROOT / "production/source-policy.json",
+                 ROOT / "production/books" / f"{BOOK_ID}.json",
+                 policy._private_path("questionsFile"), policy._private_path("metadataFile")]
+    if args.prepare_audio:
+        check_output_paths([args.prepare_audio], protected)
+    else:
+        check_output_paths([args.output, args.validation_output] + ([args.app_lessons] if args.merge else []),
+                           [*protected, args.guidance])
     draft = load_draft(args.input)
     if args.prepare_audio:
         if args.merge:
@@ -468,7 +519,7 @@ def main() -> None:
         write(args.app_lessons, merged)
     print(f"Assembled and technically validated {len(lessons)} original-book lessons: {args.output}")
     if merged is not None:
-        print(f"Merged app collection now contains {len(merged)} lessons; existing other-collection objects were preserved.")
+        print(f"Merged original-book collection now contains {len(merged)} lessons with stable source identities.")
     print("No production completion or final visual/browser/device/listening review was asserted by assembly.")
 
 
@@ -477,3 +528,5 @@ if __name__ == "__main__":
         main()
     except SourcePolicyError as error:
         raise SystemExit(f"Source policy: {error}")
+    except (ValueError, KeyError, TypeError, OSError) as error:
+        raise SystemExit(f"Assembly checkpoint: {error}")

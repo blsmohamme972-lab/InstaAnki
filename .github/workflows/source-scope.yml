@@ -22,16 +22,27 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Verify authoring checkpoints without old lesson media
+        run: |
+          python3 -m pip install Pillow==13.0.0
+          PYTHONPATH=tests python3 -m unittest test_image_prompt_gate test_production_trial test_source_policy.SourceEvidenceTests test_visual_source_review test_prepare_book_guidance test_native_import_runner -v
+      - name: Verify native import preservation without an old APK or lesson ZIP
+        run: |
+          mkdir -p build/test-deps
+          curl --fail --location --retry 2 --proto '=https' --proto-redir '=https' --output build/test-deps/json-20240303.jar https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar
+          python3 tools/test_native_import.py --json-jar build/test-deps/json-20240303.jar
       - name: Verify the fresh app without restoring any old lesson media
         run: |
           python3 -m unittest discover -s tests -p 'test_fresh_distribution.py' -v
           python3 -m unittest discover -s tests -p 'test_android_fresh_profile.py' -v
           npm ci
           npm run build:web:fresh
+          npm run source:check:fresh
       - name: Check the empty collection and application-specific update offers
         run: |
           npx playwright install --with-deps chromium --only-shell
           npm run test:fresh
+          npm run test:imports
   original-book-policy:
     runs-on: ubuntu-latest
     steps:

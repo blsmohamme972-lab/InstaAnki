@@ -848,9 +848,13 @@
     finally { clearTimeout(timeout); }
   }
   function validLesson(lesson) {
-    return lesson && typeof lesson.id === 'string' && typeof lesson.title === 'string' && typeof lesson.audioUrl === 'string'
+    return lesson && typeof lesson.id === 'string' && /^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$/.test(lesson.id)
+      && !['__proto__', 'constructor', 'prototype'].includes(lesson.id) && typeof lesson.title === 'string' && typeof lesson.audioUrl === 'string'
       && Array.isArray(lesson.scenes) && lesson.quiz && Array.isArray(lesson.quiz.options) && lesson.quiz.options.length >= 2
       && Number.isInteger(lesson.quiz.correctIndex) && lesson.quiz.correctIndex >= 0 && lesson.quiz.correctIndex < lesson.quiz.options.length;
+  }
+  function sameLessonSource(first, second) {
+    return first.source?.bookId === second.source?.bookId && first.source?.questionNumber === second.source?.questionNumber;
   }
   async function loadNativePacks() {
     const generation = ++app.collectionGeneration;
@@ -860,6 +864,9 @@
     const allowedBooks = new Map(app.bundledBooks.map(book => [book.id, book]));
     const warnings = [];
     const previousLessons = new Map(app.lessons.map(lesson => [lesson.id, lesson]));
+    const knownSources = new Map(previousLessons);
+    for (const lesson of app.bundledLessons) knownSources.set(lesson.id, lesson);
+    const conflictingIds = new Set();
     const packs = native?.listPacks ? JSON.parse(native.listPacks() || '[]') : [];
     if (!Array.isArray(packs)) throw new Error('The installed package list could not be read. Reopen the app and try again.');
     for (const pack of packs) {
@@ -867,15 +874,32 @@
         if (!pack?.manifest || !pack.baseUrl) throw new Error('Missing content package metadata.');
         const data = Array.isArray(pack.manifest.lessons) ? pack.manifest.lessons : await fetchJSON(new URL(pack.manifest.lessonsFile || 'lessons.json', pack.baseUrl));
         const imported = Array.isArray(data) ? data : data.lessons;
-        if (!Array.isArray(imported) || imported.some(x => !validLesson(x))) throw new Error('The lesson package uses an unsupported lesson format.');
+        if (!Array.isArray(imported) || imported.some(x => !validLesson(x)) || new Set(imported.map(lesson => lesson.id)).size !== imported.length) throw new Error('The lesson package uses an unsupported lesson format.');
         const publications = Array.isArray(pack.manifest.books) ? pack.manifest.books : [];
         if (imported.some(lesson => !allowedBooks.has(lesson.source?.bookId)) || publications.some(book => !allowedBooks.has(book.id))) {
           throw new Error('A package from a different book is hidden. This collection accepts only the original bundled publication. Its files and your learning history are preserved.');
+        }
+        if (imported.some(lesson => !Number.isInteger(lesson.source.questionNumber) || lesson.source.questionNumber < 1 || lesson.source.questionNumber > Number(allowedBooks.get(lesson.source.bookId).totalQuestions))) {
+          throw new Error('A package has an invalid source-question reference. It is hidden; your learning history is preserved.');
         }
         for (const book of publications) {
           const original = allowedBooks.get(book.id);
           if (['title', 'author', 'year', 'totalQuestions'].some(key => book[key] != null && String(book[key]) !== String(original[key]))) throw new Error('A package has publication details that do not match the original book. It is hidden; its files and your learning history are preserved.');
         }
+        let sourceConflict = false;
+        for (const lesson of imported) {
+          const known = knownSources.get(lesson.id), previous = lessons.get(lesson.id);
+          if ((known && !sameLessonSource(known, lesson)) || conflictingIds.has(lesson.id)
+              || (previous && !sameLessonSource(previous, lesson))) {
+            // With no trusted prior identity, hide the ambiguous ID in every
+            // package rather than let directory order choose its source.
+            if (!known) { lessons.delete(lesson.id); conflictingIds.add(lesson.id); }
+            sourceConflict = true;
+          }
+        }
+        // Examine every ID before rejecting the package: stopping at its first
+        // collision would leave later ambiguous IDs visible in directory order.
+        if (sourceConflict) throw new Error('A package reuses a lesson ID for a different source question. Conflicting content is hidden; your learning history is preserved.');
         for (const lesson of imported) {
           const previous = lessons.get(lesson.id);
           const paths = new Set([lesson.audioUrl, lesson.poster, ...(lesson.scenes || []).map(scene => scene.image), ...(lesson.realImages || []).map(image => image.url), ...(lesson.presentation?.clinicalGallery?.images || []).map(image => image.url)]);

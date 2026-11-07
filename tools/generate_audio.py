@@ -21,6 +21,7 @@ import json
 import math
 import os
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 from datetime import datetime, timezone
@@ -33,6 +34,7 @@ PROJECT = Path(__file__).resolve().parents[1]
 RUNTIME = PROJECT.parent / "runtime"
 MODEL_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx"
 VOICES_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin"
+SAFE_AUDIO_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,119}\Z")
 
 
 def sha256(path: Path) -> str:
@@ -94,11 +96,19 @@ def main() -> None:
         parser.error("Gap must be 0–0.5 seconds and thread count must be positive.")
 
     draft = json.loads(args.input.read_text())
+    if (not isinstance(draft, dict) or not isinstance(draft.get("lessons"), list)
+            or any(not isinstance(lesson, dict) or not isinstance(lesson.get("id"), str) for lesson in draft["lessons"])):
+        parser.error("Narration input must contain a source-bound lessons array with stable IDs.")
+    known_ids = [lesson["id"] for lesson in draft["lessons"]]
+    if len(set(known_ids)) != len(known_ids):
+        parser.error("Narration input has duplicate audio lesson IDs.")
+    if args.lesson and (len(set(args.lesson)) != len(args.lesson) or set(args.lesson) - set(known_ids)):
+        parser.error("Every --lesson must name an existing audio lesson exactly once.")
     lessons = [lesson for lesson in draft["lessons"]
                if not args.lesson or lesson["id"] in args.lesson]
     if not lessons:
         parser.error("No matching lessons.")
-    policy.validate_authoring(draft, lessons)
+    policy.validate_audio_authoring(draft, lessons)
     for path in (args.model, args.voices, args.guidance):
         if not path.is_file():
             parser.error(f"Required file does not exist: {path}")
@@ -108,6 +118,15 @@ def main() -> None:
     guidance_plans = {item["audioLessonId"]: item for item in guidance_document["lessons"]}
     if len(guidance_plans) != len(guidance_document["lessons"]):
         parser.error("Guidance audioLessonId values must be unique")
+    for lesson in lessons:
+        if not SAFE_AUDIO_ID.fullmatch(lesson["id"]):
+            parser.error(f"Unsafe audio lesson ID: {lesson['id']}")
+        plan = guidance_plans.get(lesson["id"])
+        if plan is None:
+            parser.error(f"No reviewed visual guidance plan for {lesson['id']}")
+        if plan.get("id") != lesson.get("lessonId", lesson["id"]):
+            parser.error("Guidance and narration must retain the same canonical app lessonId.")
+        validate_plan(plan, lesson["scenes"], PROJECT / "web")
     # Import and initialize the costly speech runtime only after source checks.
     import numpy as np
     import onnxruntime as ort
@@ -158,8 +177,6 @@ def main() -> None:
 
     for lesson in lessons:
         lesson_id = lesson["id"]
-        if any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_" for c in lesson_id):
-            raise ValueError(f"Unsafe lesson ID: {lesson_id}")
         print(f"Rendering {lesson_id}", flush=True)
         plan = guidance_plans.get(lesson_id)
         if plan is None:
@@ -313,3 +330,5 @@ if __name__ == "__main__":
         main()
     except SourcePolicyError as exc:
         raise SystemExit(f"Source policy: {exc}")
+    except (ValueError, KeyError, TypeError, OSError) as exc:
+        raise SystemExit(f"Audio preparation: {exc}")

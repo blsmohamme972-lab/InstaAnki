@@ -87,6 +87,28 @@ Accepted imported extensions: JSON, JPG/JPEG, PNG, WebP, GIF, AVIF, MP3, M4A, AA
 
 The importer rejects unsafe paths, duplicate names, unsupported schema versions, oversized entries and executable content. Optional `sha256` maps are checked for corruption; they do **not** authenticate a publisher. The update stages files and then swaps the package directory. It never deletes SQLite learning state. The original selected ZIP is not copied into permanent app storage.
 
+Before activating a nonempty package, the importer also checks the required lesson metadata, question/answer structure, scene timing and referenced local media files. Approved book identities and question bounds come from the signed app's bundled `www/data/books.json`, never the incoming ZIP. Foreign publications, incompatible source identities and older revisions of a lesson in the package being replaced are rejected before the existing directory is moved. Stable lesson IDs cannot switch source book or question across installed packages. Known source identities are retained in a private atomic importer index across withdrawals; an unreadable index blocks imports while leaving startup, existing content and learning storage intact. Missing pre-upgrade evidence is not invented.
+
+If readable legacy packages already disagree about an ID, an empty corrective withdrawal remains available. A previously saved source binding stays authoritative. If no saved binding establishes which source is correct, the index records the ID as ambiguous without selecting a source; future imports using that ID are rejected even after both conflicting packages are withdrawn. Directory order must never decide which question inherits learning history.
+
+The browser repeats source-identity checks before combining packages. It checks every conflicting ID in an incoming package, so cold-start collisions are hidden regardless of package order instead of attaching history to an arbitrary question.
+
+An additional batch needs a distinct pack ID: a package with an existing pack ID replaces that entire package. A repair keeps its lesson IDs and increases their revisions, while identical reimports and explicit empty collection withdrawals remain supported. Same-version replacement of a readable playable lesson requires matching lesson metadata. Previously pinned media hashes also constrain incoming bytes at that version, allowing damaged installed files to be restored to their expected bytes. Changed delivered content requires a revision increment. Missing legacy hashes cannot establish byte equivalence and are not fabricated.
+
+Metadata and file-presence checks do not decode every media file or prove clinical correctness. Source/asset review and final playback checks remain separate. No check can recover an unknown original source mapping from unreadable pre-upgrade metadata alone.
+
+### Native import regression check
+
+Run the actual importer and its synthetic ZIP tests with a desktop JDK and the pinned `org.json` 20240303 test dependency:
+
+```bash
+python3 tools/test_native_import.py --json-jar /path/to/json-20240303.jar
+```
+
+The required JAR SHA-256 is `3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed`. CI retrieves that version from Maven Central and runs the same command. The runner verifies the dependency, compiles current sources and propagates assertion failures; a missing dependency or compiler fails clearly rather than skipping tests. It supports an installed `jdk.compiler` module when a `javac` launcher is absent. Temporary ZIPs and class files are cleaned up. This check needs no Android SDK, old APK, lesson ZIP or private book evidence.
+
+After `npm run build:web:fresh`, `npm run test:imports` exercises collection/source collisions and preservation of notes, reviews and feedback in the actual Fresh browser UI with synthetic metadata. Native code and bundled UI fixes reach an installed phone through a new same-key APK; a lesson ZIP cannot update them.
+
 ## Catalog downloads
 
 `downloadPack(url, sha256)` requires the catalog to supply the complete ZIP's 64-character SHA-256 digest. It follows up to five HTTPS redirects only between the explicit GitHub/release-asset host allowlist, accepts no URL credentials, permits only the default HTTPS port, and rejects fragments and other schemes. It uses connection/read timeouts, a ten-minute overall bound while streaming, and a 512 MiB compressed-download limit. After downloading, it verifies the digest **before** calling the data-only ZIP importer. The temporary download is removed on success or failure.

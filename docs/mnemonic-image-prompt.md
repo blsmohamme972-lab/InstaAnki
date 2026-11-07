@@ -22,7 +22,7 @@ The **authoring agent** performs this research. Adding URLs to an image-generato
 
 For each provider, record the official page URL, exact example URL, visible connection between them, inspection time, inspection scope, concrete visual observations and the method applied to this lesson. Scope must be a complete scene, an actual video scene, or a readable character example. A promotional thumbnail does not count as a full scene or watched video.
 
-Use legitimate accessible public examples. Respect access restrictions; do not bypass a login, paywall or security block. If one example is unavailable, a different independently available official example may be used with its own truthful record. If no adequate example is accessible, leave that provider pending and block image generation. A user-supplied reference can help resolve access, but it must be actually inspected and its provenance resolved before a gate review is approved.
+Use legitimate accessible public examples. Localhost, private-network addresses and reserved example hosts do not count as public visual references. Respect access restrictions; do not bypass a login, paywall or security block. If one example is unavailable, a different independently available official example may be used with its own truthful record. If no adequate example is accessible, leave that provider pending and block image generation. A user-supplied reference can help resolve access, but it must be actually inspected and its provenance resolved before a gate review is approved.
 
 **Reference-review status for this specification update:** actual Pixorize illustrations and Picmonic character artwork were inspected. Sketchy's official method article and an independently available official embedded-video thumbnail were inspected; a full example asset was blocked in the browser. The thumbnail is limited evidence and is **not** an approved future-production reference review. No lesson-specific review or generator approval is created by this document.
 
@@ -164,7 +164,9 @@ python3 tools/prepare_image_prompt.py \
   --emit
 ```
 
-The successful output is one atomically written JSON object containing the **exact `prompt`** and its **`receipt`**. Choose a new output filename for each approved revision; the tool refuses to overwrite an existing artifact. Send that prompt unchanged to the generator. Keep the artifact private and retain it with the production provenance. There is no force or auto-approval option. Failure produces no new ready artifact and leaves the source ledger unchanged; an older artifact must never be reused after a failed run.
+The successful output is one atomically written JSON object containing the **exact `prompt`** and its **`receipt`**. Inside the repository, output must be under the ignored `private-content/` directory; public/runtime/build destinations and symlink aliases through those public trees are rejected. An external authoring workspace is supported, including a `private-content/` link to that workspace, but the agent must actually choose a private location: the tool cannot certify an arbitrary external directory's sharing permissions.
+
+Choose a new output filename for each approved revision; the tool refuses to overwrite an existing artifact. Send that prompt unchanged to the generator. Keep the artifact private and retain it with the production provenance. There is no force or auto-approval option. Failure produces no new ready artifact and leaves the source ledger unchanged; an older artifact must never be reused after a failed run.
 
 The binding covers the exact prompt, full art brief, mnemonic symbols, locus, source evidence, reviewed teaching-content fingerprints, source review and the bytes of both visual-specification documents. Any change requires a fresh review and gate run. Prompt/symbol changes cannot rely on the older source-review fingerprint, which intentionally serves a different purpose.
 

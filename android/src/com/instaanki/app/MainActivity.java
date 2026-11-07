@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -66,8 +67,8 @@ public final class MainActivity extends Activity {
         getWindow().setNavigationBarColor(Color.rgb(8, 19, 29));
         getWindow().getDecorView().setSystemUiVisibility(0);
         state = new LocalStore(this);
-        try { packs = new ContentPacks(new File(getFilesDir(), "lesson-packs")); }
-        catch (IOException e) { throw new IllegalStateException("Unable to open local content storage", e); }
+        try { packs = new ContentPacks(new File(getFilesDir(), "lesson-packs"), bundledBooks()); }
+        catch (Exception e) { throw new IllegalStateException("Unable to open the approved local content collection", e); }
 
         FrameLayout frame = new FrameLayout(this);
         frame.setBackgroundColor(Color.rgb(8, 19, 29));
@@ -115,6 +116,21 @@ public final class MainActivity extends Activity {
             }
         });
         web.loadUrl(START_URL);
+    }
+
+    private JSONArray bundledBooks() throws Exception {
+        // Admission policy comes from the signed app's assets, never an imported
+        // manifest or a JavaScript argument supplied by the content package.
+        try (InputStream input = getAssets().open("www/data/books.json")) {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            byte[] buffer = new byte[8192]; int count;
+            while ((count = input.read(buffer)) != -1) {
+                if (bytes.size() + count > 5 * 1024 * 1024) throw new IOException("Bundled source metadata exceeds its limit.");
+                bytes.write(buffer, 0, count);
+            }
+            String json = new String(bytes.toByteArray(), StandardCharsets.UTF_8).trim();
+            return json.startsWith("[") ? new JSONArray(json) : new JSONObject(json).optJSONArray("books");
+        }
     }
 
     private void applyImmersiveMode() {

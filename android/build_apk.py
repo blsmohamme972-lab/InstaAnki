@@ -20,6 +20,8 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 ANDROID = ROOT / "android"
+sys.path.insert(0, str(ROOT / "tools"))
+from check_source_scope import check_catalog
 
 
 def run(args: list[str | Path]) -> None:
@@ -75,8 +77,15 @@ def main() -> None:
     parser.add_argument("--version-name", default="0.1.1")
     parser.add_argument("--include-private", action="store_true", help="Include private-content/app-assets/ (book cover only) in this PERSONAL APK.")
     args = parser.parse_args()
+    args.web_dir = args.web_dir.resolve()
     if not (args.web_dir / "index.html").is_file():
         raise SystemExit(f"Missing offline entry point: {args.web_dir / 'index.html'}")
+    # Validate the exact selected bundle before SDK work, staging or signing.
+    # The policy and production ledger always come from this repository.
+    try:
+        check_catalog(ROOT, args.web_dir)
+    except (OSError, ValueError, TypeError, KeyError) as error:
+        raise SystemExit(f"Source scope check failed: {error}") from error
     platform, tools = sdk_locations(args.sdk_dir)
     stage = ROOT / "build" / "android"
     if stage.exists():

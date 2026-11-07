@@ -1,0 +1,21 @@
+name: Source scope
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  original-book-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the proposed source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Reject an unexpected publication or unverified bundled lesson
+        run: python3 tools/check_source_scope.py
+      - name: Exercise source-policy and direct-builder regression cases
+        run: python3 -m unittest discover -s tests -p 'test_source_*.py' -v

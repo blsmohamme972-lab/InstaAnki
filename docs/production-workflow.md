@@ -2,6 +2,8 @@
 
 This workflow records which source questions have verified teaching assets and a reviewed browser timeline. It never reads or changes a learner's answers, comments, likes, due dates or FSRS state. Production completion does not certify playback on a physical Android device or a human listening review; those checks are recorded separately and can remain pending.
 
+The active source is the original 2015 Raja book only. Read [SOURCE_SCOPE.md](SOURCE_SCOPE.md) and `production/source-policy.json` first. A missing private source is a production blocker, not permission to substitute an independent collection. The normal claim, generation, assembly, completion and packaging tools enforce this scope. Run `npm run source:check` to check the active app data; the web build and CI run it as well.
+
 ## Files and identities
 
 - `production/books/<bookId>.json` contains the public-safe production checkpoint: book metadata, stable source IDs, statuses and completed lesson references.
@@ -16,7 +18,7 @@ Use stable IDs when a batch is interrupted or a book is processed out of order. 
 
 | State | Meaning | Selected by `next`? |
 |---|---|---|
-| `ready` | Source record is available for production | Yes |
+| `ready` | Ledger record is eligible, subject to a fresh check that its actual source evidence is available | Yes |
 | `needs_review` | A source, extraction or content issue still needs resolution | No |
 | `claimed` | A named batch owns the unfinished work | No |
 | `produced` | The lesson assets passed technical checks and the explicitly recorded source, visual, audio-decode and browser-timeline checks | No |
@@ -29,7 +31,7 @@ The manifest owner resolves a `needs_review` reason and changes that source reco
 
 The CLI needs Python 3.10 or later. `complete` additionally needs `ffprobe` on `PATH`. Mutating commands use POSIX file locks and run on Linux or macOS; they have no third-party Python package dependencies.
 
-When there is one manifest in `production/books/`, it is selected automatically:
+The active book from the source policy is selected by default:
 
 ```bash
 python tools/production.py status
@@ -37,14 +39,16 @@ python tools/production.py next --count 10
 python tools/production.py claim --count 10 --batch-id batch-2026-11-07-01
 ```
 
-For multiple books, put the target before the subcommand:
+To select the book explicitly, put the target before the subcommand. Historical manifests can be inspected read-only; mutation is restricted to the active source:
 
 ```bash
 python tools/production.py --book shahzad-raja-2015-200-practice-questions status
-python tools/production.py --manifest production/books/example-book.json next --count 10
+python tools/production.py --manifest production/books/shahzad-raja-2015-200-practice-questions.json next --count 10
 ```
 
 `status` and `next` are read-only. `next` selects ready records in source-question order, inspecting every record's status rather than using the maximum completed number. It skips both outstanding claims and unresolved review items.
+
+Those commands do not prove that the private source still exists. Before a claim is written, the source gate checks the original extraction fingerprint, question identity, choices, keyed answer and explanation. The claim stores a `sourceEvidence` binding; keep it with the authoring input so generation and completion can verify the same source. A changed, incomplete or missing extraction fails before new assets are created. See the source-policy tests for the accepted private record shape and evidence binding.
 
 `claim` saves the selected stable IDs immediately. Repeating the same batch ID resumes its original selection; it does not silently append another ten questions. A resumed batch reports any already-produced records and remaining review blockers. The requested count sets the size of a new batch only.
 
@@ -62,13 +66,26 @@ For each claimed source ID:
 
 1. Check the original question, keyed answer, explanation and any linked source figures or cross-references. Review historical management statements against suitable current sources before using them in a new lesson.
 2. Write one tested objective and validate its canonical English annotation against the declared taxonomy version.
-3. Prepare the mnemonic, fixed locus, scene images and original English narration. Keep source text in the private archive.
+3. Draft the fixed locus, original English narration and quiz. Compare them against the specific source question, keyed answer and explanation, then record the per-question `sourceReview` described below. Prepare the mnemonic and scene images only after this source review. Keep source text in the private archive.
 4. Generate the final voice segments and derive their timing from the actual audio samples. Regenerating the voice invalidates the previous timing until it is checked again.
 5. Assemble the lesson, quiz, measured timeline and attributed real-image outro.
 6. Inspect the images and labels, decode the actual audio, and test the browser timeline: camera/spotlight positions, pauses, seeking, playback speed and the transition to the MCQ.
 7. Record exactly which checks were performed. Device playback and human listening are separate checks; when unavailable, retain them as false and pending.
 
 The detailed visual criteria are in [visual-production-rules.md](visual-production-rules.md). Writing a script, downloading an image or creating an audio file alone does not mark a source question produced.
+
+### Bind the authored content to an actual source review
+
+For a new question, its production-ledger record must contain a `sourceReview` with:
+
+- `schemaVersion: 1`, an actual timezone-aware `reviewedAt`, the actual `reviewer`, and meaningful `notes` describing the source comparison.
+- `sourceQuestionChecked`, `keyedAnswerChecked` and `explanationChecked`, each set to true only after that comparison occurred.
+- `sourceRecordSha256` from the claim and `evidenceSha256`, the canonical hash of its complete `sourceEvidence` object.
+- `authoredContentSha256` and `quizSha256`, computed from the reviewed draft by `source_policy.content_fingerprints(draft_lesson, authoring=True)`.
+
+The fingerprint helper calculates hashes only; it does not create a review or approve content. The authored fingerprint covers the title, locus, ordered scene identities, captions and narration, plus the quiz. The gate recomputes the equivalent public-lesson representation at completion. Changed teaching content invalidates the review. Copying `sourceEvidence` from a legitimate claim onto an unrelated draft does not satisfy this gate.
+
+These records make source comparison explicit and detect later changes. They do not decide clinical correctness or establish that a reviewer performed an honest comparison. Record the actual work and preserve the source evidence for audit. The exact frozen starter lessons use their separately pinned historical reviews.
 
 ## Complete after the recorded asset and browser review
 

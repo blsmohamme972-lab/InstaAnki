@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "activeBookId": "shahzad-raja-2015-200-practice-questions",
+  "source": {
+    "questionsFile": "private-content/questions.json",
+    "metadataFile": "private-content/book-metadata.json",
+    "questionsSha256": "b34823f25b23d78353132b0f3985681c2377639aaae8e1436b91659ffeb2a4ef"
+  },
+  "publishedSourceRecords": {
+    "5": {
+      "lessonId": "shahzad2015-q005",
+      "sourceRecordSha256": "962dda02198f70f8cc4121c72e4e4054a2194feb316069172179f17a02c67991",
+      "quizSha256": "2dcf69694aca9546f83285b6ecefa73553dde504d581378b43799033ae4f6b01",
+      "validationSha256": "4497292f78de608a59b9ebed768b8eabe7494f8097ba1c5083eb1c64448f7fcd"
+    },
+    "54": {
+      "lessonId": "shahzad2015-q054",
+      "sourceRecordSha256": "ac40549eebf4ec775034f975f5c85fb7cd72fb31a132087decb9aa747752fe52",
+      "quizSha256": "3f7fe6609192d77680a55cfdd59370adb37e242f6be7cdbfbf90ae6f91f57eca",
+      "validationSha256": "17bce91a1a022c3bab387062198c8e53c7bee8e095f9e786a013327302847e25"
+    },
+    "182": {
+      "lessonId": "shahzad2015-q182",
+      "sourceRecordSha256": "798792998bb9408de5318d601d95d8a205c0d4be56efebb307aa5abc2fcdaa9e",
+      "quizSha256": "b2f53b7c12211796d315332f6e004ac6d87eddbc05ceec46b5db62a0fffb5563",
+      "validationSha256": "78fc346deb719bec2b54d9fb194f5c6c3dc9cd241e83cfd5a92d705e2c99a22e"
+    }
+  },
+  "publishedRevisionReports": [
+    {
+      "path": "docs/verification-0.1.1.json",
+      "sha256": "9ad6d3f00faf77c676df47c616b3b16450ea1ae450c8256176c42f3a55e53807"
+    }
+  ],
+  "missingSourceAction": "Stop new production. Restore the verified private archive or review a new original-book extraction before explicitly changing its fingerprint. Never substitute another book or original collection.",
+  "sourceChangeRequires": "An explicit user decision and reviewed repository policy change; no runtime override."
+}

@@ -38,3 +38,7 @@ python tools/source_vault.py decrypt --key private-recovery-key.json --output Re
 ```
 
 The ordinary privately delivered ZIP does not require this encryption tool or key to restore. Neither restoration method needs the original PDF. Keep the Android signing identity separately so subsequent APKs can update the installed app.
+
+## Verify durable recovery
+
+Before each new batch, confirm that the private source is readable and matches its reviewed fingerprint. Historical extraction metadata is not proof of present availability. Search the original authorized book file as well as an extracted archive when recovery is needed. Keep private backups in two durable locations, keep encryption keys separately, record exact recovery identifiers privately, and verify a fresh-directory restore before reporting a backup complete. A fresh extraction needs a reviewed evidence-registration change; never invent an old fingerprint or substitute a different book.

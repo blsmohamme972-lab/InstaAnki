@@ -23,6 +23,7 @@ from pathlib import Path, PurePosixPath
 import re
 import tempfile
 import zipfile
+from source_policy import SourcePolicy, SourcePolicyError, validate_pack, validate_publications, canonical_hash
 
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -229,7 +230,11 @@ def main() -> None:
                              if not args.lesson or lesson.get("id") in args.lesson])
     if not lessons:
         parser.error("No matching lessons")
+    validate_pack(lessons, args.web_root.resolve())
+    checked_lesson_hashes = [canonical_hash(lesson) for lesson in lessons]
     media = collect_media(lessons, args.web_root.resolve())
+    if checked_lesson_hashes != [canonical_hash(lesson) for lesson in lessons]:
+        raise ValueError("Pack path normalization changed reviewed lesson content; review the assembled paths first")
     payload = {"lessons.json": json_bytes(lessons)}
     payload.update({name: source.read_bytes() for name, source in sorted(media.items())})
     for name, data in payload.items():
@@ -242,6 +247,7 @@ def main() -> None:
     if args.books.is_file():
         # Preserve source-linked production counts without publishing source scans.
         books = json.loads(args.books.read_text())
+        validate_publications(books, SourcePolicy(PROJECT).ledger())
         related = {lesson.get("source", {}).get("bookId") for lesson in lessons}
         manifest["books"] = [{key: value for key, value in book.items() if key != "coverUrl"}
                              for book in books if book.get("id") in related]
@@ -271,4 +277,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SourcePolicyError as exc:
+        raise SystemExit(f"Source policy: {exc}")

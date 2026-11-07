@@ -1,0 +1,1636 @@
+{
+  "schema_version": 1,
+  "taxonomy_id": "instaanki-surgical-taxonomy",
+  "version": "1.0.0",
+  "language": "en",
+  "created_on": "2026-11-07",
+  "purpose": "A controlled English vocabulary for indexing surgical MCQs and derived lessons across books. This is an application taxonomy, not a clinical guideline or a complete official examination syllabus.",
+  "coverage": "Initial vocabulary. Missing concepts are proposed through a versioned registry update; do not invent ad hoc production tags.",
+  "roots": [
+    "specialty.cardiac",
+    "specialty.thoracic",
+    "specialty.vascular"
+  ],
+  "facets": {
+    "specialty": {
+      "assignment": "Exactly one primary specialty; zero or more evidence-supported secondary specialties."
+    },
+    "domain": {
+      "assignment": "One primary domain and optional secondary domains when the question explicitly tests an interaction."
+    },
+    "condition": {
+      "assignment": "Zero or more specific conditions actually tested. Prefer the most specific supported descendant."
+    },
+    "procedure": {
+      "assignment": "Zero or more procedures material to the tested objective, not every procedure mentioned."
+    },
+    "focus": {
+      "assignment": "Exactly one primary learning focus."
+    },
+    "anatomy": {
+      "assignment": "Optional, only when anatomical specificity aids retrieval and is supported."
+    },
+    "phase": {
+      "assignment": "Optional explicit perioperative phase."
+    },
+    "population": {
+      "assignment": "Optional explicit population; congenital does not imply pediatric."
+    }
+  },
+  "tagging_rules": [
+    "Read the stem, keyed answer and available explanation together; unresolved extraction or answer conflicts require review.",
+    "Use only active canonical IDs from this registry. Aliases are search terms, not separate tags.",
+    "Tag the tested learning objective; do not tag a condition solely because it is a distractor.",
+    "Use one primary specialty. Add a secondary specialty only for actual overlap, not anatomical word matching.",
+    "Thoracic aortic disease does not automatically belong to the Thoracic Surgery specialty.",
+    "Use the shared Aortic Disease domain and shared condition IDs across Cardiac Surgery and Vascular Surgery.",
+    "Never infer a population, severity, disease subtype or procedure that the source does not support.",
+    "Record concise evidence for each selected ID. Low-confidence, out-of-scope or missing-concept cases remain needs_review.",
+    "Prefer a small, sufficient set of tags; the interface derives parent categories without storing them as extra condition tags.",
+    "Questions and their lessons reference the same clinical annotation. Book identity and source page are provenance, not clinical tags.",
+    "Changing tags never changes question or lesson IDs and never resets FSRS learning history.",
+    "Smart suggestions retrieve related concepts and due lessons; tags do not infer successful recall or overwrite scheduling results.",
+    "Specialty eligibility guides routing; it does not auto-assign every eligible specialty. Ambiguous cross-specialty assignments require a documented review.",
+    "Identical tags do not prove that two questions are duplicates; deduplication is a separate content review.",
+    "Due, difficult, forgotten, production status and book names are not clinical tags; keep learner state, production state and provenance separate.",
+    "Respect negation, EXCEPT questions and the actual question task; the keyed option alone does not define the entire tested concept."
+  ],
+  "version_policy": {
+    "stable_ids": "Never reuse an ID for another concept. Labels and aliases may change without changing the concept ID.",
+    "additions": "Add needed concepts in a documented minor version after checking synonyms, scope and parent relationships.",
+    "corrections": "Use a patch version for nonsemantic corrections.",
+    "merges": "Deprecate duplicate IDs with explicit replacement mappings; preserve aliases and old content references.",
+    "semantic_changes": "Create a new ID for a changed meaning, record migration, and retain prior registry versions.",
+    "question_snapshots": "Each annotation records taxonomy_version, question_id, question_version and annotation_revision."
+  },
+  "sources": [
+    {
+      "id": "abts-blueprint",
+      "title": "ABTS Written Exam Blueprint",
+      "url": "https://www.abts.org/ABTS/CertificationWebPages/Exam_Sequence/Written_Exam_Blueprint.aspx",
+      "accessed_on": "2026-11-07",
+      "use": "Broad cardiac and general thoracic subject coverage; does not endorse this application taxonomy."
+    },
+    {
+      "id": "abs-definition",
+      "title": "ABS Vascular Surgery Overview",
+      "url": "https://www.absurgery.org/get-certified/vascular-surgery/",
+      "accessed_on": "2026-11-07",
+      "use": "Scope of vascular surgery, including arterial, venous and lymphatic disease."
+    },
+    {
+      "id": "abs-epas",
+      "title": "ABS Vascular Surgery EPAs",
+      "url": "https://www.absurgery.org/get-certified/epas/vascular-surgery/",
+      "accessed_on": "2026-11-07",
+      "use": "Examples of vascular subject areas, including dialysis access and aortic disease."
+    }
+  ],
+  "tags": [
+    {
+      "id": "specialty.cardiac",
+      "facet": "specialty",
+      "label": "Cardiac Surgery",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "description": "Includes adult and congenital cardiac surgery.",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "specialty.thoracic",
+      "facet": "specialty",
+      "label": "Thoracic Surgery",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [
+        "General Thoracic Surgery"
+      ],
+      "status": "active",
+      "description": "In InstaAnki this means general thoracic surgery, excluding the cardiac specialty.",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "specialty.vascular",
+      "facet": "specialty",
+      "label": "Vascular Surgery",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "description": "Arterial, venous and lymphatic surgery; coronary and intracranial arterial conditions are not included merely because they involve vessels.",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.coronary",
+      "facet": "domain",
+      "label": "Coronary Surgery",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.valvular",
+      "facet": "domain",
+      "label": "Valvular Heart Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.congenital",
+      "facet": "domain",
+      "label": "Congenital Heart Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.rhythm",
+      "facet": "domain",
+      "label": "Arrhythmias and Cardiac Devices",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.heart_failure",
+      "facet": "domain",
+      "label": "Heart Failure and Circulatory Support",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.heart_transplantation",
+      "facet": "domain",
+      "label": "Heart Transplantation",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.pericardial",
+      "facet": "domain",
+      "label": "Pericardial Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.cardiac_tumors",
+      "facet": "domain",
+      "label": "Cardiac Tumors",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.perfusion",
+      "facet": "domain",
+      "label": "Cardiopulmonary Bypass and Myocardial Protection",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.lung",
+      "facet": "domain",
+      "label": "Lung Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.airway",
+      "facet": "domain",
+      "label": "Tracheal and Bronchial Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.pleura",
+      "facet": "domain",
+      "label": "Pleural Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.mediastinum",
+      "facet": "domain",
+      "label": "Mediastinal Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.esophagus",
+      "facet": "domain",
+      "label": "Esophageal Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.chest_wall",
+      "facet": "domain",
+      "label": "Chest Wall Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.diaphragm",
+      "facet": "domain",
+      "label": "Diaphragmatic Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.lung_transplantation",
+      "facet": "domain",
+      "label": "Lung Transplantation",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.peripheral_arterial",
+      "facet": "domain",
+      "label": "Peripheral Arterial Disorders",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.extracranial_cerebrovascular",
+      "facet": "domain",
+      "label": "Extracranial Cerebrovascular Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.visceral_renal",
+      "facet": "domain",
+      "label": "Mesenteric and Renal Arterial Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.venous",
+      "facet": "domain",
+      "label": "Venous Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.lymphatic",
+      "facet": "domain",
+      "label": "Lymphatic Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.dialysis_access",
+      "facet": "domain",
+      "label": "Dialysis Access",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.graft_complications",
+      "facet": "domain",
+      "label": "Vascular Graft Complications",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.aortic",
+      "facet": "domain",
+      "label": "Aortic Disease",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.trauma",
+      "facet": "domain",
+      "label": "Surgical Trauma",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.perioperative",
+      "facet": "domain",
+      "label": "Perioperative and Critical Care",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "domain.vascular_compression",
+      "facet": "domain",
+      "label": "Vascular Compression Syndromes",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.coronary_artery_disease",
+      "facet": "condition",
+      "label": "Coronary Artery Disease",
+      "parent_id": "domain.coronary",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [
+        "CAD"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.aortic_stenosis",
+      "facet": "condition",
+      "label": "Aortic Stenosis",
+      "parent_id": "domain.valvular",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.aortic_regurgitation",
+      "facet": "condition",
+      "label": "Aortic Regurgitation",
+      "parent_id": "domain.valvular",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [
+        "Aortic Insufficiency"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.mitral_stenosis",
+      "facet": "condition",
+      "label": "Mitral Stenosis",
+      "parent_id": "domain.valvular",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.mitral_regurgitation",
+      "facet": "condition",
+      "label": "Mitral Regurgitation",
+      "parent_id": "domain.valvular",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [
+        "Mitral Insufficiency"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.infective_endocarditis",
+      "facet": "condition",
+      "label": "Infective Endocarditis",
+      "parent_id": "domain.valvular",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.atrial_septal_defect",
+      "facet": "condition",
+      "label": "Atrial Septal Defect",
+      "parent_id": "domain.congenital",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [
+        "ASD"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.ventricular_septal_defect",
+      "facet": "condition",
+      "label": "Ventricular Septal Defect",
+      "parent_id": "domain.congenital",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [
+        "VSD"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.tetralogy_of_fallot",
+      "facet": "condition",
+      "label": "Tetralogy of Fallot",
+      "parent_id": "domain.congenital",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [
+        "TOF"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.atrial_fibrillation",
+      "facet": "condition",
+      "label": "Atrial Fibrillation",
+      "parent_id": "domain.rhythm",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.cardiac_tamponade",
+      "facet": "condition",
+      "label": "Cardiac Tamponade",
+      "parent_id": "domain.pericardial",
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.nsclc",
+      "facet": "condition",
+      "label": "Non-Small Cell Lung Cancer",
+      "parent_id": "domain.lung",
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [
+        "NSCLC"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.sclc",
+      "facet": "condition",
+      "label": "Small Cell Lung Cancer",
+      "parent_id": "domain.lung",
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [
+        "SCLC"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.pneumothorax",
+      "facet": "condition",
+      "label": "Pneumothorax",
+      "parent_id": "domain.pleura",
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.pleural_empyema",
+      "facet": "condition",
+      "label": "Pleural Empyema",
+      "parent_id": "domain.pleura",
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [
+        "Empyema Thoracis"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.pleural_effusion",
+      "facet": "condition",
+      "label": "Pleural Effusion",
+      "parent_id": "domain.pleura",
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.thymoma",
+      "facet": "condition",
+      "label": "Thymoma",
+      "parent_id": "domain.mediastinum",
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.esophageal_cancer",
+      "facet": "condition",
+      "label": "Esophageal Cancer",
+      "parent_id": "domain.esophagus",
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [
+        "Oesophageal Cancer"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.achalasia",
+      "facet": "condition",
+      "label": "Achalasia",
+      "parent_id": "domain.esophagus",
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.peripheral_arterial_disease",
+      "facet": "condition",
+      "label": "Peripheral Arterial Disease",
+      "parent_id": "domain.peripheral_arterial",
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "PAD"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.chronic_limb_threatening_ischemia",
+      "facet": "condition",
+      "label": "Chronic Limb-Threatening Ischemia",
+      "parent_id": "domain.peripheral_arterial",
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "CLTI"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.acute_limb_ischemia",
+      "facet": "condition",
+      "label": "Acute Limb Ischemia",
+      "parent_id": "domain.peripheral_arterial",
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "ALI"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.carotid_stenosis",
+      "facet": "condition",
+      "label": "Carotid Stenosis",
+      "parent_id": "domain.extracranial_cerebrovascular",
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.deep_vein_thrombosis",
+      "facet": "condition",
+      "label": "Deep Vein Thrombosis",
+      "parent_id": "domain.venous",
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "DVT",
+        "Deep Venous Thrombosis"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.chronic_venous_insufficiency",
+      "facet": "condition",
+      "label": "Chronic Venous Insufficiency",
+      "parent_id": "domain.venous",
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.lymphedema",
+      "facet": "condition",
+      "label": "Lymphedema",
+      "parent_id": "domain.lymphatic",
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "Lymphoedema"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.aortic_aneurysm",
+      "facet": "condition",
+      "label": "Aortic Aneurysm",
+      "parent_id": "domain.aortic",
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.aortic_dissection",
+      "facet": "condition",
+      "label": "Aortic Dissection",
+      "parent_id": "domain.aortic",
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.endoleak",
+      "facet": "condition",
+      "label": "Endoleak",
+      "parent_id": "domain.aortic",
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.thoracic_outlet_syndrome",
+      "facet": "condition",
+      "label": "Thoracic Outlet Syndrome",
+      "parent_id": "domain.vascular_compression",
+      "specialty_ids": [
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "TOS"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.abdominal_aortic_aneurysm",
+      "facet": "condition",
+      "label": "Abdominal Aortic Aneurysm",
+      "parent_id": "condition.aortic_aneurysm",
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "AAA"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.thoracic_aortic_aneurysm",
+      "facet": "condition",
+      "label": "Thoracic Aortic Aneurysm",
+      "parent_id": "condition.aortic_aneurysm",
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "TAA"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.stanford_type_a_dissection",
+      "facet": "condition",
+      "label": "Stanford Type A Aortic Dissection",
+      "parent_id": "condition.aortic_dissection",
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "Type A Aortic Dissection"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "condition.stanford_type_b_dissection",
+      "facet": "condition",
+      "label": "Stanford Type B Aortic Dissection",
+      "parent_id": "condition.aortic_dissection",
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "Type B Aortic Dissection"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.cabg",
+      "facet": "procedure",
+      "label": "Coronary Artery Bypass Grafting",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [
+        "CABG"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.aortic_valve_replacement",
+      "facet": "procedure",
+      "label": "Aortic Valve Replacement",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [
+        "AVR"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.mitral_valve_repair",
+      "facet": "procedure",
+      "label": "Mitral Valve Repair",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.mitral_valve_replacement",
+      "facet": "procedure",
+      "label": "Mitral Valve Replacement",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.tavr",
+      "facet": "procedure",
+      "label": "Transcatheter Aortic Valve Replacement",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [
+        "TAVR",
+        "TAVI",
+        "Transcatheter Aortic Valve Implantation"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.aortic_root_replacement",
+      "facet": "procedure",
+      "label": "Aortic Root Replacement",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.cardiopulmonary_bypass",
+      "facet": "procedure",
+      "label": "Cardiopulmonary Bypass",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [
+        "CPB"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.ecmo",
+      "facet": "procedure",
+      "label": "Extracorporeal Membrane Oxygenation",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic"
+      ],
+      "aliases": [
+        "ECMO"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.lobectomy",
+      "facet": "procedure",
+      "label": "Pulmonary Lobectomy",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [
+        "Lung Lobectomy"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.pneumonectomy",
+      "facet": "procedure",
+      "label": "Pneumonectomy",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.esophagectomy",
+      "facet": "procedure",
+      "label": "Esophagectomy",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [
+        "Oesophagectomy"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.pleural_decortication",
+      "facet": "procedure",
+      "label": "Pleural Decortication",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.chest_drainage",
+      "facet": "procedure",
+      "label": "Chest Drainage",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [
+        "Tube Thoracostomy"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.evar",
+      "facet": "procedure",
+      "label": "Endovascular Aneurysm Repair",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "EVAR"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.tevar",
+      "facet": "procedure",
+      "label": "Thoracic Endovascular Aortic Repair",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "TEVAR"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.carotid_endarterectomy",
+      "facet": "procedure",
+      "label": "Carotid Endarterectomy",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [
+        "CEA"
+      ],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.peripheral_arterial_bypass",
+      "facet": "procedure",
+      "label": "Peripheral Arterial Bypass",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "procedure.dialysis_av_fistula",
+      "facet": "procedure",
+      "label": "Dialysis Arteriovenous Fistula Creation",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.anatomy",
+      "facet": "focus",
+      "label": "Anatomy",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.physiology",
+      "facet": "focus",
+      "label": "Physiology",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.pathophysiology",
+      "facet": "focus",
+      "label": "Pathophysiology",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.diagnosis",
+      "facet": "focus",
+      "label": "Diagnosis",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.investigation_selection",
+      "facet": "focus",
+      "label": "Investigation Selection",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.investigation_interpretation",
+      "facet": "focus",
+      "label": "Investigation Interpretation",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.classification_staging",
+      "facet": "focus",
+      "label": "Classification and Staging",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.indications",
+      "facet": "focus",
+      "label": "Indications",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.contraindications",
+      "facet": "focus",
+      "label": "Contraindications",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.treatment_selection",
+      "facet": "focus",
+      "label": "Treatment Selection",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.operative_technique",
+      "facet": "focus",
+      "label": "Operative Technique",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.complications",
+      "facet": "focus",
+      "label": "Complications",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.perioperative_management",
+      "facet": "focus",
+      "label": "Perioperative Management",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.outcomes",
+      "facet": "focus",
+      "label": "Outcomes and Prognosis",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "focus.surveillance",
+      "facet": "focus",
+      "label": "Follow-up and Surveillance",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.aortic_valve",
+      "facet": "anatomy",
+      "label": "Aortic Valve",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.mitral_valve",
+      "facet": "anatomy",
+      "label": "Mitral Valve",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.coronary_arteries",
+      "facet": "anatomy",
+      "label": "Coronary Arteries",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.aortic_root",
+      "facet": "anatomy",
+      "label": "Aortic Root",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.ascending_aorta",
+      "facet": "anatomy",
+      "label": "Ascending Aorta",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.aortic_arch",
+      "facet": "anatomy",
+      "label": "Aortic Arch",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.descending_thoracic_aorta",
+      "facet": "anatomy",
+      "label": "Descending Thoracic Aorta",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.abdominal_aorta",
+      "facet": "anatomy",
+      "label": "Abdominal Aorta",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.lung",
+      "facet": "anatomy",
+      "label": "Lung",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.pleura",
+      "facet": "anatomy",
+      "label": "Pleura",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.esophagus",
+      "facet": "anatomy",
+      "label": "Esophagus",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.thoracic"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.carotid_artery",
+      "facet": "anatomy",
+      "label": "Carotid Artery",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.lower_limb_arteries",
+      "facet": "anatomy",
+      "label": "Lower Limb Arteries",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "anatomy.deep_veins",
+      "facet": "anatomy",
+      "label": "Deep Veins",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "phase.preoperative",
+      "facet": "phase",
+      "label": "Preoperative",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "phase.intraoperative",
+      "facet": "phase",
+      "label": "Intraoperative",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "phase.postoperative",
+      "facet": "phase",
+      "label": "Postoperative",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "population.adult",
+      "facet": "population",
+      "label": "Adult",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "population.pediatric",
+      "facet": "population",
+      "label": "Pediatric",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    },
+    {
+      "id": "population.neonatal",
+      "facet": "population",
+      "label": "Neonatal",
+      "parent_id": null,
+      "specialty_ids": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular"
+      ],
+      "aliases": [],
+      "status": "active",
+      "introduced_in": "1.0.0"
+    }
+  ]
+}

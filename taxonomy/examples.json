@@ -1,0 +1,169 @@
+{
+  "synthetic": true,
+  "description": "Illustrative records only; not extracted from a source book.",
+  "annotations": [
+    {
+      "question_id": "example-valve-001",
+      "question_version": 1,
+      "taxonomy_version": "1.0.0",
+      "annotation_revision": 1,
+      "status": "validated",
+      "tested_objective": "Identify when aortic valve replacement is indicated in the stated aortic stenosis scenario.",
+      "primary_specialty_id": "specialty.cardiac",
+      "secondary_specialty_ids": [],
+      "primary_domain_id": "domain.valvular",
+      "secondary_domain_ids": [],
+      "condition_ids": [
+        "condition.aortic_stenosis"
+      ],
+      "procedure_ids": [
+        "procedure.aortic_valve_replacement"
+      ],
+      "anatomy_ids": [
+        "anatomy.aortic_valve"
+      ],
+      "focus_id": "focus.indications",
+      "phase_id": null,
+      "population_id": null,
+      "evidence": [
+        {
+          "tag_id": "specialty.cardiac",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and correct answer explicitly test indications for aortic valve replacement in aortic stenosis."
+        },
+        {
+          "tag_id": "domain.valvular",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and correct answer explicitly test indications for aortic valve replacement in aortic stenosis."
+        },
+        {
+          "tag_id": "condition.aortic_stenosis",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and correct answer explicitly test indications for aortic valve replacement in aortic stenosis."
+        },
+        {
+          "tag_id": "procedure.aortic_valve_replacement",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and correct answer explicitly test indications for aortic valve replacement in aortic stenosis."
+        },
+        {
+          "tag_id": "anatomy.aortic_valve",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and correct answer explicitly test indications for aortic valve replacement in aortic stenosis."
+        },
+        {
+          "tag_id": "focus.indications",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and correct answer explicitly test indications for aortic valve replacement in aortic stenosis."
+        }
+      ],
+      "review_reason": null,
+      "missing_concept_proposals": []
+    },
+    {
+      "question_id": "example-thoracic-001",
+      "question_version": 1,
+      "taxonomy_version": "1.0.0",
+      "annotation_revision": 1,
+      "status": "validated",
+      "tested_objective": "Recognize the complication described after esophagectomy.",
+      "primary_specialty_id": "specialty.thoracic",
+      "secondary_specialty_ids": [],
+      "primary_domain_id": "domain.esophagus",
+      "secondary_domain_ids": [],
+      "condition_ids": [],
+      "procedure_ids": [
+        "procedure.esophagectomy"
+      ],
+      "anatomy_ids": [],
+      "focus_id": "focus.complications",
+      "phase_id": "phase.postoperative",
+      "population_id": null,
+      "evidence": [
+        {
+          "tag_id": "specialty.thoracic",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem explicitly describes a postoperative esophagectomy complication. No unspecified complication subtype is inferred."
+        },
+        {
+          "tag_id": "domain.esophagus",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem explicitly describes a postoperative esophagectomy complication. No unspecified complication subtype is inferred."
+        },
+        {
+          "tag_id": "procedure.esophagectomy",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem explicitly describes a postoperative esophagectomy complication. No unspecified complication subtype is inferred."
+        },
+        {
+          "tag_id": "focus.complications",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem explicitly describes a postoperative esophagectomy complication. No unspecified complication subtype is inferred."
+        },
+        {
+          "tag_id": "phase.postoperative",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem explicitly describes a postoperative esophagectomy complication. No unspecified complication subtype is inferred."
+        }
+      ],
+      "review_reason": null,
+      "missing_concept_proposals": []
+    },
+    {
+      "question_id": "example-vascular-001",
+      "question_version": 1,
+      "taxonomy_version": "1.0.0",
+      "annotation_revision": 1,
+      "status": "validated",
+      "tested_objective": "Identify the endoleak described after endovascular aneurysm repair.",
+      "primary_specialty_id": "specialty.vascular",
+      "secondary_specialty_ids": [],
+      "primary_domain_id": "domain.aortic",
+      "secondary_domain_ids": [],
+      "condition_ids": [
+        "condition.endoleak"
+      ],
+      "procedure_ids": [
+        "procedure.evar"
+      ],
+      "anatomy_ids": [],
+      "focus_id": "focus.complications",
+      "phase_id": "phase.postoperative",
+      "population_id": null,
+      "evidence": [
+        {
+          "tag_id": "specialty.vascular",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and answer explicitly concern a postoperative endoleak after EVAR; no endoleak type is inferred."
+        },
+        {
+          "tag_id": "domain.aortic",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and answer explicitly concern a postoperative endoleak after EVAR; no endoleak type is inferred."
+        },
+        {
+          "tag_id": "condition.endoleak",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and answer explicitly concern a postoperative endoleak after EVAR; no endoleak type is inferred."
+        },
+        {
+          "tag_id": "procedure.evar",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and answer explicitly concern a postoperative endoleak after EVAR; no endoleak type is inferred."
+        },
+        {
+          "tag_id": "focus.complications",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and answer explicitly concern a postoperative endoleak after EVAR; no endoleak type is inferred."
+        },
+        {
+          "tag_id": "phase.postoperative",
+          "source_field": "stem",
+          "reason": "Synthetic example: the stem and answer explicitly concern a postoperative endoleak after EVAR; no endoleak type is inferred."
+        }
+      ],
+      "review_reason": null,
+      "missing_concept_proposals": []
+    }
+  ]
+}

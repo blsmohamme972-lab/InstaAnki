@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "packageName": "com.instaanki.fresh",
+  "applicationLabel": "InstaAnki Fresh",
+  "certificateSha256": "6cd31c6fa011060e7858784277ce321e8af5039530f94a0536746cdc1e601a9c",
+  "keyAlias": "instaanki-fresh",
+  "initialVersionCode": 4,
+  "initialVersionName": "0.3.0",
+  "lastDeliveredVersionCode": 4,
+  "lastDeliveredVersionName": "0.3.0",
+  "createdOn": "2026-11-07",
+  "authorization": "User explicitly requested a fresh start with no old videos; this separate application identity preserves the existing installation.",
+  "evidence": "Generated once for the authorized fresh app; private backup is required before APK delivery."
+}

@@ -149,7 +149,8 @@ public final class MainActivity extends Activity {
         @JavascriptInterface public String getAppInfo() {
             try {
                 PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-                return new JSONObject().put("name", "InstaAnki").put("packageName", getPackageName())
+                String applicationLabel = getApplicationInfo().loadLabel(getPackageManager()).toString();
+                return new JSONObject().put("name", applicationLabel).put("packageName", getPackageName())
                     .put("version", info.versionName).put("versionCode", info.versionCode).put("nativeApi", 3)
                     .put("storage", "SQLite").put("offline", true).put("zipImport", true)
                     .put("feedbackExport", true).put("downloadSizeVerification", true)

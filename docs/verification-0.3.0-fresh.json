@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "verifiedOn": "2026-11-07",
+  "release": {
+    "file": "InstaAnki-Fresh-0.3.0.apk",
+    "bytes": 120046,
+    "sha256": "d38ffc6a8215de472e57214dc786c67372f0b3b2b4f4289ce6371bce8bb59e91",
+    "packageName": "com.instaanki.fresh",
+    "applicationLabel": "InstaAnki Fresh",
+    "version": "0.3.0",
+    "versionCode": 4,
+    "minSdk": 26,
+    "targetSdk": 35,
+    "signed": true,
+    "signatureSchemesVerified": ["v2", "v3"],
+    "certificateSha256": "6cd31c6fa011060e7858784277ce321e8af5039530f94a0536746cdc1e601a9c",
+    "zipAlignmentVerified": true,
+    "separateFreshInstallation": true,
+    "legacyInPlaceUpdate": false
+  },
+  "distribution": {
+    "bundledLessons": 0,
+    "lessonMediaFiles": 0,
+    "privateContentFiles": 0,
+    "signingSecretFiles": 0,
+    "runtimeFilesVerified": 11,
+    "apkZipEntries": 18,
+    "compiledRuntimePreserved": true,
+    "approvedBookId": "shahzad-raja-2015-200-practice-questions",
+    "historicallyProducedQuestions": [5, 54, 182],
+    "historicalProductionCount": 3,
+    "totalSourceQuestions": 200,
+    "newProductionEnabled": false,
+    "oldAppDataMigrated": false
+  },
+  "verification": {
+    "pythonTestsPassed": 151,
+    "javascriptUnitTestsPassed": 29,
+    "freshBrowserScenariosPassed": 6,
+    "playerAndUpdateBrowserScenariosPassed": 10,
+    "topicBrowserScenariosPassed": 9,
+    "freshViewports": ["390x844", "320x568", "1280x900"],
+    "freshBrowserPageErrors": 0,
+    "emptyCollectionMediaRequests": 0,
+    "actualApi35NativeCompilation": true,
+    "independentApkInspection": true,
+    "extractedApkSourceGatePassed": true,
+    "missingRuntimeRejected": true,
+    "sourcePolicyAndWhitespaceChecksPassed": true,
+    "physicalAndroidInstallationTested": false,
+    "physicalAndroidPlaybackTested": false
+  },
+  "signingContinuity": {
+    "privateBackupSavedBeforeDelivery": true,
+    "backupRestoreCertificateVerified": true,
+    "releaseSignedUsingRestoredBackup": true,
+    "futureUpdatesRequireSameKey": true,
+    "nextVersionCodeMustExceed": 4,
+    "privateBackupPublishedToGitHub": false
+  },
+  "limitations": [
+    "No physical device or emulator installation was performed.",
+    "The fresh app intentionally has no lessons; no new media was generated.",
+    "The live lesson catalog currently has no download offers.",
+    "Application installation and later APK updates use Android's installer."
+  ]
+}

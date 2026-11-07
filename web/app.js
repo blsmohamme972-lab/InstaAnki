@@ -19,7 +19,7 @@
     catalogCheckedAt: null, downloading: false, info: { version: '0.2.0', versionCode: 3 }, toastTimer: 0,
     bypassNextRecall: null, bypassEntryRecall: false, entryWasDue: false,
     pendingQuestion: null, explanationContext: null, lastQuestionResult: null,
-    bundledLessons: [], bundledBooks: [], collectionGeneration: 0, collectionWarnings: [],
+    bundledLessons: [], bundledBooks: [], distribution: null, collectionGeneration: 0, collectionWarnings: [],
     sourceUrl: '', lastPaint: 0, flowKey: '', endingId: '', endingNode: '', preloads: [],
   };
   for (const id of ['lesson-image', 'image-viewport', 'camera-layer', 'visual-stage', 'lesson-caption', 'scene-heading', 'lesson-title', 'spotlight', 'teaching-pointer', 'focus-label', 'pointer-tip', 'pointer-shaft', 'pointer-outline', 'pointer-head', 'pointer-hand', 'target-region', 'seek', 'current-time', 'duration-time', 'lesson-ending', 'clinical-gallery', 'recap-map', 'feed-status', 'lesson-question-button']) {
@@ -49,7 +49,7 @@
     return Number.isFinite(end) && end > 0 ? Math.min(end, actual) : actual;
   }
   function stopFrames() { if (app.frame) cancelAnimationFrame(app.frame); app.frame = 0; app.lastClock = 0; }
-  function syncImmersive() { native?.setImmersive?.(app.tab === 'feed' && !app.modal); }
+  function syncImmersive() { native?.setImmersive?.(app.tab === 'feed' && !!current() && !app.modal); }
   function startFrames() {
     if (!app.frame && !audio.paused && !audio.ended && document.visibilityState === 'visible' && app.tab === 'feed' && !app.modal) app.frame = requestAnimationFrame(tick);
   }
@@ -108,6 +108,8 @@
     }
     app.feed = lessons;
     app.index = Math.max(0, lessons.findIndex(x => x.id === preferredId));
+    document.body.classList.toggle('collection-empty', app.lessons.length === 0);
+    syncImmersive();
     $('#filter-indicator').hidden = !app.specialty && !app.tag;
     $$('[data-feed]').forEach(button => button.classList.toggle('selected', button.dataset.feed === app.feedMode));
     if (!lessons.length) {
@@ -124,6 +126,9 @@
       }
       if (app.feedMode === 'all' && focusedLessons.length && !visibleFocused.length && !app.specialty && !app.tag) {
         $('#feed-empty').innerHTML = `<div class="empty-emblem">${icons.book}</div><h1>Your lessons are hidden.</h1><p>Restore a lesson to see it here again. Its existing review schedule and notes are kept.</p><button class="secondary-button empty-button" data-action="feedback-history" type="button">Manage hidden lessons</button>`;
+      }
+      if (!app.lessons.length) {
+        $('#feed-empty').innerHTML = `<span class="welcome-kicker">YOUR LEARNING GALLERY</span><div class="welcome-mark" aria-hidden="true">${icons.play}<span>${icons.book}</span></div><span class="collection-count"><span class="status-dot"></span>0 lessons on this device</span><h1>A fresh place<br>to learn.</h1><p>Your collection starts here. Add a lesson package when you’re ready.</p><div class="welcome-actions"><button class="primary-button full-width" data-action="import-pack" type="button">Import lesson package ${icons.arrow}</button><button class="secondary-button full-width" data-action="check-updates" type="button">Check for updates</button></div>${app.books[0] ? `<button class="welcome-source" type="button" data-book="${esc(app.books[0].id)}">${icons.book}<span><small>APPROVED SOURCE</small>${esc(app.books[0].title)}<em>${esc(app.books[0].author)} · ${esc(app.books[0].year)}</em></span>${icons.arrow}</button>` : ''}`;
       }
       $('#feed-status').textContent = 'No lessons in this view';
       $('#lesson-question-button').disabled = true;
@@ -455,13 +460,18 @@
     refreshProductionProgress();
     const produced = app.books.reduce((n, book) => n + Number(book.completedVideos || 0), 0);
     const total = app.books.reduce((n, book) => n + Number(book.totalQuestions || 0), 0);
-    $('#screen-publications').innerHTML = `<span class="page-eyebrow">THE SOURCE COLLECTION</span><h1 class="page-heading" id="publications-heading">From page to memory.</h1><p class="page-intro">Your publications, transformed one learning objective at a time.</p>${app.books.map(book => `<button class="surface-card publication-card" type="button" data-book="${esc(book.id)}" aria-label="Open ${esc(book.title)}"><div class="book-top">${cover(book)}<div class="book-details"><div class="book-year">${esc(book.year || '')} · PERSONAL COLLECTION</div><h2>${esc(book.title)}</h2><p>${esc(book.author)}<br>${Number(book.totalQuestions) || 0} source questions</p></div></div><div class="book-progress-head"><span>Lessons produced</span><b>${Number(book.completedVideos) || 0} / ${Number(book.totalQuestions) || 0}</b></div><div class="progress-track"><div class="progress-fill" style="width:${clamp((Number(book.completedVideos) || 0) / Math.max(1, Number(book.totalQuestions)) * 100, 0, 100)}%"></div></div><div class="book-foot"><span>${esc(book.sourceStatus || 'Source collection')} · ${clamp((Number(book.completedVideos) || 0) / Math.max(1, Number(book.totalQuestions)) * 100, 0, 100).toFixed(1)}%</span>${icons.arrow}</div></button>`).join('') || '<p class="empty-copy">Your publication collection is empty. Import a source-linked lesson package to begin.</p>'}<div class="library-summary"><div class="mini-stat"><b>${produced}</b><span>Lessons produced</span></div><div class="mini-stat"><b>${Math.max(0, total - produced)}</b><span>Questions still to produce</span></div></div><div class="inline-note">${icons.lock}<span>Production progress belongs to your source collection. Your personal review progress is tracked separately in Insights.</span></div><button class="secondary-button full-width" type="button" data-action="import-pack">Import a lesson package ${icons.arrow}</button>`;
+    const empty = app.lessons.length === 0;
+    $('#screen-publications').innerHTML = `<span class="page-eyebrow">THE SOURCE COLLECTION</span><h1 class="page-heading" id="publications-heading">From page to memory.</h1><p class="page-intro">${empty ? 'Your original source is ready. No lessons are installed on this device.' : 'Your publications, transformed one learning objective at a time.'}</p>${empty ? '<div class="installed-summary"><b>0</b><span>lessons on this device</span></div>' : ''}${app.books.map(book => `<button class="surface-card publication-card" type="button" data-book="${esc(book.id)}" aria-label="Open ${esc(book.title)}"><div class="book-top">${cover(book)}<div class="book-details"><div class="book-year">${esc(book.year || '')} · PERSONAL COLLECTION</div><h2>${esc(book.title)}</h2><p>${esc(book.author)}<br>${Number(book.totalQuestions) || 0} source questions</p></div></div><div class="book-progress-head"><span>${empty ? 'Historical production' : 'Lessons produced'}</span><b>${Number(book.completedVideos) || 0} / ${Number(book.totalQuestions) || 0}</b></div><div class="progress-track"><div class="progress-fill" style="width:${clamp((Number(book.completedVideos) || 0) / Math.max(1, Number(book.totalQuestions)) * 100, 0, 100)}%"></div></div><div class="book-foot"><span>${empty ? 'Previously produced lessons are not bundled in this fresh collection.' : esc(book.sourceStatus || 'Source collection') + ' · ' + clamp((Number(book.completedVideos) || 0) / Math.max(1, Number(book.totalQuestions)) * 100, 0, 100).toFixed(1) + '%'}</span>${icons.arrow}</div></button>`).join('') || '<p class="empty-copy">Your publication collection is empty. Import a source-linked lesson package to begin.</p>'}<div class="library-summary"><div class="mini-stat"><b>${empty ? 0 : produced}</b><span>${empty ? 'Lessons on this device' : 'Lessons produced'}</span></div><div class="mini-stat"><b>${empty ? produced : Math.max(0, total - produced)}</b><span>${empty ? 'Historically produced' : 'Questions still to produce'}</span></div></div><div class="inline-note">${icons.lock}<span>${empty ? 'Historical production belongs to the source record. It does not mean those lessons are installed. New lesson production is paused.' : 'Production progress belongs to your source collection. Your personal review progress is tracked separately in Insights.'}</span></div><button class="secondary-button full-width" type="button" data-action="import-pack">Import a lesson package ${icons.arrow}</button>`;
     bindCoverFallbacks();
   }
   function lessonRow(lesson, action, suffix) {
     return `<button class="lesson-row" type="button" data-${action}="${esc(lesson.id)}"><img class="lesson-thumb" src="${esc(asset(lesson.poster, lesson._baseUrl))}" alt=""><span class="lesson-row-copy"><h3>${esc(lesson.title)}</h3><p>${esc(lesson.specialty || 'Medical learning')}${suffix ? ` · ${esc(suffix)}` : ''}</p></span><span class="row-arrow">${icons.arrow}</span></button>`;
   }
   function renderReview() {
+    if (!app.lessons.length) {
+      $('#screen-review').innerHTML = `<span class="page-eyebrow">A MOMENT TO REMEMBER</span><h1 class="page-heading" id="review-heading">Room for new memories.</h1><p class="page-intro">Your review queue will begin after you add and watch a lesson.</p><div class="surface-card review-hero"><span class="hero-orbit" aria-hidden="true"></span><div class="hero-count">0</div><p class="hero-subtitle">lessons on this device</p><p class="hero-detail">Import a lesson package to start. Your answers will guide its review schedule.</p><button class="primary-button full-width" type="button" data-action="import-pack">Import lesson package ${icons.arrow}</button></div><div class="inline-note">${icons.lock}<span>Your learning stays on this device. An empty collection does not change any history restored from a backup.</span></div>`;
+      return;
+    }
     const due = L.due(app.lessons);
     const started = app.lessons.filter(lesson => L.get(lesson.id).enrolledAt);
     $('#screen-review').innerHTML = `<span class="page-eyebrow">A MOMENT TO REMEMBER</span><h1 class="page-heading" id="review-heading">Due reviews.</h1><p class="page-intro">Start with the question. Let your memory do the work before the explanation.</p><div class="surface-card review-hero"><span class="hero-orbit" aria-hidden="true"></span><div class="hero-count">${due.length}</div><p class="hero-subtitle">${due.length === 1 ? 'lesson ready for recall' : 'lessons ready for recall'}</p><p class="hero-detail">${due.length ? 'These are due now, according to your review history.' : started.length ? 'Your next reviews will appear here when they are due.' : 'Your queue begins after you spend time with a lesson.'}</p><button class="primary-button full-width" type="button" data-action="${due.length ? 'start-review' : 'go-feed'}">${due.length ? 'Begin recall' : 'Explore your lessons'} ${icons.arrow}</button></div>${due.length ? `<div class="section-title"><h2>Due now</h2><span>${due.length} ${due.length === 1 ? 'lesson' : 'lessons'}</span></div><div class="lesson-list">${due.map(x => lessonRow(x, 'review-lesson', 'Ready to recall')).join('')}</div>` : ''}<div class="section-title"><h2>Practise anytime</h2><span>No schedule changes</span></div><div class="lesson-list">${app.lessons.map(x => lessonRow(x, 'practice-lesson', 'Quick question')).join('')}</div><div class="inline-note">${icons.recall}<span>Watching adds a lesson to your collection. Answers guide its review schedule. A replay or a like never counts as a correct answer.</span></div>`;
@@ -589,7 +599,8 @@
     const book = app.books.find(item => item.id === id); if (!book) return;
     const questions = book.questions || [];
     const paused = isProductionPaused(book);
-    openModal('book', book.title, 'PUBLICATION PROGRESS', `<p class="modal-intro">${esc(book.author)} · ${esc(book.year)}<br>${Number(book.completedVideos) || 0} lessons produced from ${Number(book.totalQuestions) || 0} source questions.</p><div class="source-block"><h3>${paused ? 'New lesson production is paused.' : `Next question to produce: ${book.nextQuestionNumber ? `Q${esc(book.nextQuestionNumber)}` : 'All source questions covered'}`}</h3><p>${paused ? 'Work is limited to app and existing-lesson repairs. Source questions remain listed for reference.' : 'Completed questions are tracked individually. Skipped question numbers remain in the production plan.'}</p><button class="quiet-button" type="button" data-copy-plan="${esc(book.id)}">${paused ? 'Copy collection brief' : 'Copy the next-batch brief'} ↗</button></div><div class="question-key"><span><i class="done"></i>Produced</span><span><i></i>Not yet produced</span></div><div class="question-grid">${questions.map(q => `<button class="question-cell ${q.status === 'produced' ? 'produced' : q.status === 'needs_review' ? 'needs-review' : ''}" type="button" data-question="${q.number}" data-question-book="${esc(book.id)}" aria-label="Question ${q.number}, ${q.status === 'produced' ? 'lesson produced' : q.status === 'needs_review' ? 'source needs review' : 'not yet produced'}">${q.number}</button>`).join('')}</div>`, { bookId: id });
+    const installed = app.lessons.filter(lesson => lesson.source?.bookId === id).length;
+    openModal('book', book.title, 'PUBLICATION PROGRESS', `<p class="modal-intro">${esc(book.author)} · ${esc(book.year)}<br>${Number(book.completedVideos) || 0} lessons historically produced from ${Number(book.totalQuestions) || 0} source questions.<br><strong>${installed} ${installed === 1 ? 'lesson' : 'lessons'} on this device.</strong></p><div class="source-block"><h3>${paused ? 'New lesson production is paused.' : `Next question to produce: ${book.nextQuestionNumber ? `Q${esc(book.nextQuestionNumber)}` : 'All source questions covered'}`}</h3><p>${paused ? 'Work is limited to app and existing-lesson repairs. Source questions remain listed for reference.' : 'Completed questions are tracked individually. Skipped question numbers remain in the production plan.'}</p><button class="quiet-button" type="button" data-copy-plan="${esc(book.id)}">${paused ? 'Copy collection brief' : 'Copy the next-batch brief'} ↗</button></div><div class="question-key"><span><i class="done"></i>Historically produced</span><span><i></i>Not yet produced</span></div><div class="question-grid">${questions.map(q => `<button class="question-cell ${q.status === 'produced' ? 'produced' : q.status === 'needs_review' ? 'needs-review' : ''}" type="button" data-question="${q.number}" data-question-book="${esc(book.id)}" aria-label="Question ${q.number}, ${q.status === 'produced' ? 'lesson produced' : q.status === 'needs_review' ? 'source needs review' : 'not yet produced'}">${q.number}</button>`).join('')}</div>`, { bookId: id });
   }
   function quizMode(lesson, requested) {
     if (requested === 'practice') return 'practice';
@@ -903,7 +914,7 @@
       if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.packs)) throw new Error('The catalog format is not supported by this app version.');
       app.catalog = catalog; app.catalogCheckedAt = new Date().toISOString();
       if (interactive && app.modal?.kind === 'updates') renderUpdates();
-      else if (!app.modal && (Number(catalog.latestApp?.versionCode) > Number(app.info.versionCode || 1) || catalog.packs.some(pack => !packIsCurrent(pack)))) {
+      else if (!app.modal && (appUpdateCandidate(catalog) || catalog.packs.some(pack => packTargetsApp(pack) && !packIsCurrent(pack)))) {
         openModal('updates', 'New learning is ready.', 'CONTENT & APP', ''); renderUpdates();
       }
       if (app.tab === 'settings') renderSettings();
@@ -918,6 +929,24 @@
     }
     if (native?.listPacks) { try { return JSON.parse(native.listPacks()).some(p => p.packId === pack.id && String(p.manifest.version) === String(pack.version)); } catch (_) {} }
     return false;
+  }
+  function currentPackageName() { return app.info.packageName || 'com.instaanki.app'; }
+  function isFreshApp() { return app.distribution?.profile === 'fresh' || currentPackageName() === 'com.instaanki.fresh'; }
+  function packTargetsApp(pack) {
+    // A shared catalog must not reintroduce the legacy starter collection into
+    // the explicitly empty fresh app. Manual source-valid imports are separate.
+    return !isFreshApp() || (Array.isArray(pack?.targetPackageNames) && pack.targetPackageNames.includes('com.instaanki.fresh'));
+  }
+  function appUpdateCandidate(catalog = app.catalog) {
+    if (!catalog) return null;
+    const identity = currentPackageName();
+    const apps = Array.isArray(catalog.apps) ? catalog.apps : catalog.apps && typeof catalog.apps === 'object'
+      ? Object.entries(catalog.apps).filter(([, value]) => value && typeof value === 'object').map(([name, value]) => ({ packageName: name, ...value })) : [];
+    return [...apps, catalog.latestApp].filter(candidate => {
+      if (!candidate || typeof candidate !== 'object' || !Number.isInteger(candidate.versionCode) || candidate.versionCode <= Number(app.info.versionCode || 1)) return false;
+      if (candidate.packageName !== identity && !(identity === 'com.instaanki.app' && !isFreshApp() && candidate.packageName == null)) return false;
+      try { return new URL(candidate.url).protocol === 'https:'; } catch (_) { return false; }
+    }).sort((a, b) => b.versionCode - a.versionCode)[0] || null;
   }
   function packCompatibility(pack) {
     // The repaired app uses a separate catalog. Every offered package must
@@ -942,12 +971,14 @@
   }
   function renderUpdates() {
     const catalog = app.catalog; if (!catalog) return;
-    const availableApp = catalog.latestApp && Number(catalog.latestApp.versionCode) > Number(app.info.versionCode || 1);
-    const packs = catalog.packs.filter(pack => !packIsCurrent(pack));
-    $('#modal-body').innerHTML = `<p class="modal-intro">Checked ${esc(dateLabel(app.catalogCheckedAt))}. Content downloads are separate from your installed app.</p>${availableApp ? `<div class="update-card"><h3>InstaAnki ${esc(catalog.latestApp.version)}</h3><p>${esc(catalog.latestApp.notes || 'An updated Android app is available.')}</p><button class="primary-button full-width" type="button" data-action="open-app-update">Open Android update ↗</button></div>` : '<div class="source-block"><h3>No newer app release listed.</h3><p>Your installed version is ' + esc(app.info.version) + '.</p></div>'}<h3>Available lesson packages</h3>${packs.length ? packs.map(packUpdateCard).join('') : `<p class="empty-copy">${catalog.packs.length ? 'All published lessons in this catalog are already on this device.' : 'There are no downloadable packages in this catalog yet. You can still import a personal ZIP from your device.'}</p>`}<div id="download-progress" class="download-progress" ${app.downloading ? '' : 'hidden'}><span>Preparing download…</span><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>`;
+    const availableApp = appUpdateCandidate(catalog);
+    const targeted = catalog.packs.filter(packTargetsApp);
+    const packs = targeted.filter(pack => !packIsCurrent(pack));
+    $('#modal-body').innerHTML = `<p class="modal-intro">Checked ${esc(dateLabel(app.catalogCheckedAt))}. Content downloads are separate from your installed app.</p>${availableApp ? `<div class="update-card"><h3>InstaAnki ${esc(availableApp.version)}</h3><p>${esc(availableApp.notes || 'An updated Android app is available.')}</p><button class="primary-button full-width" type="button" data-action="open-app-update">Open Android update ↗</button></div>` : '<div class="source-block"><h3>No newer app release listed.</h3><p>Your installed version is ' + esc(app.info.version) + '.</p></div>'}<h3>Available lesson packages</h3>${packs.length ? packs.map(packUpdateCard).join('') : `<p class="empty-copy">${targeted.length ? 'All published lessons in this catalog are already on this device.' : isFreshApp() ? 'No lesson packages are published for this fresh app yet. You can still choose a source-linked ZIP to import from your device.' : 'There are no downloadable packages in this catalog yet. You can still import a personal ZIP from your device.'}</p>`}<div id="download-progress" class="download-progress" ${app.downloading ? '' : 'hidden'}><span>Preparing download…</span><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>`;
   }
   function downloadPack(id) {
     const pack = app.catalog?.packs.find(x => x.id === id); if (!pack) return;
+    if (!packTargetsApp(pack)) { toast('This package is not published for the fresh app. Choose a compatible package or import a source-linked ZIP yourself.'); return; }
     const compatibility = packCompatibility(pack);
     if (compatibility.message) { toast(compatibility.message); return; }
     if (!native?.downloadPack && !native?.downloadPackVerified && !native?.downloadPackCompatible) { toast('Install the Android app to download and install a lesson package.'); return; }
@@ -970,7 +1001,7 @@
     const paused = isProductionPaused(book);
     const existing = app.lessons.filter(lesson => lesson.source?.bookId === book.id).map(lesson => lesson.id);
     const text = paused
-      ? `Repair the InstaAnki app and its existing ${existing.length} lessons only.\nDo not create new videos, lessons, narration, or mnemonic artwork until an explicit new user request.\nOriginal publication: ${book.title} (${book.author}, ${book.year}).\nBook ID: ${book.id}\nProduced source question numbers: ${done.join(', ') || 'none'}.\nExisting lesson IDs: ${existing.join(', ') || 'none'}.\nKeep the original book as the only active publication. Preserve lesson IDs, reviews, private notes, preferences, source references, and produced counts.\nAllowed work: app errors, interface and playback repairs, lossless media optimization, feedback, and update delivery.\n${remaining.length} source questions remain unproduced; new production is paused.`
+      ? `${existing.length ? `Repair the InstaAnki app and its existing ${existing.length} lessons only.` : 'Repair the InstaAnki app only. This fresh collection has no installed lessons.'}\nDo not create new videos, lessons, narration, or mnemonic artwork until an explicit new user request.\nOriginal publication: ${book.title} (${book.author}, ${book.year}).\nBook ID: ${book.id}\nProduced source question numbers: ${done.join(', ') || 'none'}.\nExisting lesson IDs: ${existing.join(', ') || 'none'}.\nHistorical produced lesson IDs: ${(book.questions || []).filter(q => q.status === 'produced' && q.lessonId).map(q => q.lessonId).join(', ') || 'none'}.\nKeep the original book as the only active publication. Preserve lesson IDs, reviews, private notes, preferences, source references, and produced counts.\nAllowed work: app errors, interface and playback repairs, lossless media optimization, feedback, and update delivery.\n${remaining.length} source questions remain unproduced; new production is paused.`
       : `Continue the InstaAnki collection for ${book.title} (${book.author}, ${book.year}).\nBook ID: ${book.id}\nCompleted source question numbers: ${done.join(', ') || 'none'}.\n${remaining.length} source questions remain.\nNext batch: ${remaining.slice(0, 10).map(n => `Q${n}`).join(', ')}.\nKeep stable lesson IDs, English narration, source references, licensed real clinical images, and the existing JSON content format. Use the original 2D visual-mnemonic style and the fixed symbol dictionary. Do not mark questions complete until their media and MCQs are produced and checked.`;
     try { await navigator.clipboard.writeText(text); toast(paused ? 'The collection brief was copied.' : 'The next-batch brief was copied.'); }
     catch (_) { openModal('copy-plan', paused ? 'Your collection brief.' : 'Your next-batch brief.', paused ? 'APP REPAIRS ONLY' : 'CONTINUE PRODUCTION', `<p class="modal-intro">${paused ? 'Share this brief when asking for app or existing-lesson updates.' : 'Copy this brief into your next content-generation conversation.'}</p><textarea class="textarea" readonly autofocus>${esc(text)}</textarea>`); }
@@ -1008,7 +1039,7 @@
     'export-backup': () => { if (native?.exportBackup) native.exportBackup(); else { downloadJSON(L.backup(), `InstaAnki-backup-${new Date().toISOString().slice(0, 10)}.json`); toast('Your learning backup is ready to save.'); } },
     'import-backup': () => { if (native?.importBackup) native.importBackup(); else $('#backup-file').click(); },
     'check-updates': () => checkUpdates(true),
-    'open-app-update': () => { if (app.catalog?.latestApp?.url) external(app.catalog.latestApp.url); },
+    'open-app-update': () => { const candidate = appUpdateCandidate(); if (candidate) external(candidate.url); else toast('No compatible app update is listed for this installation.'); },
   };
   document.addEventListener('click', async event => {
     const link = event.target.closest('a[data-external]'); if (link) { event.preventDefault(); external(link.href); return; }
@@ -1024,6 +1055,7 @@
         const book = app.books.find(x => x.id === button.dataset.questionBook);
         const question = book?.questions?.find(x => x.number === Number(button.dataset.question));
         if (question?.lessonId && byId(question.lessonId)) watchLesson(question.lessonId);
+        else if (question?.status === 'produced') toast(`Question ${button.dataset.question} was produced previously. Its lesson is not installed on this device.`);
         else toast(`Question ${button.dataset.question} has ${question?.status === 'needs_review' ? 'source details that still need review' : 'not been produced as a lesson yet'}.`);
         return;
       }
@@ -1161,8 +1193,17 @@
     try {
       if (!L) throw new Error('The learning engine could not be loaded.');
       L.load(); syncWarning();
-      if (native?.getAppInfo) { try { app.info = { ...app.info, ...JSON.parse(native.getAppInfo()) }; } catch (_) { } }
-      const results = await Promise.allSettled([fetchJSON('data/lessons.json'), fetchJSON('data/books.json'), fetchJSON('data/taxonomy.json')]);
+      let nativeInfo = {};
+      if (native?.getAppInfo) { try { nativeInfo = JSON.parse(native.getAppInfo()) || {}; } catch (_) { } }
+      const fresh = document.querySelector('meta[name="instaanki-distribution"]')?.content === 'fresh';
+      const results = await Promise.allSettled([fetchJSON('data/lessons.json'), fetchJSON('data/books.json'), fetchJSON('data/taxonomy.json'), fresh ? fetchJSON('data/distribution.json') : Promise.resolve(null)]);
+      if (fresh) {
+        const marker = results[3].status === 'fulfilled' && results[3].value;
+        if (marker?.schemaVersion !== 1 || marker.profile !== 'fresh' || marker.app?.packageName !== 'com.instaanki.fresh') throw new Error('The fresh app identity could not be opened. Reinstall its complete app package.');
+        app.distribution = marker;
+        app.info = { ...app.info, ...marker.app };
+      }
+      app.info = { ...app.info, ...nativeInfo };
       if (results[0].status === 'fulfilled') {
         const raw = results[0].value;
         app.bundledLessons = (Array.isArray(raw) ? raw : raw.lessons || []).filter(validLesson);

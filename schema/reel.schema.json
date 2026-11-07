@@ -1,0 +1,1095 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/blsmohamme972-lab/InstaAnki/schema/reel.schema.json",
+  "title": "InstaAnki reel (reel.json)",
+  "type": "object",
+  "required": [
+    "id",
+    "revision",
+    "title",
+    "language",
+    "duration",
+    "audio",
+    "transcript",
+    "tags",
+    "images",
+    "regions",
+    "segments",
+    "cues",
+    "questions"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "#/$defs/id"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "language": {
+      "type": "string",
+      "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+    },
+    "duration": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 300
+    },
+    "audio": {
+      "$ref": "#/$defs/path"
+    },
+    "transcript": {
+      "$ref": "#/$defs/path"
+    },
+    "tags": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/tag"
+      }
+    },
+    "related": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "reel",
+          "relation"
+        ],
+        "properties": {
+          "reel": {
+            "$ref": "#/$defs/id"
+          },
+          "relation": {
+            "enum": [
+              "confusable",
+              "prerequisite",
+              "followup"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "remediates": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/id"
+      }
+    },
+    "images": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "#/$defs/key"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/image"
+      }
+    },
+    "regions": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/key"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/region"
+      }
+    },
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/segment"
+      }
+    },
+    "cues": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/cue"
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/question"
+      }
+    },
+    "pretest": {
+      "$ref": "#/$defs/key"
+    },
+    "recap": {
+      "type": "object",
+      "required": [
+        "segments"
+      ],
+      "properties": {
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/key"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "patternProperties": {
+    "^x-": {}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,63}$"
+    },
+    "tag": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+(/[a-z0-9-]+)*$"
+    },
+    "path": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+    },
+    "time": {
+      "type": "number",
+      "minimum": 0
+    },
+    "unit": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400
+    },
+    "keyList": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/key"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/key"
+          }
+        }
+      ]
+    },
+    "options": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      }
+    },
+    "image": {
+      "type": "object",
+      "required": [
+        "src",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "src": {
+          "$ref": "#/$defs/path"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "alt": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "region": {
+      "type": "object",
+      "required": [
+        "image",
+        "label"
+      ],
+      "properties": {
+        "image": {
+          "$ref": "#/$defs/key"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "quiz": {
+          "type": "boolean"
+        },
+        "svgId": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "rect": {
+          "type": "object",
+          "required": [
+            "x",
+            "y",
+            "w",
+            "h"
+          ],
+          "properties": {
+            "x": {
+              "$ref": "#/$defs/unit"
+            },
+            "y": {
+              "$ref": "#/$defs/unit"
+            },
+            "w": {
+              "$ref": "#/$defs/unit"
+            },
+            "h": {
+              "$ref": "#/$defs/unit"
+            }
+          },
+          "additionalProperties": false
+        },
+        "circle": {
+          "type": "object",
+          "required": [
+            "cx",
+            "cy",
+            "r"
+          ],
+          "properties": {
+            "cx": {
+              "$ref": "#/$defs/unit"
+            },
+            "cy": {
+              "$ref": "#/$defs/unit"
+            },
+            "r": {
+              "$ref": "#/$defs/unit"
+            }
+          },
+          "additionalProperties": false
+        },
+        "polygon": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "$ref": "#/$defs/unit"
+              },
+              {
+                "$ref": "#/$defs/unit"
+              }
+            ],
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "svgId"
+          ]
+        },
+        {
+          "required": [
+            "rect"
+          ]
+        },
+        {
+          "required": [
+            "circle"
+          ]
+        },
+        {
+          "required": [
+            "polygon"
+          ]
+        }
+      ],
+      "additionalProperties": false
+    },
+    "segment": {
+      "type": "object",
+      "required": [
+        "id",
+        "start",
+        "end",
+        "importance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/key"
+        },
+        "start": {
+          "$ref": "#/$defs/time"
+        },
+        "end": {
+          "$ref": "#/$defs/time"
+        },
+        "importance": {
+          "enum": [
+            "key",
+            "normal",
+            "minor"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 300
+        }
+      },
+      "additionalProperties": false
+    },
+    "cue": {
+      "type": "object",
+      "required": [
+        "t",
+        "type"
+      ],
+      "properties": {
+        "t": {
+          "$ref": "#/$defs/time"
+        },
+        "type": {
+          "enum": [
+            "show",
+            "camera",
+            "spotlight",
+            "label",
+            "arrow",
+            "text",
+            "pulse"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "show"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/cueShow"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "camera"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/cueCamera"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "spotlight"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/cueSpotlight"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "label"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/cueLabel"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "arrow"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/cueArrow"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "text"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/cueText"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "pulse"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/cuePulse"
+          }
+        }
+      ]
+    },
+    "cueShow": {
+      "required": [
+        "image"
+      ],
+      "properties": {
+        "t": true,
+        "type": true,
+        "image": {
+          "$ref": "#/$defs/key"
+        },
+        "transition": {
+          "enum": [
+            "cut",
+            "fade",
+            "slide"
+          ]
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "cueCamera": {
+      "required": [
+        "target"
+      ],
+      "properties": {
+        "t": true,
+        "type": true,
+        "target": {
+          "$ref": "#/$defs/key"
+        },
+        "zoom": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "ease": {
+          "enum": [
+            "linear",
+            "in",
+            "out",
+            "inOut"
+          ]
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "cueSpotlight": {
+      "required": [
+        "target",
+        "until"
+      ],
+      "properties": {
+        "t": true,
+        "type": true,
+        "target": {
+          "$ref": "#/$defs/keyList"
+        },
+        "until": {
+          "$ref": "#/$defs/time"
+        },
+        "dim": {
+          "$ref": "#/$defs/unit"
+        },
+        "shape": {
+          "enum": [
+            "auto",
+            "circle",
+            "rect"
+          ]
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "cueLabel": {
+      "required": [
+        "region",
+        "until"
+      ],
+      "properties": {
+        "t": true,
+        "type": true,
+        "region": {
+          "$ref": "#/$defs/key"
+        },
+        "until": {
+          "$ref": "#/$defs/time"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "position": {
+          "enum": [
+            "auto",
+            "top",
+            "bottom",
+            "left",
+            "right"
+          ]
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "cueArrow": {
+      "required": [
+        "from",
+        "to",
+        "until"
+      ],
+      "properties": {
+        "t": true,
+        "type": true,
+        "from": {
+          "$ref": "#/$defs/key"
+        },
+        "to": {
+          "$ref": "#/$defs/key"
+        },
+        "until": {
+          "$ref": "#/$defs/time"
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "cueText": {
+      "required": [
+        "text",
+        "until"
+      ],
+      "properties": {
+        "t": true,
+        "type": true,
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "until": {
+          "$ref": "#/$defs/time"
+        },
+        "position": {
+          "enum": [
+            "top",
+            "center",
+            "bottom"
+          ]
+        },
+        "style": {
+          "enum": [
+            "title",
+            "keyword",
+            "formula",
+            "note"
+          ]
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "cuePulse": {
+      "required": [
+        "region"
+      ],
+      "properties": {
+        "t": true,
+        "type": true,
+        "region": {
+          "$ref": "#/$defs/key"
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "question": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "explain"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/key"
+        },
+        "type": {
+          "enum": [
+            "mcq",
+            "truefalse",
+            "cloze",
+            "order",
+            "case",
+            "compare",
+            "teachback"
+          ]
+        },
+        "explain": {
+          "$ref": "#/$defs/keyList"
+        },
+        "level": {
+          "enum": [
+            "recall",
+            "understand",
+            "apply"
+          ]
+        },
+        "explanation": {
+          "type": "string",
+          "maxLength": 600
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "mcq"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/qMcq"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "truefalse"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/qTrueFalse"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "cloze"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/qCloze"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "order"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/qOrder"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "case"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/qCase"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "compare"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/qCompare"
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "teachback"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/qTeachback"
+          }
+        }
+      ]
+    },
+    "qMcq": {
+      "required": [
+        "stem",
+        "options",
+        "answer"
+      ],
+      "properties": {
+        "id": true,
+        "type": true,
+        "explain": true,
+        "level": true,
+        "explanation": true,
+        "stem": {
+          "$ref": "#/$defs/text"
+        },
+        "options": {
+          "$ref": "#/$defs/options"
+        },
+        "answer": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "qTrueFalse": {
+      "required": [
+        "statement",
+        "answer"
+      ],
+      "properties": {
+        "id": true,
+        "type": true,
+        "explain": true,
+        "level": true,
+        "explanation": true,
+        "statement": {
+          "$ref": "#/$defs/text"
+        },
+        "answer": {
+          "type": "boolean"
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "qCloze": {
+      "required": [
+        "from",
+        "cut",
+        "resume",
+        "sentenceText",
+        "options",
+        "answer"
+      ],
+      "properties": {
+        "id": true,
+        "type": true,
+        "explain": true,
+        "level": true,
+        "explanation": true,
+        "from": {
+          "$ref": "#/$defs/time"
+        },
+        "cut": {
+          "$ref": "#/$defs/time"
+        },
+        "resume": {
+          "$ref": "#/$defs/time"
+        },
+        "sentenceText": {
+          "type": "string",
+          "pattern": "____"
+        },
+        "options": {
+          "$ref": "#/$defs/options"
+        },
+        "answer": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "qOrder": {
+      "required": [
+        "prompt",
+        "items"
+      ],
+      "properties": {
+        "id": true,
+        "type": true,
+        "explain": true,
+        "level": true,
+        "explanation": true,
+        "prompt": {
+          "$ref": "#/$defs/text"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "qCase": {
+      "required": [
+        "vignette",
+        "stem",
+        "options",
+        "answer"
+      ],
+      "properties": {
+        "id": true,
+        "type": true,
+        "explain": true,
+        "level": true,
+        "explanation": true,
+        "vignette": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 800
+        },
+        "stem": {
+          "$ref": "#/$defs/text"
+        },
+        "options": {
+          "$ref": "#/$defs/options"
+        },
+        "answer": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "qCompare": {
+      "required": [
+        "prompt",
+        "image",
+        "otherReel",
+        "otherImage",
+        "answer"
+      ],
+      "properties": {
+        "id": true,
+        "type": true,
+        "explain": true,
+        "level": true,
+        "explanation": true,
+        "prompt": {
+          "$ref": "#/$defs/text"
+        },
+        "image": {
+          "$ref": "#/$defs/key"
+        },
+        "otherReel": {
+          "$ref": "#/$defs/id"
+        },
+        "otherImage": {
+          "$ref": "#/$defs/key"
+        },
+        "answer": {
+          "enum": [
+            "this",
+            "other"
+          ]
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "qTeachback": {
+      "required": [
+        "prompt",
+        "keywords",
+        "minHits"
+      ],
+      "properties": {
+        "id": true,
+        "type": true,
+        "explain": true,
+        "level": true,
+        "explanation": true,
+        "prompt": {
+          "$ref": "#/$defs/text"
+        },
+        "keywords": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "minHits": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}

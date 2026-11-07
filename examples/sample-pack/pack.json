@@ -1,0 +1,20 @@
+{
+  "format": "instaanki-pack",
+  "formatVersion": 1,
+  "id": "cardio-basics-001",
+  "version": 1,
+  "title": "أساسيات القلب (حزمة مثال)",
+  "description": "حزمة مثال توضّح صيغة الحزم. الصوت صامت (placeholder) لأن الهدف توضيح البنية والتوقيتات فقط.",
+  "language": "ar",
+  "createdAt": "2026-11-07",
+  "author": "InstaAnki example",
+  "tags": ["cardiology"],
+  "reels": ["cardio-heart-chambers-001"],
+  "licenses": [
+    {
+      "files": "reels/*/img/*.svg",
+      "license": "CC0-1.0",
+      "source": "رُسم يدوياً كمخطط SVG لهذا المشروع"
+    }
+  ]
+}

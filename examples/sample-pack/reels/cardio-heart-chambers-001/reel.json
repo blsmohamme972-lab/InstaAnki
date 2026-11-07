@@ -1,0 +1,555 @@
+{
+  "id": "cardio-heart-chambers-001",
+  "revision": 1,
+  "title": "حجرات القلب ومسار الدم",
+  "language": "ar",
+  "duration": 79.49,
+  "audio": "audio.opus",
+  "transcript": "transcript.json",
+  "tags": [
+    "cardiology/anatomy",
+    "cardiology/physiology"
+  ],
+  "related": [
+    {
+      "reel": "cardio-heart-valves-002",
+      "relation": "followup"
+    }
+  ],
+  "images": {
+    "heart": {
+      "src": "img/heart.svg",
+      "width": 1000,
+      "height": 1200,
+      "alt": "مخطط تبسيطي لحجرات القلب الأربع والأوعية الكبيرة"
+    }
+  },
+  "regions": {
+    "right-atrium": {
+      "image": "heart",
+      "svgId": "right-atrium",
+      "label": "الأذين الأيمن",
+      "quiz": true
+    },
+    "left-atrium": {
+      "image": "heart",
+      "svgId": "left-atrium",
+      "label": "الأذين الأيسر",
+      "quiz": true
+    },
+    "right-ventricle": {
+      "image": "heart",
+      "svgId": "right-ventricle",
+      "label": "البطين الأيمن",
+      "quiz": true
+    },
+    "left-ventricle": {
+      "image": "heart",
+      "svgId": "left-ventricle",
+      "label": "البطين الأيسر",
+      "quiz": true
+    },
+    "aorta": {
+      "image": "heart",
+      "svgId": "aorta",
+      "label": "الأبهر",
+      "aliases": [
+        "الشريان الأورطي"
+      ],
+      "quiz": true
+    },
+    "pulmonary-trunk": {
+      "image": "heart",
+      "svgId": "pulmonary-trunk",
+      "label": "الشريان الرئوي",
+      "quiz": true
+    },
+    "superior-vena-cava": {
+      "image": "heart",
+      "svgId": "superior-vena-cava",
+      "label": "الوريد الأجوف العلوي",
+      "quiz": true
+    }
+  },
+  "segments": [
+    {
+      "id": "intro",
+      "start": 0.0,
+      "end": 4.1,
+      "importance": "minor",
+      "summary": "مقدمة"
+    },
+    {
+      "id": "chambers",
+      "start": 4.1,
+      "end": 13.95,
+      "importance": "key",
+      "summary": "أربع حجرات: أذينان يستقبلان وبطينان يضخان"
+    },
+    {
+      "id": "right-side",
+      "start": 13.95,
+      "end": 32.15,
+      "importance": "normal",
+      "summary": "الجانب الأيمن: الوريد الأجوف ← الأذين الأيمن ← البطين الأيمن ← الشريان الرئوي ← الرئتان"
+    },
+    {
+      "id": "left-side",
+      "start": 32.15,
+      "end": 48.17,
+      "importance": "key",
+      "summary": "الجانب الأيسر: الرئتان ← الأذين الأيسر ← البطين الأيسر ← الأبهر ← الجسم"
+    },
+    {
+      "id": "lv-wall",
+      "start": 48.17,
+      "end": 65.32,
+      "importance": "key",
+      "summary": "جدار البطين الأيسر أسمك لأنه يضخ ضد ضغط الدورة الجهازية العالي"
+    },
+    {
+      "id": "clinical",
+      "start": 65.32,
+      "end": 74.12,
+      "importance": "normal",
+      "summary": "ارتفاع الضغط المزمن يسبب تضخم جدار البطين الأيسر"
+    },
+    {
+      "id": "outro",
+      "start": 74.12,
+      "end": 79.49,
+      "importance": "minor",
+      "summary": "الأيمن للرئتين والأيسر للجسم"
+    }
+  ],
+  "cues": [
+    {
+      "t": 0,
+      "type": "show",
+      "image": "heart",
+      "transition": "fade",
+      "duration": 0.6
+    },
+    {
+      "t": 0,
+      "type": "camera",
+      "target": "full"
+    },
+    {
+      "t": 7.12,
+      "type": "spotlight",
+      "target": [
+        "right-atrium",
+        "left-atrium"
+      ],
+      "until": 10.78,
+      "dim": 0.7
+    },
+    {
+      "t": 7.12,
+      "type": "label",
+      "region": "right-atrium",
+      "until": 10.78
+    },
+    {
+      "t": 7.12,
+      "type": "label",
+      "region": "left-atrium",
+      "until": 10.78
+    },
+    {
+      "t": 10.88,
+      "type": "spotlight",
+      "target": [
+        "right-ventricle",
+        "left-ventricle"
+      ],
+      "until": 13.89,
+      "dim": 0.7
+    },
+    {
+      "t": 10.88,
+      "type": "label",
+      "region": "right-ventricle",
+      "until": 13.89
+    },
+    {
+      "t": 10.88,
+      "type": "label",
+      "region": "left-ventricle",
+      "until": 13.89
+    },
+    {
+      "t": 18.77,
+      "type": "camera",
+      "target": "superior-vena-cava",
+      "zoom": 1.8,
+      "duration": 0.9,
+      "ease": "inOut"
+    },
+    {
+      "t": 18.77,
+      "type": "spotlight",
+      "target": "superior-vena-cava",
+      "until": 20.7,
+      "dim": 0.7
+    },
+    {
+      "t": 18.77,
+      "type": "label",
+      "region": "superior-vena-cava",
+      "until": 20.7
+    },
+    {
+      "t": 20.8,
+      "type": "camera",
+      "target": "right-atrium",
+      "zoom": 1.8,
+      "duration": 0.9,
+      "ease": "inOut"
+    },
+    {
+      "t": 20.8,
+      "type": "spotlight",
+      "target": "right-atrium",
+      "until": 24.07,
+      "dim": 0.7
+    },
+    {
+      "t": 20.8,
+      "type": "label",
+      "region": "right-atrium",
+      "until": 24.07
+    },
+    {
+      "t": 24.17,
+      "type": "camera",
+      "target": "right-ventricle",
+      "zoom": 1.7,
+      "duration": 0.9,
+      "ease": "inOut"
+    },
+    {
+      "t": 24.17,
+      "type": "spotlight",
+      "target": "right-ventricle",
+      "until": 28.82,
+      "dim": 0.7
+    },
+    {
+      "t": 24.17,
+      "type": "label",
+      "region": "right-ventricle",
+      "until": 28.82
+    },
+    {
+      "t": 28.92,
+      "type": "camera",
+      "target": "pulmonary-trunk",
+      "zoom": 1.3,
+      "duration": 0.9,
+      "ease": "inOut"
+    },
+    {
+      "t": 28.92,
+      "type": "spotlight",
+      "target": [
+        "right-ventricle",
+        "pulmonary-trunk"
+      ],
+      "until": 32.09,
+      "dim": 0.7
+    },
+    {
+      "t": 28.92,
+      "type": "arrow",
+      "from": "right-ventricle",
+      "to": "pulmonary-trunk",
+      "until": 32.09
+    },
+    {
+      "t": 28.92,
+      "type": "label",
+      "region": "pulmonary-trunk",
+      "until": 32.09
+    },
+    {
+      "t": 29.32,
+      "type": "pulse",
+      "region": "pulmonary-trunk"
+    },
+    {
+      "t": 37.05,
+      "type": "camera",
+      "target": "left-atrium",
+      "zoom": 1.8,
+      "duration": 0.9,
+      "ease": "inOut"
+    },
+    {
+      "t": 37.05,
+      "type": "spotlight",
+      "target": "left-atrium",
+      "until": 39.72,
+      "dim": 0.7
+    },
+    {
+      "t": 37.05,
+      "type": "label",
+      "region": "left-atrium",
+      "until": 39.72
+    },
+    {
+      "t": 39.82,
+      "type": "camera",
+      "target": "left-ventricle",
+      "zoom": 1.6,
+      "duration": 0.9,
+      "ease": "inOut"
+    },
+    {
+      "t": 39.82,
+      "type": "spotlight",
+      "target": "left-ventricle",
+      "until": 44.47,
+      "dim": 0.7
+    },
+    {
+      "t": 39.82,
+      "type": "label",
+      "region": "left-ventricle",
+      "until": 44.47
+    },
+    {
+      "t": 44.57,
+      "type": "camera",
+      "target": "aorta",
+      "zoom": 1.3,
+      "duration": 0.9,
+      "ease": "inOut"
+    },
+    {
+      "t": 44.57,
+      "type": "spotlight",
+      "target": [
+        "left-ventricle",
+        "aorta"
+      ],
+      "until": 48.11,
+      "dim": 0.7
+    },
+    {
+      "t": 44.57,
+      "type": "arrow",
+      "from": "left-ventricle",
+      "to": "aorta",
+      "until": 48.11
+    },
+    {
+      "t": 44.57,
+      "type": "label",
+      "region": "aorta",
+      "until": 48.11
+    },
+    {
+      "t": 49.02,
+      "type": "camera",
+      "target": "left-ventricle",
+      "zoom": 2.2,
+      "duration": 1.2,
+      "ease": "inOut"
+    },
+    {
+      "t": 49.02,
+      "type": "spotlight",
+      "target": "left-ventricle",
+      "until": 65.26,
+      "dim": 0.75
+    },
+    {
+      "t": 51.42,
+      "type": "pulse",
+      "region": "left-ventricle"
+    },
+    {
+      "t": 57.75,
+      "type": "text",
+      "text": "ضغط الدورة الجهازية العالي",
+      "until": 65.26,
+      "position": "bottom",
+      "style": "keyword"
+    },
+    {
+      "t": 66.7,
+      "type": "camera",
+      "target": "full",
+      "duration": 1.0,
+      "ease": "inOut"
+    },
+    {
+      "t": 66.7,
+      "type": "text",
+      "text": "ارتفاع الضغط المزمن = تضخم جدار البطين الأيسر",
+      "until": 74.06,
+      "position": "top",
+      "style": "note"
+    },
+    {
+      "t": 70.6,
+      "type": "spotlight",
+      "target": "left-ventricle",
+      "until": 74.06,
+      "dim": 0.7
+    },
+    {
+      "t": 70.6,
+      "type": "pulse",
+      "region": "left-ventricle"
+    },
+    {
+      "t": 74.37,
+      "type": "text",
+      "text": "الأيمن ← الرئتين  ·  الأيسر ← الجسم",
+      "until": 79.49,
+      "position": "center",
+      "style": "title"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-pretest",
+      "type": "mcq",
+      "level": "recall",
+      "explain": "lv-wall",
+      "stem": "أي حجرة في القلب جدارها هو الأسمك؟",
+      "options": [
+        "البطين الأيسر",
+        "البطين الأيمن",
+        "الأذين الأيسر",
+        "الأذين الأيمن"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "q-why-thick",
+      "type": "mcq",
+      "level": "understand",
+      "explain": "lv-wall",
+      "stem": "لماذا جدار البطين الأيسر أسمك من جدار البطين الأيمن؟",
+      "options": [
+        "لأنه يضخ ضد ضغط الدورة الجهازية العالي",
+        "لأنه يستقبل كمية دم أكبر من الأيمن",
+        "لأنه يضخ الدم إلى الرئتين",
+        "لأنه يحتوي على صمامين بدل صمام واحد"
+      ],
+      "answer": 0,
+      "explanation": "البطينان يضخان نفس الكمية تقريباً، لكن الأيسر يضخ ضد مقاومة الدورة الجهازية العالية فيحتاج عضلة أقوى."
+    },
+    {
+      "id": "q-tf-rv-aorta",
+      "type": "truefalse",
+      "level": "recall",
+      "explain": "right-side",
+      "statement": "البطين الأيمن يضخ الدم إلى الأبهر.",
+      "answer": false,
+      "explanation": "البطين الأيمن يضخ إلى الشريان الرئوي ثم الرئتين. الأبهر يخرج من البطين الأيسر."
+    },
+    {
+      "id": "q-tf-la-oxygen",
+      "type": "truefalse",
+      "level": "recall",
+      "explain": "left-side",
+      "statement": "الأذين الأيسر يستقبل الدم الغني بالأكسجين القادم من الرئتين.",
+      "answer": true
+    },
+    {
+      "id": "q-tf-atria-pump",
+      "type": "truefalse",
+      "level": "recall",
+      "explain": "chambers",
+      "statement": "الأذينان هما الحجرتان اللتان تضخان الدم خارج القلب.",
+      "answer": false,
+      "explanation": "الأذينان يستقبلان الدم، والبطينان هما اللذان يضخانه خارج القلب."
+    },
+    {
+      "id": "q-cloze-aorta",
+      "type": "cloze",
+      "level": "recall",
+      "explain": "left-side",
+      "from": 41.87,
+      "cut": 44.57,
+      "resume": 45.26,
+      "sentenceText": "والبطين الأيسر يضخّه إلى ____، ومنه إلى كل الجسم.",
+      "options": [
+        "الأبهر",
+        "الشريان الرئوي",
+        "الوريد الأجوف",
+        "الأذين الأيسر"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "q-order-flow",
+      "type": "order",
+      "level": "understand",
+      "explain": [
+        "right-side",
+        "left-side"
+      ],
+      "prompt": "رتّب مسار الدم من لحظة رجوعه من الجسم حتى يخرج للجسم مرة ثانية",
+      "items": [
+        "الوريد الأجوف",
+        "الأذين الأيمن",
+        "البطين الأيمن",
+        "الشريان الرئوي",
+        "الرئتان",
+        "الأذين الأيسر",
+        "البطين الأيسر",
+        "الأبهر"
+      ]
+    },
+    {
+      "id": "q-case-htn",
+      "type": "case",
+      "level": "apply",
+      "explain": "clinical",
+      "vignette": "رجل عمره 58 سنة عنده ارتفاع ضغط دم غير مضبوط منذ 15 سنة. تخطيط صدى القلب أظهر زيادة واضحة في سماكة جدار إحدى الحجرات.",
+      "stem": "أي حجرة يُتوقع أن جدارها هو الذي ازداد سماكةً؟",
+      "options": [
+        "البطين الأيسر",
+        "البطين الأيمن",
+        "الأذين الأيمن",
+        "الأذين الأيسر"
+      ],
+      "answer": 0,
+      "explanation": "ارتفاع الضغط الجهازي يزيد الحمل على البطين الأيسر فيتضخم جداره (LVH)."
+    },
+    {
+      "id": "q-teach-wall",
+      "type": "teachback",
+      "level": "understand",
+      "explain": "lv-wall",
+      "prompt": "اشرح بصوتك: ليش جدار البطين الأيسر أسمك من الأيمن؟",
+      "keywords": [
+        [
+          "ضغط",
+          "مقاومة"
+        ],
+        [
+          "الجهازية",
+          "الجسم",
+          "الدورة الكبرى"
+        ]
+      ],
+      "minHits": 2
+    }
+  ],
+  "pretest": "q-pretest",
+  "recap": {
+    "segments": [
+      "chambers",
+      "left-side",
+      "lv-wall"
+    ]
+  }
+}

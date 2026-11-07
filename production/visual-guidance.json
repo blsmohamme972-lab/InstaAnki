@@ -1,0 +1,627 @@
+{
+  "schemaVersion": 1,
+  "coordinateSystem": "normalized-original-image",
+  "alignmentPolicy": "Phrase boundaries must come from final synthesized audio samples. This plan contains no estimated timings. Audio or image changes require validation and retiming.",
+  "lessons": [
+    {
+      "id": "shahzad2015-q054",
+      "audioLessonId": "lesson-shahzad2015-q054-v1",
+      "images": {
+        "media/mnemonic/coronary-palace.png": {
+          "sha256": "07db19e1ecdb5862c5f6b0b530c6022d45b465f49f9098e5486e2fb5f43a672f",
+          "width": 1024,
+          "height": 1536
+        },
+        "media/real/coronary-dominance-angiograms.png": {
+          "sha256": "c05a32baa2a5bde37d86bdb8d300f54c38840a93ba22366e965be04542aa9fa2",
+          "width": 1535,
+          "height": 613
+        }
+      },
+      "targets": {
+        "rear-door": {
+          "image": "media/mnemonic/coronary-palace.png",
+          "label": "Rear doorway · fixed memory location",
+          "x": 0.2490234,
+          "y": 0.5859375,
+          "rx": 0.1074219,
+          "ry": 0.1204427,
+          "zoom": 1.15,
+          "spotX": 0.2441406,
+          "spotY": 0.59375
+        },
+        "circumflex-key": {
+          "image": "media/mnemonic/coronary-palace.png",
+          "label": "Curved key · circumflex artery",
+          "x": 0.3798828,
+          "y": 0.641276,
+          "rx": 0.0683594,
+          "ry": 0.1132812,
+          "zoom": 1.2,
+          "spotX": 0.4111328,
+          "spotY": 0.6028646
+        },
+        "lateral-wall": {
+          "image": "media/mnemonic/coronary-palace.png",
+          "label": "Side wall · lateral LV territory",
+          "x": 0.6269531,
+          "y": 0.6158854,
+          "rx": 0.1445312,
+          "ry": 0.1184896,
+          "zoom": 1.15,
+          "spotX": 0.6396484,
+          "spotY": 0.5755208
+        },
+        "posterior-bridge": {
+          "image": "media/mnemonic/coronary-palace.png",
+          "label": "Rear bridge · posterior septal territory",
+          "x": 0.9150391,
+          "y": 0.516276,
+          "rx": 0.0830078,
+          "ry": 0.0566406,
+          "zoom": 1.12,
+          "spotX": 0.9121094,
+          "spotY": 0.5351562
+        },
+        "clinical-pda": {
+          "image": "media/real/coronary-dominance-angiograms.png",
+          "label": "PDA indicated by source arrows · panel (b)",
+          "x": 0.6084691,
+          "y": 0.8189233,
+          "rx": 0.0553746,
+          "ry": 0.1190865,
+          "zoom": 1,
+          "spotX": 0.6162866,
+          "spotY": 0.8156607
+        }
+      },
+      "scenes": [
+        {
+          "id": "scene-01",
+          "phrases": [
+            {
+              "id": "s01-p01",
+              "text": "At the rear door of the cardiac gallery,",
+              "targetId": "rear-door"
+            },
+            {
+              "id": "s01-p02",
+              "text": "picture a curved circumflex key.",
+              "targetId": "circumflex-key"
+            },
+            {
+              "id": "s01-p03",
+              "text": "Keep that same doorway as your memory location whenever coronary dominance returns.",
+              "targetId": "rear-door"
+            }
+          ]
+        },
+        {
+          "id": "scene-02",
+          "phrases": [
+            {
+              "id": "s02-p01",
+              "text": "Coronary dominance follows the artery that gives rise to the posterior descending artery.",
+              "targetId": "clinical-pda"
+            },
+            {
+              "id": "s02-p02",
+              "text": "On the angiogram, trace that vessel",
+              "targetId": "clinical-pda"
+            },
+            {
+              "id": "s02-p03",
+              "text": "back to its parent artery.",
+              "targetId": null
+            }
+          ]
+        },
+        {
+          "id": "scene-03",
+          "phrases": [
+            {
+              "id": "s03-p01",
+              "text": "In a left-dominant circulation, the posterior descending artery comes from the circumflex.",
+              "targetId": "circumflex-key"
+            },
+            {
+              "id": "s03-p02",
+              "text": "Its septal branches supply the posterior part of the interventricular septum.",
+              "targetId": "posterior-bridge"
+            }
+          ]
+        },
+        {
+          "id": "scene-04",
+          "phrases": [
+            {
+              "id": "s04-p01",
+              "text": "The circumflex also supplies the lateral left ventricular wall through its branches.",
+              "targetId": "lateral-wall"
+            },
+            {
+              "id": "s04-p02",
+              "text": "A clot at its origin can therefore threaten both territories downstream.",
+              "targetId": null
+            }
+          ]
+        },
+        {
+          "id": "scene-05",
+          "phrases": [
+            {
+              "id": "s05-p01",
+              "text": "For the book's example, combine the lateral left ventricular wall",
+              "targetId": "lateral-wall"
+            },
+            {
+              "id": "s05-p02",
+              "text": "with the posterior septum.",
+              "targetId": "posterior-bridge"
+            },
+            {
+              "id": "s05-p03",
+              "text": "Identifying only one of those regions would leave out part of the pattern.",
+              "targetId": null
+            }
+          ]
+        },
+        {
+          "id": "scene-06",
+          "phrases": [
+            {
+              "id": "s06-p01",
+              "text": "Return to the rear door:",
+              "targetId": "rear-door"
+            },
+            {
+              "id": "s06-p02",
+              "text": "the circumflex key opens",
+              "targetId": "circumflex-key"
+            },
+            {
+              "id": "s06-p03",
+              "text": "the lateral room",
+              "targetId": "lateral-wall"
+            },
+            {
+              "id": "s06-p04",
+              "text": "and the back septal room.",
+              "targetId": "posterior-bridge"
+            },
+            {
+              "id": "s06-p05",
+              "text": "The recall cue is simple: left dominance, circumflex supplies the back.",
+              "targetId": "posterior-bridge"
+            }
+          ]
+        }
+      ],
+      "outroTargetId": "clinical-pda",
+      "annotationNotes": [
+        "The mnemonic bridge is the agreed symbolic mapping for posterior septal territory; it is not anatomy.",
+        "The clinical PDA point is on the vessel immediately above the published red arrows in panel (b). The parent-artery phrase deliberately has no pointer: the downloaded source identifies the PDA but does not label an exact parent-vessel point.",
+        "Clot, vessel occlusion, and combined supply patterns are not literally drawn; the corresponding abstract phrase has no pointer."
+      ]
+    },
+    {
+      "id": "shahzad2015-q005",
+      "audioLessonId": "lesson-shahzad2015-q005-v1",
+      "images": {
+        "media/mnemonic/sequestration-palace.png": {
+          "sha256": "e1916db3d6f429b7eef27d200815bb5fddc7186d9a2f790210794d91034d7bac",
+          "width": 1024,
+          "height": 1536
+        },
+        "media/real/extralobar-sequestration-thoracoscopy.jpg": {
+          "sha256": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8",
+          "width": 787,
+          "height": 620
+        }
+      },
+      "targets": {
+        "coat-hook": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "Coat hook · fixed memory location",
+          "x": 0.4697266,
+          "y": 0.5507812,
+          "rx": 0.0546875,
+          "ry": 0.0507812,
+          "zoom": 1.18,
+          "spotX": 0.4716797,
+          "spotY": 0.5488281
+        },
+        "extra-coat": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "Extra coat · own visceral pleura",
+          "x": 0.3896484,
+          "y": 0.6276042,
+          "rx": 0.2636719,
+          "ry": 0.1373698,
+          "zoom": 1.12,
+          "spotX": 0.4726562,
+          "spotY": 0.7213542
+        },
+        "lung-parcel": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "Lung parcel · sequestered tissue",
+          "x": 0.4189453,
+          "y": 0.7584635,
+          "rx": 0.1621094,
+          "ry": 0.1061198,
+          "zoom": 1.15,
+          "spotX": 0.4765625,
+          "spotY": 0.7272135
+        },
+        "systemic-pipe": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "External red pipe · systemic artery",
+          "x": 0.703125,
+          "y": 0.2942708,
+          "rx": 0.0839844,
+          "ry": 0.1295573,
+          "zoom": 1.15,
+          "spotX": 0.6679688,
+          "spotY": 0.3736979
+        },
+        "shared-dome": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "Shared glass dome · surrounding lung pleura",
+          "x": 0.5546875,
+          "y": 0.4016927,
+          "rx": 0.2792969,
+          "ry": 0.1933594,
+          "zoom": 1.08,
+          "spotX": 0.2890625,
+          "spotY": 0.3886719
+        },
+        "separate-dome": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "Separate glass dome · extralobar covering",
+          "x": 0.9511719,
+          "y": 0.422526,
+          "rx": 0.1650391,
+          "ry": 0.139974,
+          "zoom": 1.1,
+          "spotX": 0.8300781,
+          "spotY": 0.4746094
+        },
+        "clinical-pleura": {
+          "image": "media/real/extralobar-sequestration-thoracoscopy.jpg",
+          "label": "Own pleural covering · source panel A",
+          "x": 0.1905972,
+          "y": 0.2145161,
+          "rx": 0.133418,
+          "ry": 0.15,
+          "zoom": 1,
+          "spotX": 0.249047,
+          "spotY": 0.2403226
+        }
+      },
+      "scenes": [
+        {
+          "id": "scene-01",
+          "phrases": [
+            {
+              "id": "s01-p01",
+              "text": "At the coat hook in the thoracic gallery,",
+              "targetId": "coat-hook"
+            },
+            {
+              "id": "s01-p02",
+              "text": "imagine an extra lung parcel wearing its own coat.",
+              "targetId": "extra-coat"
+            },
+            {
+              "id": "s01-p03",
+              "text": "Keep this same hook as the permanent location for extralobar sequestration.",
+              "targetId": "coat-hook"
+            }
+          ]
+        },
+        {
+          "id": "scene-02",
+          "phrases": [
+            {
+              "id": "s02-p01",
+              "text": "Pulmonary sequestration is abnormal lung tissue",
+              "targetId": "lung-parcel"
+            },
+            {
+              "id": "s02-p02",
+              "text": "without the usual connection to the tracheobronchial tree.",
+              "targetId": null
+            },
+            {
+              "id": "s02-p03",
+              "text": "It receives arterial blood from the systemic circulation, commonly through an aortic branch.",
+              "targetId": "systemic-pipe"
+            }
+          ]
+        },
+        {
+          "id": "scene-03",
+          "phrases": [
+            {
+              "id": "s03-p01",
+              "text": "Extralobar means the sequestered tissue has a separate visceral pleural covering.",
+              "targetId": "clinical-pleura"
+            },
+            {
+              "id": "s03-p02",
+              "text": "In the operative photograph, focus on the distinct pleural envelope around the lesion.",
+              "targetId": "clinical-pleura"
+            }
+          ]
+        },
+        {
+          "id": "scene-04",
+          "phrases": [
+            {
+              "id": "s04-p01",
+              "text": "An intralobar sequestration instead lies within the surrounding lung",
+              "targetId": null
+            },
+            {
+              "id": "s04-p02",
+              "text": "and shares its pleural covering.",
+              "targetId": "shared-dome"
+            },
+            {
+              "id": "s04-p03",
+              "text": "The difference tested here is the relationship to visceral pleura.",
+              "targetId": "extra-coat"
+            }
+          ]
+        },
+        {
+          "id": "scene-05",
+          "phrases": [
+            {
+              "id": "s05-p01",
+              "text": "Use the relationship to pleura to identify the extralobar form,",
+              "targetId": "separate-dome"
+            },
+            {
+              "id": "s05-p02",
+              "text": "and keep the feeding vessel as a separate anatomical feature.",
+              "targetId": "systemic-pipe"
+            },
+            {
+              "id": "s05-p03",
+              "text": "This distinction makes the question much easier.",
+              "targetId": null
+            }
+          ]
+        },
+        {
+          "id": "scene-06",
+          "phrases": [
+            {
+              "id": "s06-p01",
+              "text": "Return to the coat hook and say:",
+              "targetId": "coat-hook"
+            },
+            {
+              "id": "s06-p02",
+              "text": "extra means an extra coat.",
+              "targetId": "extra-coat"
+            },
+            {
+              "id": "s06-p03",
+              "text": "In this lesson, that coat represents its own visceral pleura.",
+              "targetId": "extra-coat"
+            },
+            {
+              "id": "s06-p04",
+              "text": "Retrieve the feature before choosing an answer.",
+              "targetId": null
+            }
+          ]
+        }
+      ],
+      "outroTargetId": "clinical-pleura",
+      "annotationNotes": [
+        "The clinical point is on the pleural-covered lesion in panel A immediately beyond the published white arrow tip. Its ellipse stays inside panel A; panels B, C, and D are not targets.",
+        "No intralobar lesion, airway disconnection, or surgical measurement is fabricated in the mnemonic. Those clauses have no pointer.",
+        "The coat target points to the visible coat collar, not to the pink lung parcel inside it."
+      ]
+    },
+    {
+      "id": "shahzad2015-q182",
+      "audioLessonId": "lesson-shahzad2015-q182-v1",
+      "images": {
+        "media/mnemonic/resistance-palace.png": {
+          "sha256": "60ea64fd19cce9d21aff5d1601625299687baab2e5667e90a0c5bf8ee4ebcb41",
+          "width": 1024,
+          "height": 1536
+        },
+        "media/real/artery-cross-section.png": {
+          "sha256": "e835434db7751e97dcaff6632849baecb9315dd382d80e3d8064b9863944199d",
+          "width": 1914,
+          "height": 1637
+        }
+      },
+      "targets": {
+        "four-locks": {
+          "image": "media/mnemonic/resistance-palace.png",
+          "label": "Four locks · fourth-power rule",
+          "x": 0.59375,
+          "y": 0.2083333,
+          "rx": 0.3613281,
+          "ry": 0.0644531,
+          "zoom": 1.15,
+          "spotX": 0.5,
+          "spotY": 0.1927083
+        },
+        "wide-opening": {
+          "image": "media/mnemonic/resistance-palace.png",
+          "label": "Wide opening · larger radius",
+          "x": 0.8486328,
+          "y": 0.4583333,
+          "rx": 0.2783203,
+          "ry": 0.1855469,
+          "zoom": 1.12,
+          "spotX": 0.6660156,
+          "spotY": 0.5898438
+        },
+        "relieved-guard": {
+          "image": "media/mnemonic/resistance-palace.png",
+          "label": "Relieved gatekeeper · lower resistance",
+          "x": 0.6708984,
+          "y": 0.5546875,
+          "rx": 0.0917969,
+          "ry": 0.0585938,
+          "zoom": 1.2,
+          "spotX": 0.6708984,
+          "spotY": 0.5572917
+        },
+        "arterial-lumen": {
+          "image": "media/real/artery-cross-section.png",
+          "label": "Arterial lumen · anatomical example",
+          "x": 0.522466,
+          "y": 0.5284056,
+          "rx": 0.2246604,
+          "ry": 0.2351863,
+          "zoom": 1,
+          "spotX": 0.545977,
+          "spotY": 0.5253513
+        }
+      },
+      "scenes": [
+        {
+          "id": "scene-01",
+          "phrases": [
+            {
+              "id": "s01-p01",
+              "text": "At the double doors of the vascular gallery, imagine four number locks above the frame.",
+              "targetId": "four-locks"
+            },
+            {
+              "id": "s01-p02",
+              "text": "Widening the doorway changes resistance",
+              "targetId": "wide-opening"
+            },
+            {
+              "id": "s01-p03",
+              "text": "through a fourth-power relationship.",
+              "targetId": "four-locks"
+            }
+          ]
+        },
+        {
+          "id": "scene-02",
+          "phrases": [
+            {
+              "id": "s02-p01",
+              "text": "For steady laminar flow in the ideal tube model,",
+              "targetId": null
+            },
+            {
+              "id": "s02-p02",
+              "text": "resistance is proportional to viscosity and length,",
+              "targetId": null
+            },
+            {
+              "id": "s02-p03",
+              "text": "and inversely proportional to the fourth power of radius.",
+              "targetId": "four-locks"
+            }
+          ]
+        },
+        {
+          "id": "scene-03",
+          "phrases": [
+            {
+              "id": "s03-p01",
+              "text": "If diameter doubles, radius doubles too.",
+              "targetId": "wide-opening"
+            },
+            {
+              "id": "s03-p02",
+              "text": "Raise that factor of two to the fourth power:",
+              "targetId": "four-locks"
+            },
+            {
+              "id": "s03-p03",
+              "text": "two times two times two times two equals sixteen.",
+              "targetId": null
+            }
+          ]
+        },
+        {
+          "id": "scene-04",
+          "phrases": [
+            {
+              "id": "s04-p01",
+              "text": "Resistance therefore becomes one sixteenth of its original value",
+              "targetId": "relieved-guard"
+            },
+            {
+              "id": "s04-p02",
+              "text": "when length and viscosity stay unchanged.",
+              "targetId": null
+            },
+            {
+              "id": "s04-p03",
+              "text": "Starting from sixteen resistance units, the new value is one unit.",
+              "targetId": null
+            }
+          ]
+        },
+        {
+          "id": "scene-05",
+          "phrases": [
+            {
+              "id": "s05-p01",
+              "text": "This is an idealized laminar-flow relationship.",
+              "targetId": null
+            },
+            {
+              "id": "s05-p02",
+              "text": "In real circulation, pulsation, branching, and vessel compliance affect how pressure and flow behave.",
+              "targetId": null
+            },
+            {
+              "id": "s05-p03",
+              "text": "Keep the model assumptions in mind.",
+              "targetId": null
+            }
+          ]
+        },
+        {
+          "id": "scene-06",
+          "phrases": [
+            {
+              "id": "s06-p01",
+              "text": "Return to the double doors and the four locks.",
+              "targetId": "four-locks"
+            },
+            {
+              "id": "s06-p02",
+              "text": "Remember: double diameter,",
+              "targetId": "wide-opening"
+            },
+            {
+              "id": "s06-p03",
+              "text": "divide resistance by sixteen.",
+              "targetId": "relieved-guard"
+            },
+            {
+              "id": "s06-p04",
+              "text": "The answer to this example is one peripheral resistance unit.",
+              "targetId": null
+            }
+          ]
+        }
+      ],
+      "outroTargetId": "arterial-lumen",
+      "annotationNotes": [
+        "The four-lock arrow tip is on the shield-shaped third lock; the separately centered ellipse covers all four. A midpoint arrow would point at empty wall.",
+        "The wide-opening pointer is on the upper-right gold rim, away from the gatekeeper.",
+        "The guard symbolizes lower resistance only. Exact numerical values, viscosity, length, pulsation, branching, and compliance are not depicted, so abstract clauses have no pointer.",
+        "The arterial-lumen target is anatomical context only; it does not assert a measured radius change or resistance value."
+      ]
+    }
+  ]
+}

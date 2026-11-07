@@ -4,16 +4,20 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const L = window.Learning;
+  const G = window.VisualGuidance;
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
   const native = window.AndroidNative || null;
   const audio = $('#lesson-audio');
   const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2];
   const CATALOG_URL = 'https://raw.githubusercontent.com/blsmohamme972-lab/InstaAnki/main/content/catalog.json';
   const app = {
     lessons: [], books: [], feed: [], index: 0, tab: 'feed', feedMode: 'all', specialty: '', tag: '',
+    topicModel: null, topicDraft: [],
     modal: null, previousFocus: null, resumeOnClose: false, captions: true, endHandled: false,
-    frame: 0, lastClock: 0, exposure: 0, lastScene: '', currentImage: '', catalog: null,
-    catalogCheckedAt: null, downloading: false, info: { version: '0.1.0', versionCode: 1 }, toastTimer: 0,
+    frame: 0, lastClock: 0, exposure: 0, lastScene: '', currentImage: '', imageReady: false, catalog: null,
+    catalogCheckedAt: null, downloading: false, info: { version: '0.1.1', versionCode: 2 }, toastTimer: 0,
     bypassNextRecall: null, bypassEntryRecall: false, entryWasDue: false,
+    pendingQuestion: null, explanationContext: null, lastQuestionResult: null,
   };
   const icons = {
     arrow: '<svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>',
@@ -70,13 +74,15 @@
       $('#like-button').setAttribute('aria-pressed', String(!!record.liked));
       $('#like-button').setAttribute('aria-label', record.liked ? 'Unsave lesson' : 'Save lesson');
       $('#like-button').querySelector('span:last-child').textContent = record.liked ? 'Saved' : 'Save';
-      $('#feed-status').textContent = record.enrolledAt ? 'Added to spaced reviews' : 'Recall, woven into your feed';
+      syncLessonFlow();
     }
     document.body.classList.toggle('reduced-motion', !!settings().reduceMotion);
   }
   function rebuildFeed(preferredId) {
     pauseAudio();
-    let lessons = app.feedMode === 'due' ? L.due(app.lessons) : app.feedMode === 'saved' ? app.lessons.filter(x => L.get(x.id).liked) : L.getFeed(app.lessons);
+    const dailyIds = settings().dailyTopicIds || [];
+    const focusedLessons = app.topicModel ? app.topicModel.filterLessons(app.lessons, dailyIds) : app.lessons;
+    let lessons = app.feedMode === 'due' ? L.due(app.lessons) : app.feedMode === 'saved' ? app.lessons.filter(x => L.get(x.id).liked) : L.getFeed(focusedLessons);
     if (app.specialty) lessons = lessons.filter(x => x.specialty === app.specialty || x.primarySpecialtyId === app.specialty);
     if (app.tag) lessons = lessons.filter(x => x.tags?.some(t => t.id === app.tag));
     if (preferredId && app.bypassNextRecall === preferredId && !lessons.some(x => x.id === preferredId)) {
@@ -91,10 +97,16 @@
       const heading = app.feedMode === 'saved' ? 'Your saved collection' : app.feedMode === 'due' ? 'A little breathing room' : app.specialty || app.tag ? 'No lessons in this view' : 'Your gallery is ready to grow';
       const copy = app.feedMode === 'saved' ? 'Tap the heart on a lesson to keep it here. Your saved lessons stay on this device.' : app.feedMode === 'due' ? 'Nothing is due right now. Watch a new lesson, or practise a familiar one whenever you like.' : app.specialty || app.tag ? 'Try another specialty or clear the current filters.' : 'Import a lesson package from Settings to begin your learning collection.';
       $('#feed-empty').innerHTML = `<div class="empty-emblem">${app.feedMode === 'saved' ? icons.book : icons.recall}</div><h1>${esc(heading)}</h1><p>${esc(copy)}</p><button class="secondary-button empty-button" data-action="${app.specialty || app.tag ? 'clear-filters' : 'all-feed'}" type="button">${app.specialty || app.tag ? 'Clear filters' : 'Explore the feed'}</button>`;
-      $('#quiz-now').disabled = true;
+      if (app.feedMode === 'all' && dailyIds.length && !app.specialty && !app.tag) {
+        $('#feed-empty').innerHTML = `<div class="empty-emblem">${icons.book}</div><h1>No lessons in your daily topics yet.</h1><p>${esc(app.topicModel?.summary(dailyIds) || 'Your selected topics')}<br>Choose more tags or All to explore the available lessons.</p><button class="secondary-button empty-button" type="button" data-action="daily-topics">Choose daily topics</button>`;
+      }
+      if (app.feedMode === 'all' && focusedLessons.length && !app.specialty && !app.tag) {
+        $('#feed-empty').innerHTML = `<div class="empty-emblem">${icons.recall}</div><h1>Today’s new-lesson limit is reached.</h1><p>Your topics still have lessons available. Continue with your due reviews, or adjust the daily limit.</p><button class="secondary-button empty-button" type="button" data-action="review-home">Open due reviews</button><button class="quiet-button" type="button" data-action="new-limit">Adjust daily limit</button>`;
+      }
+      $('#lesson-question-button').disabled = true;
       return;
     }
-    $('#lesson-card').hidden = false; $('#feed-empty').hidden = true; $('#quiz-now').disabled = false;
+    $('#lesson-card').hidden = false; $('#feed-empty').hidden = true; $('#lesson-question-button').disabled = false;
     setLesson(app.index, false);
   }
   function flushExposure() {
@@ -110,7 +122,7 @@
     app.bypassEntryRecall = app.bypassNextRecall === lesson.id;
     app.bypassNextRecall = null;
     const entryCard = L.get(lesson.id).card;
-    app.entryWasDue = !!entryCard && new Date(entryCard.due).getTime() <= Date.now();
+    app.entryWasDue = !!entryCard && entryCard.reps > 0 && new Date(entryCard.due).getTime() <= Date.now();
     app.endHandled = false; app.lastScene = ''; app.currentImage = ''; app.exposure = 0; app.lastClock = 0;
     $('#lesson-title').textContent = lesson.title;
     $('#lesson-specialty').textContent = lesson.specialty || 'Medical learning';
@@ -136,27 +148,68 @@
     return false;
   }
   async function playAudio(reportError = true) {
-    if (!current() || app.modal || maybeGateRecall(current())) return;
+    if (!current() || app.modal) return;
+    const explaining = app.explanationContext?.lessonId === current().id;
+    if (app.pendingQuestion?.lessonId === current().id && !explaining) { resumePendingQuestion(); return; }
+    if (app.lastQuestionResult?.lessonId === current().id && !explaining) { watchLesson(current().id); return; }
+    if (maybeGateRecall(current())) return;
     if (audio.ended || (Number.isFinite(audio.duration) && audio.currentTime >= audio.duration - .1)) { audio.currentTime = 0; app.endHandled = false; }
     try { await audio.play(); }
     catch (error) { updatePlayButtons(); if (reportError && error.name !== 'NotAllowedError') toast('The audio could not start. Try again or check this lesson package.'); }
   }
   function updatePlayButtons() {
     const playing = !audio.paused && !audio.ended;
+    const explaining = app.explanationContext?.lessonId === current()?.id;
+    const waiting = app.pendingQuestion?.lessonId === current()?.id && !explaining && !playing;
+    const replay = app.lastQuestionResult?.lessonId === current()?.id && !explaining && !playing;
     $('#visual-stage').classList.toggle('is-playing', playing);
-    $('#play-button').innerHTML = playing ? icons.pause : icons.play;
-    $('#play-button').setAttribute('aria-label', playing ? 'Pause lesson' : 'Play lesson');
+    $('#play-button').innerHTML = playing ? icons.pause : waiting ? icons.recall : icons.play;
+    $('#play-button').setAttribute('aria-label', playing ? 'Pause lesson' : waiting ? 'Answer question' : replay ? 'Replay video' : 'Play lesson');
+    $('#center-play').innerHTML = waiting ? icons.recall : icons.play;
+    $('#center-play').setAttribute('aria-label', waiting ? 'Answer question' : replay ? 'Replay video' : 'Play lesson');
     $('#center-play').hidden = playing || !!app.modal;
+    syncLessonFlow();
+  }
+  function syncLessonFlow() {
+    const lesson = current(); if (!lesson) return;
+    const question = app.modal?.kind === 'quiz' && app.modal.lessonId === lesson.id ? app.modal : null;
+    const pending = app.pendingQuestion?.lessonId === lesson.id;
+    const explaining = app.explanationContext?.question?.lessonId === lesson.id;
+    const result = app.lastQuestionResult?.lessonId === lesson.id;
+    const step = question ? (question.answered ? 'result' : 'answer') : explaining ? 'watch' : pending ? 'answer' : result ? 'result' : 'watch';
+    const names = ['watch', 'answer', 'result'];
+    $$('[data-lesson-step]').forEach(item => {
+      item.classList.toggle('is-current', item.dataset.lessonStep === step);
+      item.classList.toggle('is-complete', names.indexOf(item.dataset.lessonStep) < names.indexOf(step));
+      if (item.dataset.lessonStep === step) item.setAttribute('aria-current', 'step'); else item.removeAttribute('aria-current');
+    });
+    const outro = lesson.realImageOutro;
+    const inOutro = outro && audio.currentTime >= outro.start && audio.currentTime < outro.end;
+    $('#feed-status').textContent = explaining ? (app.explanationContext.question.answered ? 'Replay · your answer is saved' : 'Explanation · your question is saved') : pending ? 'Your question is ready' : inOutro ? `Clinical image · question in ${Math.ceil(outro.end - audio.currentTime)}s` : step === 'result' ? 'Answer saved · continue when ready' : 'Watch the lesson, then answer.';
+    const button = $('#lesson-question-button');
+    button.textContent = explaining ? (app.explanationContext.question.answered ? 'Return to result' : 'Return to question') : pending ? 'Answer question' : step === 'result' ? 'View answer' : 'Go to question';
+    button.classList.toggle('is-ready', !!pending);
+    const next = $('[data-action="next"]');
+    next.innerHTML = `${app.index >= app.feed.length - 1 ? 'Finish' : 'Next'}${icons.arrow}`;
+    next.setAttribute('aria-label', app.index >= app.feed.length - 1 ? 'Finish this selection' : 'Next lesson');
+  }
+  function showFeedComplete() {
+    pauseAudio();
+    openModal('feed-complete', 'You reached the end.', 'CURRENT TOPICS', `<p class="modal-intro">You have reached the end of this selection. Choose another topic, review what is due, or replay this explanation.</p><div class="quiz-actions"><button class="primary-button full-width" type="button" data-action="daily-topics">Choose daily topics</button><button class="secondary-button full-width" type="button" data-action="review-home">Open due reviews</button>${current() ? `<button class="quiet-button full-width" type="button" data-watch-lesson="${esc(current().id)}">Watch this explanation again</button>` : ''}</div>`);
   }
   function nextLesson(direction = 1) {
     if (!app.feed.length) return;
     pauseAudio();
     if (app.feedMode === 'due') {
-      const preferred = app.feed[(app.index + direction + app.feed.length) % app.feed.length]?.id;
+      const due = new Set(L.due(app.lessons).map(lesson => lesson.id));
+      const remaining = direction > 0 ? app.feed.slice(app.index + 1) : app.feed.slice(0, app.index).reverse();
+      const preferred = remaining.find(lesson => due.has(lesson.id))?.id;
+      if (!preferred) { showTab('review', false); toast('Review selection finished. Remaining due questions are listed here.'); return; }
       rebuildFeed(preferred); if (current() && settings().autoPlay) playAudio(false); return;
     }
-    if (app.feed.length === 1) { toast('This is the only lesson in the current view. Change filters to explore more.'); return; }
-    setLesson((app.index + direction + app.feed.length) % app.feed.length);
+    if (direction > 0 && app.index >= app.feed.length - 1) { showFeedComplete(); return; }
+    if (direction < 0 && app.index === 0) { toast('This is the first lesson in this selection.'); return; }
+    setLesson(app.index + direction);
   }
   function paintFrame() {
     const lesson = current(); if (!lesson) return;
@@ -166,6 +219,7 @@
     if (document.activeElement !== $('#seek')) $('#seek').value = String(now / duration * 100);
     $('#seek').style.setProperty('--progress', `${clamp(now / duration * 100, 0, 100)}%`);
     $('#seek').setAttribute('aria-valuetext', `${time(now)} of ${time(duration)}`);
+    syncLessonFlow();
     const scene = lesson.scenes?.find(item => now >= item.start && now < item.end) || lesson.scenes?.[lesson.scenes.length - 1] || {};
     const outroStart = Number(lesson.realImageOutro?.start);
     const isOutro = Number.isFinite(outroStart) && now >= outroStart && !!lesson.realImages?.length;
@@ -173,7 +227,11 @@
     const clinicalImage = lesson.realImages?.find(item => item.url === scene.image) || lesson.realImages?.[0];
     const image = isOutro ? lesson.realImages[0].url : scene.image || lesson.poster;
     const url = asset(image, lesson._baseUrl);
-    if (url !== app.currentImage) { app.currentImage = url; $('#lesson-image').src = url; }
+    if (url !== app.currentImage) {
+      app.currentImage = url; app.imageReady = false;
+      $('#teaching-pointer').setAttribute('hidden', ''); $('#focus-label').hidden = true;
+      $('#spotlight').style.opacity = '0'; $('#lesson-image').src = url;
+    }
     $('#visual-stage').classList.toggle('is-real', !!isReal); $('#real-image-badge').hidden = !isReal;
     $('#lesson-image').alt = isReal ? clinicalImage.title : `${lesson.title} — illustrated memory scene`;
     if (isReal) $('#real-image-badge > span:nth-child(2)').textContent = `REAL CLINICAL IMAGE · ${clinicalImage.license || 'SOURCE'}`;
@@ -185,39 +243,46 @@
     }
     $('#scene-heading').classList.toggle('visible', !isReal && !!scene.caption && app.captions);
     $('#lesson-caption').hidden = !app.captions;
-    const elapsed = Math.max(0, Number(scene.end) - Number(scene.start));
-    const position = elapsed ? clamp((now - Number(scene.start)) / elapsed, 0, 1) : 0;
-    const eased = position * position * (3 - 2 * position);
-    const from = scene.camera?.from || { x: .5, y: .5, scale: 1 };
-    const to = scene.camera?.to || from;
-    const frame = $('#visual-stage'); const imageElement = $('#lesson-image');
-    const frameWidth = frame.clientWidth; const frameHeight = frame.clientHeight;
-    const fit = Math.min(frameWidth / (imageElement.naturalWidth || frameWidth), frameHeight / (imageElement.naturalHeight || frameHeight));
-    const imageWidth = (imageElement.naturalWidth || frameWidth) * fit;
-    const imageHeight = (imageElement.naturalHeight || frameHeight) * fit;
-    let scale = 1, panX = 0, panY = 0;
-    if (!isReal && !settings().reduceMotion) {
-      const x = clamp(Number(from.x ?? .5) + (Number(to.x ?? .5) - Number(from.x ?? .5)) * eased, 0, 1);
-      const y = clamp(Number(from.y ?? .5) + (Number(to.y ?? .5) - Number(from.y ?? .5)) * eased, 0, 1);
-      scale = clamp(Number(from.scale || 1) + (Number(to.scale || 1) - Number(from.scale || 1)) * eased, 1, 2.2);
-      const maxX = Math.max(0, (imageWidth * scale - frameWidth) / 2);
-      const maxY = Math.max(0, (imageHeight * scale - frameHeight) / 2);
-      panX = Math.max(-maxX, Math.min(maxX, (.5 - x) * imageWidth * scale));
-      panY = Math.max(-maxY, Math.min(maxY, (.5 - y) * imageHeight * scale));
-      $('#camera-layer').style.transformOrigin = '50% 50%';
-      $('#camera-layer').style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
-    } else $('#camera-layer').style.transform = 'none';
-    const spot = scene.spotlight;
-    const focusX = frameWidth / 2 + (clamp(spot?.x ?? .5, 0, 1) - .5) * imageWidth * scale + panX;
-    const focusY = frameHeight / 2 + (clamp(spot?.y ?? .5, 0, 1) - .5) * imageHeight * scale + panY;
-    // On shorter phones, an upper caption can cover a cue near the top of the
-    // picture (for example, the four locks). Move it away from that focal point.
-    $('#scene-heading').classList.toggle('caption-low', !isReal && !!spot && focusY < 80 + $('#scene-heading').offsetHeight);
-    if (spot && !isReal && !settings().reduceMotion && !audio.paused) {
-      const radius = clamp(spot.r || .2, .06, .6) * Math.min(imageWidth, imageHeight) * scale;
-      $('#spotlight').style.background = `radial-gradient(circle at ${focusX}px ${focusY}px, transparent 0, transparent ${radius * .48}px, rgba(0,8,15,.13) ${radius}px, rgba(0,8,15,.2) 100%)`;
-      $('#spotlight').style.opacity = '1';
-    } else $('#spotlight').style.opacity = '0';
+    const frame = $('#visual-stage'), imageElement = $('#lesson-image'), layer = $('#camera-layer');
+    const guidance = lesson.visualGuidance;
+    frame.classList.toggle('has-guidance', !!guidance);
+    const active = G?.resolve(guidance, now, image, lesson.realImageOutro);
+    frame.dataset.cueId = active?.cue.id || '';
+    frame.dataset.targetId = '';
+    $('#scene-heading').textContent = active?.cue.text || (isOutro ? clinicalImage?.caption : scene.caption) || '';
+    $('#scene-heading').classList.toggle('visible', app.captions && !!$('#scene-heading').textContent && (!isReal || !!guidance));
+    $('#teaching-pointer').setAttribute('hidden', ''); $('#focus-label').hidden = true;
+    $('#spotlight').style.opacity = '0';
+    // Use the actual untransformed image box, including clinical-image insets.
+    // All three projections share this geometry; no overlay gets a separate animation.
+    const imageViewport = $('#image-viewport');
+    const box = { x: imageViewport.offsetLeft + layer.offsetLeft, y: imageViewport.offsetTop + layer.offsetTop, width: layer.clientWidth, height: layer.clientHeight };
+    const still = isReal || !!settings().reduceMotion || motionPreference.matches;
+    const camera = G?.cameraAt(guidance, active, now, image, still);
+    const geometry = app.imageReady && G?.geometry(box, imageElement.naturalWidth, imageElement.naturalHeight, camera);
+    if (!geometry) { layer.style.transform = 'none'; return; }
+    layer.style.transform = `translate(${geometry.panX}px, ${geometry.panY}px) scale(${geometry.scale})`;
+    const imageSpec = guidance?.images?.[image];
+    // A changed/corrupt image never inherits a coordinate from its predecessor.
+    const target = active?.target;
+    if (!target || !imageSpec || imageSpec.width !== imageElement.naturalWidth || imageSpec.height !== imageElement.naturalHeight) return;
+    const tip = geometry.project(target.x, target.y);
+    const focus = geometry.project(target.spotX ?? target.x, target.spotY ?? target.y);
+    const rx = Math.max(8, target.rx * geometry.width * geometry.scale);
+    const ry = Math.max(8, target.ry * geometry.height * geometry.scale);
+    if (tip.x < 0 || tip.x > frame.clientWidth || tip.y < 0 || tip.y > frame.clientHeight) return;
+    const pointer = G.pointer(tip, box);
+    const svg = $('#teaching-pointer');
+    svg.setAttribute('viewBox', `0 0 ${frame.clientWidth} ${frame.clientHeight}`);
+    $('#pointer-tip').setAttribute('cx', tip.x); $('#pointer-tip').setAttribute('cy', tip.y);
+    $('#pointer-shaft').setAttribute('d', pointer.shaft); $('#pointer-outline').setAttribute('d', pointer.shaft);
+    $('#pointer-head').setAttribute('d', pointer.head); $('#pointer-hand').setAttribute('transform', pointer.hand);
+    const region = $('#target-region');
+    for (const [key, value] of Object.entries({ cx: focus.x, cy: focus.y, rx, ry })) region.setAttribute(key, value);
+    $('#spotlight').style.background = `radial-gradient(ellipse ${rx}px ${ry}px at ${focus.x}px ${focus.y}px, transparent 0%, transparent 85%, rgba(3,12,20,${isReal ? .12 : .18}) 140%, rgba(3,12,20,${isReal ? .25 : .38}) 220%)`;
+    $('#spotlight').style.opacity = '1';
+    svg.removeAttribute('hidden'); frame.dataset.targetId = active.cue.targetId;
+    $('#focus-label').textContent = target.label; $('#focus-label').hidden = false;
   }
   function tick(clock) {
     if (!audio.paused && !audio.ended && !audio.seeking && audio.readyState >= 3 && document.visibilityState === 'visible' && app.tab === 'feed' && !app.modal) {
@@ -242,7 +307,7 @@
     if (tab === 'feed') {
       if (previousTab !== 'feed' && resume && current()) {
         const card = L.get(current().id).card;
-        app.entryWasDue = !!card && new Date(card.due).getTime() <= Date.now();
+        app.entryWasDue = !!card && card.reps > 0 && new Date(card.due).getTime() <= Date.now();
         app.bypassEntryRecall = false;
       }
       syncIndicators(); if (resume && current() && !maybeGateRecall(current()) && settings().autoPlay && !app.modal) playAudio(false);
@@ -288,7 +353,7 @@
   function renderReview() {
     const due = L.due(app.lessons);
     const started = app.lessons.filter(lesson => L.get(lesson.id).enrolledAt);
-    $('#screen-review').innerHTML = `<span class="page-eyebrow">A MOMENT TO REMEMBER</span><h1 class="page-heading" id="review-heading">Make it stay.</h1><p class="page-intro">Start with the question. Let your memory do the work before the explanation.</p><div class="surface-card review-hero"><span class="hero-orbit" aria-hidden="true"></span><div class="hero-count">${due.length}</div><p class="hero-subtitle">${due.length === 1 ? 'lesson ready for recall' : 'lessons ready for recall'}</p><p class="hero-detail">${due.length ? 'These are due now, according to your review history.' : started.length ? 'Your next reviews will appear here when they are due.' : 'Your queue begins after you spend time with a lesson.'}</p><button class="primary-button full-width" type="button" data-action="${due.length ? 'start-review' : 'go-feed'}">${due.length ? 'Begin recall' : 'Explore your lessons'} ${icons.arrow}</button></div>${due.length ? `<div class="section-title"><h2>Due now</h2><span>${due.length} ${due.length === 1 ? 'lesson' : 'lessons'}</span></div><div class="lesson-list">${due.map(x => lessonRow(x, 'review-lesson', 'Ready to recall')).join('')}</div>` : ''}<div class="section-title"><h2>Practise anytime</h2><span>No schedule changes</span></div><div class="lesson-list">${app.lessons.map(x => lessonRow(x, 'practice-lesson', 'Quick question')).join('')}</div><div class="inline-note">${icons.recall}<span>Watching adds a lesson to your collection. Answers guide its review schedule. A replay or a like never counts as a correct answer.</span></div>`;
+    $('#screen-review').innerHTML = `<span class="page-eyebrow">A MOMENT TO REMEMBER</span><h1 class="page-heading" id="review-heading">Due reviews.</h1><p class="page-intro">Start with the question. Let your memory do the work before the explanation.</p><div class="surface-card review-hero"><span class="hero-orbit" aria-hidden="true"></span><div class="hero-count">${due.length}</div><p class="hero-subtitle">${due.length === 1 ? 'lesson ready for recall' : 'lessons ready for recall'}</p><p class="hero-detail">${due.length ? 'These are due now, according to your review history.' : started.length ? 'Your next reviews will appear here when they are due.' : 'Your queue begins after you spend time with a lesson.'}</p><button class="primary-button full-width" type="button" data-action="${due.length ? 'start-review' : 'go-feed'}">${due.length ? 'Begin recall' : 'Explore your lessons'} ${icons.arrow}</button></div>${due.length ? `<div class="section-title"><h2>Due now</h2><span>${due.length} ${due.length === 1 ? 'lesson' : 'lessons'}</span></div><div class="lesson-list">${due.map(x => lessonRow(x, 'review-lesson', 'Ready to recall')).join('')}</div>` : ''}<div class="section-title"><h2>Practise anytime</h2><span>No schedule changes</span></div><div class="lesson-list">${app.lessons.map(x => lessonRow(x, 'practice-lesson', 'Quick question')).join('')}</div><div class="inline-note">${icons.recall}<span>Watching adds a lesson to your collection. Answers guide its review schedule. A replay or a like never counts as a correct answer.</span></div>`;
   }
   function renderInsights() {
     const stats = L.stats();
@@ -305,13 +370,15 @@
     return `<button class="setting-row" type="button" data-action="${action}"><span class="setting-copy"><h3>${esc(title)}</h3>${description ? `<p>${esc(description)}</p>` : ''}</span>${value ? `<span class="setting-value">${esc(value)}</span>` : icons.arrow}</button>`;
   }
   function renderSettings() {
-    $('#screen-settings').innerHTML = `<span class="page-eyebrow">MAKE IT YOURS</span><h1 class="page-heading" id="settings-heading">Your learning rhythm.</h1><p class="page-intro">Tune the pace. Keep control of your collection.</p><section class="setting-section"><h2>Spaced recall</h2><div class="settings-card">${settingsAction('retention', 'Target recall', 'Higher targets generally mean more reviews.', `${Math.round((settings().retention || .9) * 100)}%`)}${settingsAction('new-limit', 'New lessons each day', 'A comfortable limit for the For you feed.', String(settings().newPerDay ?? 10))}</div></section><section class="setting-section"><h2>Playback</h2><div class="settings-card">${settingsAction('speed', 'Playback speed', 'Visuals follow the narration at every speed.', `${settings().speed || 1}×`)}${toggleRow('autoPlay', 'Autoplay lessons', 'Start narration when you enter a lesson.')}${toggleRow('reduceMotion', 'Reduce camera motion', 'Keep the memory scene steady.')}</div></section><section class="setting-section"><h2>Collection & updates</h2><div class="settings-card">${settingsAction('import-pack', 'Import lesson package', 'Add a ZIP from your device.')}${settingsAction('check-updates', 'Check for updates', app.catalogCheckedAt ? `Last checked ${dateLabel(app.catalogCheckedAt)}` : 'Find new content packages and app releases.')}${toggleRow('autoCheckUpdates', 'Check when opening', 'Check the catalog when a connection is available.')}</div></section><section class="setting-section"><h2>Your data</h2><div class="settings-card">${settingsAction('export-backup', 'Export learning backup', 'Save reviews, private notes and preferences.')}${settingsAction('import-backup', 'Restore learning backup', 'Restore a saved snapshot without removing media.')}${settingsAction('local-info', 'Stored on this device', `${app.lessons.length} lessons · No account required`)}</div></section><section class="setting-section"><h2>About</h2><div class="settings-card">${settingsAction('licenses', 'Open-source licenses', 'App credits and licenses, available offline.')}</div></section><p class="app-version">InstaAnki ${esc(app.info.version || '0.1.0')} · Personal learning<br>English · ${native ? 'Android' : 'Browser preview'}</p>`;
+    $('#screen-settings').innerHTML = `<span class="page-eyebrow">MAKE IT YOURS</span><h1 class="page-heading" id="settings-heading">Your learning rhythm.</h1><p class="page-intro">Tune the pace. Keep control of your collection.</p><section class="setting-section"><h2>Spaced recall</h2><div class="settings-card">${settingsAction('retention', 'Target recall', 'Higher targets generally mean more reviews.', `${Math.round((settings().retention || .9) * 100)}%`)}${settingsAction('new-limit', 'New lessons each day', 'A comfortable limit for the For you feed.', String(settings().newPerDay ?? 10))}${settingsAction('daily-topics', 'Daily lesson topics', 'Choose All, specialties, or several topic tags.', dailyTopicSummary())}</div></section><section class="setting-section"><h2>Playback</h2><div class="settings-card">${settingsAction('speed', 'Playback speed', 'Visuals follow the narration at every speed.', `${settings().speed || 1}×`)}${toggleRow('autoPlay', 'Autoplay lessons', 'Start narration when you enter a lesson.')}${toggleRow('reduceMotion', 'Reduce camera motion', 'Keep the memory scene steady.')}</div></section><section class="setting-section"><h2>Collection & updates</h2><div class="settings-card">${settingsAction('import-pack', 'Import lesson package', 'Add a ZIP from your device.')}${settingsAction('check-updates', 'Check for updates', app.catalogCheckedAt ? `Last checked ${dateLabel(app.catalogCheckedAt)}` : 'Find new content packages and app releases.')}${toggleRow('autoCheckUpdates', 'Check when opening', 'Check the catalog when a connection is available.')}</div></section><section class="setting-section"><h2>Your data</h2><div class="settings-card">${settingsAction('export-backup', 'Export learning backup', 'Save reviews, private notes and preferences.')}${settingsAction('import-backup', 'Restore learning backup', 'Restore a saved snapshot without removing media.')}${settingsAction('local-info', 'Stored on this device', `${app.lessons.length} lessons · No account required`)}</div></section><section class="setting-section"><h2>About</h2><div class="settings-card">${settingsAction('licenses', 'Open-source licenses', 'App credits and licenses, available offline.')}</div></section><p class="app-version">InstaAnki ${esc(app.info.version || '0.1.1')} · Personal learning<br>English · ${native ? 'Android' : 'Browser preview'}</p>`;
   }
   function openModal(kind, title, eyebrow, html, extra = {}) {
     const wasOpen = !!app.modal;
     if (!wasOpen) { app.previousFocus = document.activeElement; app.resumeOnClose = !audio.paused && kind !== 'quiz'; }
     pauseAudio();
     app.modal = { kind, ...extra };
+    $('#modal-sheet').dataset.kind = kind;
+    $('#modal-actions').replaceChildren(); $('#modal-actions').hidden = true;
     $('#modal-title').textContent = title; $('#modal-eyebrow').textContent = eyebrow || '';
     $('#modal-body').innerHTML = html; $('#modal-backdrop').hidden = false; $('#app-shell').inert = true;
     document.body.classList.add('no-scroll');
@@ -320,6 +387,7 @@
   }
   function closeModal(resume = true) {
     if (!app.modal) return;
+    if (app.modal.kind === 'quiz') preserveQuizState();
     const shouldResume = resume && app.resumeOnClose;
     app.modal = null; app.resumeOnClose = false;
     $('#modal-backdrop').hidden = true; $('#app-shell').inert = false; document.body.classList.remove('no-scroll');
@@ -367,46 +435,189 @@
     const due = record.card?.due ? new Date(record.card.due).getTime() : 0;
     return due > Date.now() ? 'practice' : 'review';
   }
-  function showQuiz(lesson, requested = 'review', origin = 'feed') {
-    if (!lesson?.quiz?.options?.length) { toast('This lesson does not include a recall question.'); return; }
-    const mode = quizMode(lesson, requested);
-    const attemptId = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  function quizSnapshot(state) {
+    return { ...state, returnLocation: state.returnLocation ? { ...state.returnLocation, feedIds: [...(state.returnLocation.feedIds || [])] } : null, reviewSeen: [...(state.reviewSeen || [])] };
+  }
+  function notifyLessonFlow() {
+    if (typeof syncLessonFlow === 'function') syncLessonFlow();
+  }
+  function preserveQuizState() {
+    if (app.modal?.kind !== 'quiz') return;
+    const state = quizSnapshot(app.modal);
+    if (state.answered) app.lastQuestionResult = state;
+    else app.pendingQuestion = state;
+    notifyLessonFlow();
+  }
+  function openQuizState(state) {
+    const lesson = byId(state?.lessonId);
+    if (!lesson?.quiz?.options?.length) return false;
+    const title = state.questionKind === 'new' ? 'New lesson question' : state.questionKind === 'due' ? 'Due review' : 'Practice question';
+    const eyebrow = state.answered ? 'ANSWER RESULT' : state.questionKind === 'due' ? 'REVIEW DUE · ANSWER FIRST' : state.questionKind === 'new' ? 'LESSON QUESTION' : 'NO SCHEDULE CHANGE';
     app.resumeOnClose = false;
-    openModal('quiz', mode === 'practice' ? 'A quick memory check.' : 'What stayed with you?', mode === 'practice' ? 'PRACTICE · NO SCHEDULE CHANGE' : 'ACTIVE RECALL', '', { lessonId: lesson.id, mode, origin, attemptId, selected: -1, answered: false });
-    app.resumeOnClose = false; renderQuiz();
+    openModal('quiz', title, eyebrow, '', quizSnapshot(state));
+    app.resumeOnClose = false;
+    if (app.modal.answered) app.lastQuestionResult = quizSnapshot(app.modal);
+    else app.pendingQuestion = quizSnapshot(app.modal);
+    renderQuiz();
+    $('#modal-body').scrollTop = 0;
+    requestAnimationFrame(() => {
+      if (app.modal?.attemptId !== state.attemptId) return;
+      if (app.modal.answered) $('.quiz-result')?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+      else $('#modal-body').scrollTop = 0;
+    });
+    notifyLessonFlow();
+    return true;
+  }
+  function resumePendingQuestion(id = current()?.id) {
+    const context = app.explanationContext;
+    const state = context?.lessonId === id && !context.question?.answered ? context.question : app.pendingQuestion;
+    if (!state || state.lessonId !== id || state.answered) return false;
+    if (context?.lessonId === id) app.explanationContext = null;
+    return openQuizState(state);
+  }
+  function resumeLastQuestionResult(id = current()?.id) {
+    const state = app.lastQuestionResult;
+    if (!state || state.lessonId !== id || !state.answered) return false;
+    if (app.explanationContext?.lessonId === id) app.explanationContext = null;
+    return openQuizState(state);
+  }
+  function finishLessonPlayback() {
+    const lesson = current(); if (!lesson) return;
+    const context = app.explanationContext;
+    if (context?.lessonId === lesson.id && context.question) {
+      app.explanationContext = null;
+      openQuizState(context.question);
+      return;
+    }
+    if (context) app.explanationContext = null;
+    if (resumePendingQuestion(lesson.id) || resumeLastQuestionResult(lesson.id)) return;
+    const assisted = app.entryWasDue && app.bypassEntryRecall;
+    showQuiz(lesson, assisted ? 'practice' : 'review', 'feed', { assisted });
+  }
+  function selectQuizAnswer(index) {
+    const state = app.modal, lesson = byId(state?.lessonId);
+    if (state?.kind !== 'quiz' || state.answered || !lesson?.quiz || !Number.isInteger(index) || index < 0 || index >= lesson.quiz.options.length) return;
+    state.selected = index;
+    state.dontKnow = false;
+    $$('[data-answer]', $('#modal-body')).forEach(button => {
+      const selected = Number(button.dataset.answer) === index;
+      button.classList.toggle('selected', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    $('[data-action="submit-answer"]', $('#modal-sheet')).disabled = false;
+    app.pendingQuestion = quizSnapshot(state);
+  }
+  function restoreQuizLocation(state) {
+    const location = state.returnLocation;
+    const tab = state.origin === 'review' ? 'review' : location?.tab || 'feed';
+    if (tab !== 'feed') { showTab(tab, false); return; }
+    const savedFeed = location?.feedIds?.map(byId).filter(Boolean);
+    const orderChanged = savedFeed?.length && savedFeed.map(item => item.id).join('|') !== app.feed.map(item => item.id).join('|');
+    const changed = location && (orderChanged || app.feedMode !== location.feedMode || app.specialty !== location.specialty || app.tag !== location.tag || current()?.id !== state.lessonId);
+    if (location) { app.feedMode = location.feedMode; app.specialty = location.specialty; app.tag = location.tag; }
+    showTab('feed', false);
+    if (changed) {
+      app.bypassNextRecall = state.lessonId; rebuildFeed(state.lessonId);
+      if (savedFeed?.length && savedFeed.some(item => item.id === state.lessonId)) {
+        // Grading changes due-first ordering. Continue along the selection the
+        // learner entered, instead of treating a replayed item as its new end.
+        app.feed = savedFeed;
+        app.bypassNextRecall = state.lessonId;
+        setLesson(savedFeed.findIndex(item => item.id === state.lessonId), false);
+      }
+    }
+    notifyLessonFlow();
+  }
+  function showQuiz(lesson, requested = 'review', origin = 'feed', options = {}) {
+    if (!lesson?.quiz?.options?.length) { toast('This lesson does not include a recall question.'); return; }
+    // An interrupted question keeps its attempt. Explicit practice starts a new
+    // practice attempt and can never inherit a scheduled-review mode.
+    if (requested !== 'practice' && app.pendingQuestion?.lessonId === lesson.id && !app.pendingQuestion.answered) {
+      openQuizState(app.pendingQuestion); return;
+    }
+    const mode = quizMode(lesson, requested);
+    const hasReviewed = Number(L.get(lesson.id).card?.reps) > 0;
+    const attemptId = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const state = {
+      kind: 'quiz', lessonId: lesson.id, mode, origin, attemptId, selected: -1, answered: false,
+      questionKind: mode === 'practice' ? 'practice' : hasReviewed ? 'due' : 'new',
+      assisted: !!options.assisted,
+      returnLocation: options.returnLocation || { tab: app.tab, feedMode: app.feedMode, specialty: app.specialty, tag: app.tag, lessonId: current()?.id, feedIndex: app.index, feedLength: app.feed.length, feedIds: app.feed.map(item => item.id) },
+      reviewSeen: [...(options.reviewSeen || [])],
+    };
+    if (app.lastQuestionResult?.lessonId === lesson.id) app.lastQuestionResult = null;
+    app.explanationContext = null;
+    openQuizState(state);
   }
   function renderQuiz() {
     const state = app.modal; const lesson = byId(state?.lessonId); if (!lesson) return;
     const quiz = lesson.quiz;
     const result = state.result;
-    $('#modal-body').innerHTML = `<p class="modal-intro">${esc(lesson.specialty || 'Medical learning')}${lesson.source?.questionNumber ? ` · Source Q${lesson.source.questionNumber}` : ''}</p><p class="quiz-prompt">${esc(quiz.prompt)}</p><div role="group" aria-label="Answer options">${quiz.options.map((option, index) => `<button type="button" class="quiz-option ${state.selected === index ? 'selected' : ''} ${state.answered && index === quiz.correctIndex ? 'correct' : ''} ${state.answered && state.selected === index && index !== quiz.correctIndex ? 'incorrect' : ''}" data-answer="${index}" aria-pressed="${state.selected === index}" ${state.answered ? 'disabled' : ''}><span class="option-letter">${String.fromCharCode(65 + index)}</span><span>${esc(option)}</span></button>`).join('')}</div>${state.answered ? `<div class="quiz-result ${result.correct ? '' : 'missed'}" role="status"><h3>${result.correct ? 'You remembered.' : 'Keep this connection.'}</h3><p>${esc(quiz.explanation)}</p><span class="schedule-note">${state.mode === 'practice' || result.practice || !result.scheduled ? 'Practice recorded. Your scheduled review has not moved.' : `Next review: ${esc(dateLabel(result.due))}`}</span></div><div class="quiz-actions"><button type="button" class="primary-button full-width" data-action="quiz-continue">${state.origin === 'review' ? 'Continue recall' : state.origin === 'practice' ? 'Done' : 'Continue the feed'} ${icons.arrow}</button><button type="button" class="quiet-button full-width" data-watch-lesson="${esc(lesson.id)}">Revisit the explanation</button></div>` : `<div class="quiz-actions"><button type="button" class="primary-button full-width" data-action="submit-answer" ${state.selected < 0 ? 'disabled' : ''}>Check my answer</button><button type="button" class="secondary-button full-width" data-action="dont-know">I don’t know yet</button><button type="button" class="quiet-button full-width" data-watch-lesson="${esc(lesson.id)}">Watch the explanation first</button></div>`}`;
+    const steps = state.questionKind === 'new' ? ['Watch', 'Answer', 'Result'] : ['Answer', 'Result', state.origin === 'review' ? 'Next review' : 'Done'];
+    const step = state.questionKind === 'new' ? state.answered ? 2 : 1 : state.answered ? 1 : 0;
+    const context = state.assisted ? 'You watched the explanation. This is practice; your due review stays in the review list.' : state.questionKind === 'due' ? 'This review is due. Answer from memory before replaying the video.' : state.mode === 'practice' ? 'Practice only. This answer will not change your review date.' : 'Choose one answer to finish this lesson, then check it.';
+    const seen = new Set([...(state.reviewSeen || []), state.lessonId]);
+    const nextReview = state.origin === 'review' && L.due(app.lessons).some(item => !seen.has(item.id));
+    const hasNextLesson = (state.returnLocation?.feedIndex ?? app.index) < (state.returnLocation?.feedLength ?? app.feed.length) - 1;
+    const continueLabel = state.origin === 'review' ? nextReview ? 'Next review' : 'Back to review' : state.origin === 'practice' ? state.returnLocation?.tab === 'review' ? 'Back to review' : 'Return to video' : hasNextLesson ? state.returnLocation?.feedMode === 'due' ? 'Next review' : 'Next lesson' : state.returnLocation?.feedMode === 'due' ? 'Finish review' : 'Finish lesson';
+    const schedule = state.assisted ? 'Practice recorded. This review is still due for an answer from memory.' : state.mode === 'practice' || result?.practice || (state.answered && !result?.scheduled) ? 'Practice recorded. Your review schedule has not changed.' : state.answered ? `Answer saved. Next review: ${dateLabel(result.due)}` : '';
+    const optionList = `${state.answered ? '' : `<p class="quiz-choice-count">Choose 1 of ${quiz.options.length} answers</p>`}<div class="quiz-options" role="group" aria-label="${state.answered ? 'Answer options' : `Choose 1 of ${quiz.options.length} answers`}">${quiz.options.map((option, index) => `<button type="button" class="quiz-option ${state.selected === index ? 'selected' : ''} ${state.answered && index === quiz.correctIndex ? 'correct' : ''} ${state.answered && state.selected === index && index !== quiz.correctIndex ? 'incorrect' : ''}" data-answer="${index}" aria-pressed="${state.selected === index}" ${state.answered ? 'disabled' : ''}><span class="option-letter">${String.fromCharCode(65 + index)}</span><span class="option-text">${esc(option)}${state.answered && index === quiz.correctIndex ? '<small class="answer-marker">Correct answer</small>' : state.answered && state.selected === index ? '<small class="answer-marker">Your answer</small>' : ''}</span></button>`).join('')}</div>`;
+    const resultPanel = state.answered ? `<div class="quiz-result ${result.correct ? '' : 'missed'}" role="status" tabindex="-1"><h3>${result.correct ? 'Correct' : state.dontKnow ? 'Answer explained' : 'Incorrect'}</h3><p class="correct-answer"><strong>Correct answer:</strong> ${String.fromCharCode(65 + quiz.correctIndex)}. ${esc(quiz.options[quiz.correctIndex])}</p><p>${esc(quiz.explanation)}</p><span class="schedule-note">${esc(schedule)}</span></div><details class="answered-options"><summary>View all answer options</summary>${optionList}</details>` : optionList;
+    const actions = state.answered ? `<div class="quiz-actions"><button type="button" class="primary-button full-width" data-action="quiz-continue">${continueLabel} ${icons.arrow}</button><button type="button" class="secondary-button full-width" data-watch-lesson="${esc(lesson.id)}">Replay video</button></div>` : `<div class="quiz-actions"><button type="button" class="primary-button full-width" data-action="submit-answer" ${state.selected < 0 ? 'disabled' : ''}>Check my answer</button><button type="button" class="secondary-button full-width" data-action="dont-know">I don’t know yet</button><button type="button" class="quiet-button full-width" data-watch-lesson="${esc(lesson.id)}">${L.get(lesson.id).watchedSeconds > 0 ? 'Replay video' : 'Watch video first'}</button></div>`;
+    $('#modal-body').innerHTML = `<ol class="lesson-steps quiz-steps" aria-label="Lesson progress">${steps.map((label, index) => `<li class="${index < step ? 'is-complete' : index === step ? 'is-current' : ''}" ${index === step ? 'aria-current="step"' : ''}><span>${index + 1}</span>${esc(label)}</li>`).join('')}</ol><h3 class="quiz-lesson-title">${esc(lesson.title)}</h3>${state.answered ? '' : `<p class="quiz-context-note">${esc(context)}</p>`}<p class="quiz-prompt">${esc(quiz.prompt)}</p>${resultPanel}${actions}`;
+    const footer = $('#modal-actions'), controls = $('.quiz-actions', $('#modal-body'));
+    if (footer && controls) { footer.replaceChildren(controls); footer.hidden = false; }
   }
   function submitAnswer(dontKnow = false) {
     const state = app.modal; if (state?.kind !== 'quiz' || state.answered || (!dontKnow && state.selected < 0)) return;
     if (L.loadError) { toast('Restore your learning backup before recording an answer.'); return; }
     const lesson = byId(state.lessonId);
     try {
-      if (dontKnow) { state.selected = -1; state.dontKnow = true; }
       state.result = L.grade(lesson.id, dontKnow ? false : state.selected === lesson.quiz.correctIndex, state.attemptId, state.mode);
-      state.answered = true; renderQuiz(); syncIndicators();
+      if (dontKnow) { state.selected = -1; state.dontKnow = true; }
+      state.answered = true;
+      if (app.pendingQuestion?.attemptId === state.attemptId) app.pendingQuestion = null;
+      app.lastQuestionResult = quizSnapshot(state);
+      renderQuiz(); syncIndicators(); notifyLessonFlow();
+      $('#modal-eyebrow').textContent = 'ANSWER RESULT';
+      $('.quiz-result')?.focus({ preventScroll: true });
       $('.quiz-result')?.scrollIntoView({ behavior: settings().reduceMotion ? 'auto' : 'smooth', block: 'nearest' });
     } catch (error) { toast(error.message || 'Your answer could not be saved.'); }
   }
   function continueQuiz() {
-    const state = app.modal; if (!state) return;
+    const state = app.modal; if (state?.kind !== 'quiz' || !state.answered) return;
     closeModal(false);
     if (state.origin === 'review') {
-      const next = L.due(app.lessons).find(x => x.id !== state.lessonId);
-      if (next) showQuiz(next, 'review', 'review'); else { showTab('review'); toast('Your due recall session is complete.'); }
-    } else if (state.origin === 'feed') nextLesson();
-    else { if (app.tab === 'review') renderReview(); if (app.tab === 'insights') renderInsights(); }
+      const seen = [...new Set([...(state.reviewSeen || []), state.lessonId])];
+      const due = L.due(app.lessons);
+      const next = due.find(x => !seen.includes(x.id));
+      showTab('review', false);
+      if (next) showQuiz(next, 'review', 'review', { reviewSeen: seen, returnLocation: state.returnLocation });
+      else toast(due.length ? 'Session finished. Items still due remain in your review list.' : 'Your due review session is complete.');
+    } else {
+      restoreQuizLocation(state);
+      if (state.origin === 'feed') nextLesson();
+    }
   }
   function watchLesson(id) {
+    const active = app.modal?.kind === 'quiz' && app.modal.lessonId === id ? app.modal : null;
+    const saved = active || (app.pendingQuestion?.lessonId === id ? app.pendingQuestion : app.lastQuestionResult?.lessonId === id ? app.lastQuestionResult : null);
+    if (saved) {
+      const card = L.get(id).card;
+      // Once a due explanation is revealed, the preserved attempt is assisted
+      // practice. Replaying an answered question keeps its original result.
+      if (!saved.answered && Number(card?.reps) > 0 && new Date(card.due).getTime() <= Date.now()) {
+        saved.mode = 'practice'; saved.questionKind = 'practice'; saved.assisted = true;
+      }
+      app.explanationContext = { lessonId: id, question: quizSnapshot(saved) };
+      if (!saved.answered) app.pendingQuestion = quizSnapshot(saved);
+    } else app.explanationContext = null;
     closeModal(false); app.feedMode = 'all'; app.specialty = ''; app.tag = '';
     app.bypassNextRecall = id;
     showTab('feed', false); rebuildFeed(id);
     if (!current() || current().id !== id) { const lesson = byId(id); if (lesson) { app.feed = [lesson, ...app.feed.filter(x => x.id !== id)]; app.index = 0; app.bypassNextRecall = id; setLesson(0, true); } }
     else playAudio(false);
+    notifyLessonFlow();
   }
   function showLocalInfo() {
     openModal('local', 'Your collection is yours.', 'ON THIS DEVICE', `<div class="source-block"><h3>${native ? 'Native local storage' : 'Browser storage'}</h3><p>Your review history, saved lessons, notes and preferences are stored ${native ? 'in this app on your Android device' : 'in this browser'}. There is no account or automatic cloud sync.</p></div><div class="source-block"><h3>Keep a backup</h3><p>App updates preserve your learning data. Uninstalling the app or clearing its storage removes local data. Export a learning backup before changing devices.</p></div><div class="source-block"><h3>Content and learning progress</h3><p>Lesson packages contain media and questions. Your learning backup contains personal progress and notes. Replacing a lesson package does not reset your learning history.</p></div><button class="primary-button full-width" type="button" data-action="export-backup">Export learning backup</button>`);
@@ -428,6 +639,35 @@
   }
   function showNewLimit() {
     openModal('new-limit', 'Leave room for recall.', 'DAILY NEW LESSONS', `<p class="modal-intro">Set the maximum number of new lessons you want introduced each day. Due reviews remain available.</p><label class="field-label" for="new-limit-input">New lessons per day</label><input class="text-field" id="new-limit-input" type="number" min="1" max="50" step="1" value="${clamp(settings().newPerDay ?? 10, 1, 50)}"><button class="primary-button full-width" type="button" data-action="save-new-limit" style="margin-top:20px">Save daily limit</button>`);
+  }
+  function dailyTopicSummary() {
+    const ids = settings().dailyTopicIds || [];
+    return !ids.length ? 'All' : ids.length === 1 ? app.topicModel?.get(ids[0])?.label || '1 tag' : `${ids.length} tags`;
+  }
+  function updateTopicCount() {
+    const count = app.topicModel?.filterLessons(app.lessons, app.topicDraft).length || 0;
+    $('#daily-topic-count').textContent = `${count} available ${count === 1 ? 'lesson' : 'lessons'} · Up to ${settings().newPerDay || 10} new each day`;
+    const all = $('[data-action="daily-topics-all"]');
+    all.classList.toggle('selected', !app.topicDraft.length); all.setAttribute('aria-pressed', String(!app.topicDraft.length));
+  }
+  function renderTopicOptions() {
+    const query = $('#daily-topic-search')?.value.trim() || '';
+    const selected = new Set(app.topicDraft);
+    const renderNode = (node, depth = 0) => {
+      const count = app.topicModel.filterLessons(app.lessons, [node.id]).length;
+      const children = node.children || [];
+      return `<div class="daily-topic-node"><label class="daily-topic-option"><input type="checkbox" data-daily-tag="${esc(node.id)}" ${selected.has(node.id) ? 'checked' : ''}><span><strong>${esc(node.label)}</strong><small>${children.length ? 'Includes its subtopics' : esc(node.facet || 'Topic')}</small></span><em>${count}</em></label>${children.length ? `<details class="daily-topic-children" ${query ? 'open' : ''}><summary>Browse ${children.length} ${children.length === 1 ? 'topic' : 'topics'}</summary>${children.map(child => renderNode(child, depth + 1)).join('')}</details>` : ''}</div>`;
+    };
+    const nodes = app.topicModel?.tree(query) || [];
+    $('#daily-topic-options').innerHTML = nodes.length ? nodes.map(node => renderNode(node)).join('') : '<p class="empty-copy">No tags match that search.</p>';
+    const unavailable = app.topicDraft.filter(id => !app.topicModel?.get(id));
+    $('#daily-topic-unavailable').innerHTML = unavailable.length ? `<p class="field-hint">These saved tags are unavailable. Remove them or choose All.</p>${unavailable.map(id => `<button type="button" class="topic-unavailable" data-remove-daily-tag="${esc(id)}">${esc(id)} <span aria-hidden="true">×</span><span class="visually-hidden">Remove tag</span></button>`).join('')}` : '';
+    updateTopicCount();
+  }
+  function showDailyTopics() {
+    app.topicDraft = [...(settings().dailyTopicIds || [])];
+    openModal('daily-topics', 'Choose your daily topics.', 'SPACED RECALL', `<p class="modal-intro">Choose one or more specialties or topic tags for your For you feed. A parent tag includes its subtopics. Your choice is saved on this device.</p><button type="button" class="choice-button daily-topics-all" data-action="daily-topics-all" aria-pressed="false">All <span>Every topic</span></button><label class="visually-hidden" for="daily-topic-search">Search topic tags</label><input id="daily-topic-search" class="text-field" type="search" placeholder="Search specialties or subtopics…" autocomplete="off"><p id="daily-topic-count" class="field-hint" aria-live="polite"></p><div id="daily-topic-unavailable"></div><div id="daily-topic-options" class="daily-topic-options"></div><div class="daily-topic-footer"><button class="primary-button full-width" type="button" data-action="save-daily-topics">Save selection</button><p class="field-hint">The Due tab keeps all scheduled reviews available.</p></div>`);
+    renderTopicOptions();
   }
   async function fetchJSON(url) {
     const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), 15000);
@@ -522,10 +762,20 @@
     'all-feed': () => { app.feedMode = 'all'; rebuildFeed(); },
     'go-feed': () => { showTab('feed'); },
     'quiz-now': () => { if (current()) showQuiz(current(), 'practice', 'practice'); },
+    'lesson-question': () => { if (current()) { pauseAudio(); finishLessonPlayback(); } },
+    'review-home': () => { closeModal(false); showTab('review'); },
     'save-note': () => { if (app.modal?.lessonId) { L.note(app.modal.lessonId, $('#note-input').value); closeModal(); toast('Your private note was saved.'); } },
     'submit-answer': () => submitAnswer(false), 'dont-know': () => submitAnswer(true), 'quiz-continue': continueQuiz,
     'start-review': () => { const lesson = L.due(app.lessons)[0]; if (lesson) showQuiz(lesson, 'review', 'review'); },
-    retention: showRetention, 'new-limit': showNewLimit,
+    retention: showRetention, 'new-limit': showNewLimit, 'daily-topics': showDailyTopics,
+    'daily-topics-all': () => { app.topicDraft = []; renderTopicOptions(); },
+    'save-daily-topics': () => {
+      L.setSetting('dailyTopicIds', app.topicDraft);
+      const preferred = current()?.id;
+      closeModal(false); app.specialty = ''; app.tag = ''; app.feedMode = 'all';
+      rebuildFeed(preferred); if (app.tab === 'settings') renderSettings();
+      toast('Your daily topics were saved.');
+    },
     'save-retention': () => { L.setSetting('retention', Number($('#retention-input').value) / 100); closeModal(); renderSettings(); toast('Your recall target was updated.'); },
     'save-new-limit': () => { const value = Number($('#new-limit-input').value); if (!Number.isInteger(value) || value < 1 || value > 50) { toast('Choose a whole number from 1 to 50.'); return; } L.setSetting('newPerDay', value); closeModal(); renderSettings(); rebuildFeed(current()?.id); },
     'import-pack': () => { if (native?.importZip) native.importZip(); else toast('ZIP lesson import is available in the Android app.'); },
@@ -559,31 +809,47 @@
       }
       if (button.dataset.reviewLesson) { showQuiz(byId(button.dataset.reviewLesson), 'review', 'review'); return; }
       if (button.dataset.practiceLesson) { showQuiz(byId(button.dataset.practiceLesson), 'practice', 'practice'); return; }
-      if (button.hasAttribute('data-answer') && app.modal?.kind === 'quiz' && !app.modal.answered) { app.modal.selected = Number(button.dataset.answer); renderQuiz(); return; }
+      if (button.hasAttribute('data-answer') && app.modal?.kind === 'quiz' && !app.modal.answered) { selectQuizAnswer(Number(button.dataset.answer)); return; }
       if (button.dataset.speed) {
         const speed = Number(button.dataset.speed); L.setSetting('speed', speed); audio.playbackRate = speed; $('#speed-button').textContent = `${speed}×`; closeModal(); if (app.tab === 'settings') renderSettings(); return;
       }
       if (button.hasAttribute('data-specialty')) { app.specialty = button.dataset.specialty; closeModal(false); rebuildFeed(); return; }
       if (button.hasAttribute('data-topic')) { app.tag = button.dataset.topic; closeModal(false); rebuildFeed(); return; }
+      if (button.dataset.removeDailyTag) { app.topicDraft = app.topicDraft.filter(id => id !== button.dataset.removeDailyTag); renderTopicOptions(); return; }
       if (button.dataset.downloadPack) downloadPack(button.dataset.downloadPack);
     } catch (error) { console.error(error); toast(error.message || 'That action could not be completed.'); }
   });
   document.addEventListener('change', event => {
+    if (event.target.hasAttribute('data-daily-tag') && app.modal?.kind === 'daily-topics') {
+      const id = event.target.dataset.dailyTag;
+      app.topicDraft = event.target.checked ? [...new Set([...app.topicDraft, id])] : app.topicDraft.filter(item => item !== id);
+      // A shared topic can appear under several specialties; keep its checkboxes consistent.
+      $$('[data-daily-tag]').forEach(input => { input.checked = app.topicDraft.includes(input.dataset.dailyTag); });
+      updateTopicCount(); return;
+    }
     if (event.target.hasAttribute('data-captions')) { app.captions = event.target.checked; $('#caption-button').setAttribute('aria-pressed', String(app.captions)); paintFrame(); return; }
     const key = event.target.dataset?.setting; if (!key) return;
-    L.setSetting(key, event.target.checked); syncIndicators();
+    L.setSetting(key, event.target.checked); syncIndicators(); paintFrame();
     if (key === 'autoCheckUpdates' && event.target.checked && navigator.onLine) checkUpdates(false);
   });
   document.addEventListener('input', event => {
     if (event.target.id === 'retention-input') $('#retention-value').textContent = event.target.value;
+    if (event.target.id === 'daily-topic-search') renderTopicOptions();
   });
   $('#seek').addEventListener('input', event => { if (Number.isFinite(audio.duration)) { audio.currentTime = Number(event.target.value) / 100 * audio.duration; app.lastClock = 0; paintFrame(); } });
-  audio.addEventListener('play', () => { app.lastClock = 0; updatePlayButtons(); });
+  audio.addEventListener('play', () => { app.lastClock = 0; updatePlayButtons(); paintFrame(); });
   audio.addEventListener('pause', () => { flushExposure(); updatePlayButtons(); paintFrame(); });
   audio.addEventListener('loadedmetadata', paintFrame);
-  $('#lesson-image').addEventListener('load', paintFrame);
+  $('#lesson-image').addEventListener('load', () => {
+    const image = $('#lesson-image');
+    app.imageReady = image.currentSrc === app.currentImage && image.naturalWidth > 0;
+    paintFrame();
+  });
+  $('#lesson-image').addEventListener('error', () => { app.imageReady = false; paintFrame(); });
   audio.addEventListener('timeupdate', paintFrame);
-  audio.addEventListener('seeking', () => { app.lastClock = 0; });
+  audio.addEventListener('seeking', () => { app.lastClock = 0; paintFrame(); });
+  audio.addEventListener('seeked', paintFrame);
+  audio.addEventListener('ratechange', paintFrame);
   audio.addEventListener('error', () => { updatePlayButtons(); if (current()) { $('#lesson-caption').textContent = 'The narration file is unavailable. Reimport this lesson package to restore playback.'; } });
   audio.addEventListener('ended', () => {
     flushExposure(); updatePlayButtons();
@@ -591,11 +857,12 @@
       app.endHandled = true;
       // Revealing a due lesson before answering is assisted practice, not a
       // successful recall. A first learning pass still schedules its end MCQ.
-      const mode = app.entryWasDue && app.bypassEntryRecall ? 'practice' : 'review';
-      showQuiz(current(), mode, 'feed');
+      finishLessonPlayback();
     }
   });
   window.addEventListener('resize', paintFrame);
+  if (window.ResizeObserver) new ResizeObserver(paintFrame).observe($('#visual-stage'));
+  motionPreference.addEventListener?.('change', paintFrame);
   $('#modal-backdrop').addEventListener('click', event => { if (event.target === $('#modal-backdrop')) closeModal(); });
   document.addEventListener('keydown', event => {
     if (app.modal) {
@@ -627,7 +894,7 @@
   }, { passive: true });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState !== 'visible') pauseAudio(); });
   window.addEventListener('instaanki:background', pauseAudio);
-  window.addEventListener('learning:changed', syncIndicators);
+  window.addEventListener('learning:changed', () => { syncIndicators(); paintFrame(); });
   window.addEventListener('instaanki:error', event => { app.downloading = false; toast(event.detail?.message || 'The operation could not be completed.'); if (app.modal?.kind === 'updates') renderUpdates(); });
   window.addEventListener('instaanki:import-started', () => { pauseAudio(); toast('Preparing your lesson package…'); });
   window.addEventListener('instaanki:download-progress', event => {
@@ -656,13 +923,23 @@
       if (!L) throw new Error('The learning engine could not be loaded.');
       L.load(); syncWarning();
       if (native?.getAppInfo) { try { app.info = { ...app.info, ...JSON.parse(native.getAppInfo()) }; } catch (_) { } }
-      const results = await Promise.allSettled([fetchJSON('data/lessons.json'), fetchJSON('data/books.json')]);
+      const results = await Promise.allSettled([fetchJSON('data/lessons.json'), fetchJSON('data/books.json'), fetchJSON('data/taxonomy.json')]);
       if (results[0].status === 'fulfilled') {
         const raw = results[0].value;
         app.lessons = (Array.isArray(raw) ? raw : raw.lessons || []).filter(validLesson);
       }
       if (results[1].status === 'fulfilled') { const raw = results[1].value; app.books = Array.isArray(raw) ? raw : raw.books || []; }
       await loadNativePacks();
+      const loadedTags = new Map();
+      for (const lesson of app.lessons) {
+        const specialtyId = lesson.primarySpecialtyId || (lesson.tags || []).find(tag => tag.id?.startsWith('specialty.'))?.id;
+        for (const tag of lesson.tags || []) {
+          const previous = loadedTags.get(tag.id);
+          loadedTags.set(tag.id, { ...tag, status: 'active', specialty_ids: [...new Set([...(previous?.specialty_ids || []), ...(specialtyId ? [specialtyId] : [])])] });
+        }
+      }
+      const fallbackTags = [...loadedTags.values()];
+      app.topicModel = window.TopicSelection.create(results[2].status === 'fulfilled' ? results[2].value : { tags: fallbackTags });
       if (!app.lessons.length && results[0].status === 'rejected') throw new Error('Your lesson collection could not be opened. Use Settings to import a package, or reopen the app.');
       rebuildFeed(); syncIndicators(); app.frame = requestAnimationFrame(tick);
       if (settings().autoPlay && current()) playAudio(false);

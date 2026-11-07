@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-07T14:41:48.804119+00:00",
+  "generatedAt": "2026-11-07T15:42:45.114211+00:00",
   "engine": "kokoro-onnx",
   "engineVersion": "0.6.1",
   "onnxruntimeVersion": "1.31.1",
@@ -20,15 +20,17 @@
     "sourceUrl": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin"
   },
   "inputSha256": "d46c3b7ca2d8b6d28e340acecb1fa422b6420af9e0f038158b201497f63ec782",
-  "alignment": "Exact sample boundaries of independently synthesized scenes; not estimated word alignment.",
+  "alignment": "Exact sample boundaries of independently synthesized target phrases; no estimated word timing.",
+  "phraseGapSeconds": 0.08,
+  "guidancePlanSha256": "9326df9895e1a82a99fc516c6d3483446899717c36ebea7908bd78940f510033",
   "humanListeningReviewed": false,
   "automatedChecks": [
     "Nonempty mono audio",
     "Finite samples",
     "Non-silent narration",
     "Decoded MP3 below full scale",
-    "60\u201390 second total duration",
-    "8\u201310 second final real-image stage",
+    "60–90 second total duration",
+    "8–10 second final real-image stage",
     "Container and PCM durations agree"
   ],
   "lessons": [
@@ -36,83 +38,85 @@
       "lessonId": "lesson-shahzad2015-q054-v1",
       "audioFile": "lesson-shahzad2015-q054-v1.mp3",
       "timingFile": "lesson-shahzad2015-q054-v1.timing.json",
-      "sha256": "0c65ff04ac88ea2f57fd24f8c47990a9acde34c724f742f3fcedfe644da310ab",
-      "bytes": 861499,
-      "duration": 71.70666666666666,
-      "containerDuration": 71.76,
-      "narrationDuration": 62.70666666666666,
+      "sha256": "d66dc9ebd1c2e1a2bf38ec1a3751722525680149bb0e346d46cc2d766f3a48f7",
+      "bytes": 855163,
+      "duration": 71.166625,
+      "containerDuration": 71.232,
+      "narrationDuration": 62.166625,
       "outroDuration": 9.0,
       "sampleRate": 24000,
       "normalizationGain": 1.0,
-      "sourcePeakBeforeGain": 0.8188948631286621,
+      "sourcePeakBeforeGain": 0.706200122833252,
       "pcmValidation": {
         "finite": true,
-        "peak": 0.8188948631286621,
-        "rms": 0.06610773697418482,
+        "peak": 0.706200122833252,
+        "rms": 0.06784542381865492,
         "samplesAtOrAboveFullScale": 0
       },
       "decodedValidation": {
         "finite": true,
-        "peak": 0.7798898816108704,
-        "rms": 0.06280282455769108,
+        "peak": 0.6543076634407043,
+        "rms": 0.0644520945085022,
         "samplesAtOrAboveFullScale": 0
       },
-      "humanListeningReviewed": false
+      "humanListeningReviewed": false,
+      "cueCount": 18
     },
     {
       "lessonId": "lesson-shahzad2015-q005-v1",
       "audioFile": "lesson-shahzad2015-q005-v1.mp3",
       "timingFile": "lesson-shahzad2015-q005-v1.timing.json",
-      "sha256": "bdbfadc526a7ea4cfb91ee1d77379248feb8b76e1cb88a1c0f758d18c453385b",
-      "bytes": 923719,
-      "duration": 76.88195833333333,
-      "containerDuration": 76.944,
-      "narrationDuration": 67.88195833333333,
+      "sha256": "7225a777c6642472c3aac68c8912b87e23edf8bc83bac496838d32e75de04f98",
+      "bytes": 895783,
+      "duration": 74.54508333333334,
+      "containerDuration": 74.616,
+      "narrationDuration": 65.54508333333334,
       "outroDuration": 9.0,
       "sampleRate": 24000,
       "normalizationGain": 1.0,
-      "sourcePeakBeforeGain": 0.7771039009094238,
+      "sourcePeakBeforeGain": 0.7954422235488892,
       "pcmValidation": {
         "finite": true,
-        "peak": 0.7771039009094238,
-        "rms": 0.06667944103348529,
+        "peak": 0.7954422235488892,
+        "rms": 0.06808911502367912,
         "samplesAtOrAboveFullScale": 0
       },
       "decodedValidation": {
         "finite": true,
-        "peak": 0.7227246761322021,
-        "rms": 0.06334300397384136,
+        "peak": 0.7582327127456665,
+        "rms": 0.06468758951035442,
         "samplesAtOrAboveFullScale": 0
       },
-      "humanListeningReviewed": false
+      "humanListeningReviewed": false,
+      "cueCount": 18
     },
     {
       "lessonId": "lesson-shahzad2015-q182-v1",
       "audioFile": "lesson-shahzad2015-q182-v1.mp3",
       "timingFile": "lesson-shahzad2015-q182-v1.timing.json",
-      "sha256": "f03e330c6c3d59732c9dbb319af5b5f059e0a1669006ad83bddc7ae01773ac8c",
-      "bytes": 889155,
-      "duration": 73.99329166666666,
-      "containerDuration": 74.064,
-      "narrationDuration": 64.99329166666666,
+      "sha256": "38a962c05ead5a3b9ef984cdd011ea86644067fcc8776f4105f27520fc2c4fc6",
+      "bytes": 864675,
+      "duration": 71.9685,
+      "containerDuration": 72.024,
+      "narrationDuration": 62.9685,
       "outroDuration": 9.0,
       "sampleRate": 24000,
       "normalizationGain": 1.0,
-      "sourcePeakBeforeGain": 0.7487930059432983,
+      "sourcePeakBeforeGain": 0.7211358547210693,
       "pcmValidation": {
         "finite": true,
-        "peak": 0.7487930059432983,
-        "rms": 0.06598681132229282,
+        "peak": 0.7211358547210693,
+        "rms": 0.06761204920826727,
         "samplesAtOrAboveFullScale": 0
       },
       "decodedValidation": {
         "finite": true,
-        "peak": 0.7224286794662476,
-        "rms": 0.06268327358252936,
+        "peak": 0.6801337003707886,
+        "rms": 0.0642357739300845,
         "samplesAtOrAboveFullScale": 0
       },
-      "humanListeningReviewed": false
+      "humanListeningReviewed": false,
+      "cueCount": 19
     }
-  ],
-  "codec": "MP3 / libmp3lame 96 kbps"
+  ]
 }

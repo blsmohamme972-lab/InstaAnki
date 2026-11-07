@@ -13,7 +13,7 @@ python android/build_apk.py --include-private
 
 `--include-private` is for the user's personal APK only. It copies only `private-content/app-assets/` (currently the book cover) to `/assets/private-content/`. It does not include the extracted source questions, the original PDF, or signing secrets. Do not publish personal book material or a personal binary as a public release without checking its content and the user's instruction.
 
-The result is `dist/InstaAnki-0.1.0.apk`. The builder verifies APK signatures, zip alignment, and writes a SHA-256 checksum plus a machine-readable build report. It does not claim to have installed or run the app on a device.
+The result is `dist/InstaAnki-0.1.1.apk`. The builder verifies APK signatures, zip alignment, and writes a SHA-256 checksum plus a machine-readable build report. It does not claim to have installed or run the app on a device.
 
 Future versions must keep package ID `com.instaanki.app`, use the same signing key, and increase `--version-code`. Signing files live in the sibling `.instaanki-signing/` directory, outside this repository. **Back them up privately before this workspace expires. Never commit or publish them.** To use an existing identity, provide `--key-dir /private/signing/folder`.
 

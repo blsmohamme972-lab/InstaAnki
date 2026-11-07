@@ -9,6 +9,8 @@
   <title>InstaAnki — Your learning gallery</title>
   <link rel="stylesheet" href="styles.css">
   <script src="learning.js" defer></script>
+  <script src="guidance.js" defer></script>
+  <script src="topic-selection.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -33,11 +35,21 @@
         </div>
         <div class="feed-viewport" id="feed-viewport">
           <article class="lesson-card" id="lesson-card" aria-label="Current lesson" tabindex="0" hidden>
+            <ol class="lesson-steps" id="lesson-steps" aria-label="Lesson progress"><li data-lesson-step="watch" class="is-current" aria-current="step"><span>1</span> Watch</li><li data-lesson-step="answer"><span>2</span> Answer</li><li data-lesson-step="result"><span>3</span> Result</li></ol>
             <div class="visual-stage" id="visual-stage">
-              <div class="camera-layer" id="camera-layer"><img id="lesson-image" alt="" draggable="false"></div>
+              <div class="image-viewport" id="image-viewport"><div class="camera-layer" id="camera-layer"><img id="lesson-image" alt="" draggable="false"></div></div>
               <div class="spotlight" id="spotlight" aria-hidden="true"></div>
               <div class="cinematic-shade" aria-hidden="true"></div>
+              <svg id="teaching-pointer" class="teaching-pointer" aria-hidden="true" hidden>
+                <ellipse id="target-region" class="target-region"/>
+                <path id="pointer-outline" class="pointer-outline"/>
+                <path id="pointer-shaft" class="pointer-shaft"/>
+                <path id="pointer-head" class="pointer-head"/>
+                <circle id="pointer-tip" class="pointer-tip" r="3"/>
+                <g id="pointer-hand" class="pointer-hand"><path d="M0 0C-3 0-5 2-5 5v14l-3-3c-4-5-10 0-6 6l9 12q3 4 9 4h13q7-1 7-9V17q-1-6-6-4-1-6-6-4-3-5-7-2V5Q5 0 0 0Z"/><path class="hand-detail" d="M5 10v11m7-8v10m6-7v8M-3 31h20"/></g>
+              </svg>
               <div class="card-topline"><span id="lesson-specialty" class="eyebrow-pill"></span><span class="lesson-position" id="lesson-position"></span></div>
+              <div id="focus-label" class="focus-label" hidden></div>
               <div id="scene-heading" class="scene-heading" aria-hidden="true"></div>
               <button class="center-play" id="center-play" type="button" data-action="play" aria-label="Play lesson"><svg viewBox="0 0 24 24"><path d="m9 5 11 7-11 7Z" fill="currentColor" stroke="none"/></svg></button>
               <div class="action-rail">
@@ -67,7 +79,7 @@
           </article>
           <div class="feed-empty" id="feed-empty"><div class="loading-orbit" aria-hidden="true"></div><h1>Opening your gallery</h1><p>Preparing lessons on this device.</p></div>
         </div>
-        <div class="feed-bottomline"><span id="feed-status">Recall, woven into your feed</span><button type="button" data-action="quiz-now" id="quiz-now">Quick recall <span aria-hidden="true">↗</span></button></div>
+        <div class="feed-bottomline"><span id="feed-status">Watch the lesson, then answer.</span><button type="button" data-action="lesson-question" id="lesson-question-button">Go to question <span aria-hidden="true">↗</span></button></div>
       </section>
       <section id="screen-publications" class="screen scroll-screen" aria-labelledby="publications-heading" hidden></section>
       <section id="screen-review" class="screen scroll-screen" aria-labelledby="review-heading" hidden></section>
@@ -88,6 +100,7 @@
       <div class="sheet-handle" aria-hidden="true"></div>
       <header class="modal-header"><div><span class="modal-eyebrow" id="modal-eyebrow"></span><h2 id="modal-title"></h2></div><button class="icon-button close-button" type="button" data-action="close-modal" aria-label="Close dialog"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>
       <div class="modal-body" id="modal-body"></div>
+      <div class="modal-actions" id="modal-actions" hidden></div>
     </section>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>

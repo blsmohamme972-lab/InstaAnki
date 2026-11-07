@@ -45,5 +45,44 @@ Every lesson ends with one or more authentic images obtained from the web, such 
 
 ## Current pilot implementation
 
-The three starter lessons have original two-dimensional mnemonic illustrations, locally generated English audio, timed image-space camera anchors, an MCQ and a nine-second real-image ending. The implementation currently uses Kokoro ONNX for production-time audio; neither the voice model nor a cloud voice service is needed on the phone. Runtime audio is MP3 and is the master animation clock. Alignment is measured at narration-segment level; it is not claimed to be forced word-level alignment. Human listening and physical Android validation remain separately recorded QA steps.
+The three starter lessons have original two-dimensional mnemonic illustrations, locally generated English audio, an MCQ, and a nine-second real-image ending. Their 18 scenes now contain **55 measured narration phrases** linked to named visual targets. This replaces the earlier single spotlight anchor per scene. Kokoro ONNX synthesizes each phrase independently during production; neither the voice model nor a cloud voice service is needed on the phone. Runtime MP3 playback remains the master clock. These are measured phrase boundaries, **not forced word-level alignment** or estimates based on reading speed.
+
+Each target supplies an exact arrow-tip point and an elliptical spotlight region on one identified image. The camera, spotlight and hand-arrow use the same image-fit and camera transform. The player holds the target while paused, resolves the correct target immediately after a seek, and follows the media clock at every playback speed. Reduced motion keeps the camera stationary while retaining the pointer and spotlight. Captions and controls use reserved space around the teaching image. A missing target, an incompatible image, or legacy content without guidance has no invented pointer.
+
+Clinical images retain their full framing with camera zoom fixed at `1`. Each starter lesson also declares an `outroTargetId`: a calibrated, static point on its real image during the final nine seconds. The outro is part of the audio timeline, so pause, seek and playback-speed changes preserve its place before the MCQ. A clinical target must be justified by the source figure and visual inspection; an unlabelled or uncertain anatomical location remains unpointed.
+
+### Named target and phrase records
+
+The authoring source is `production/visual-guidance.json` (`schemaVersion: 1`). Coordinates refer to the **original image**, with the top-left at `(0, 0)` and bottom-right at `(1, 1)`, rather than to screen pixels or the image element's surrounding space.
+
+| Field | Meaning |
+| --- | --- |
+| `images[path].sha256`, `width`, `height` | Exact image bytes and original dimensions used when inspecting its targets. |
+| `targets[id].image`, `label` | Image path and concise English description of the visible feature or mnemonic mapping. |
+| `targets[id].x`, `y` | Exact point touched by the arrow tip. The hand or arrow's center must not be substituted. |
+| `targets[id].rx`, `ry` | Ellipse radii as fractions of original image width and height. The ellipse must remain inside the image and contain the arrow tip. |
+| `targets[id].spotX`, `spotY` | Optional ellipse center, defaulting to `x`, `y`. Use this for a group: the four-lock cue points at an actual lock while its ellipse surrounds all four. |
+| `targets[id].zoom` | Authored camera zoom from `1` to `1.25`; use `1` for clinical targets. |
+| `scenes[].phrases[]` | Stable phrase `id`, verbatim `text`, and a named `targetId` or explicit `null`. Joining each scene's phrases with spaces must reproduce its approved narration exactly. |
+| `outroTargetId` | Optional named target on the real image displayed during the final hold. |
+
+Use `targetId: null` for explanations whose subject is absent from the picture, including abstract quantities or uncertain anatomical points. Do not highlight an unrelated object to fill time. Preserve the approved medical wording when dividing narration into phrases.
+
+The generated timing companion records the sample rate, phrase and voice start/end sample indices, and corresponding playback seconds. It also binds the result to `audioSha256` and `visualGuidancePlanSha256`. `tools/guidance.py` checks these bindings, image hashes, target bounds, scene/phrase identities, complete narration, and measured cue continuity before assembly and production verification. Changing audio bytes invalidates old timing even when the recording's duration remains similar. Changing image bytes requires target review; changing the authoring plan requires regeneration before assembly.
+
+### Authoring and regeneration
+
+1. Inspect the original images and their source evidence. Update named targets, image hashes/dimensions, phrase divisions and the outro target in `production/visual-guidance.json`. Keep the source scripts and private book material in their established private locations.
+2. Run `tools/generate_audio.py` with the local Kokoro model and voices. Its default guidance input is `production/visual-guidance.json`; `--guidance PATH` selects another plan. It derives phrase boundaries from actual synthesized samples and writes the MP3, timing companion and provenance together in the audio output directory.
+3. Run `python tools/assemble_lessons.py` with the existing private source inputs available. Assembly uses `tools/guidance.py` to reject mismatched scripts, stale audio, changed images or an outdated plan, then embeds verified cues and targets in the public lesson data. Do not hand-edit assembled cue times as a substitute for regeneration.
+4. Validate the pipeline and the actual player:
+
+   ```sh
+   python -m unittest discover -s tests -p 'test_guidance_pipeline.py'
+   npm run test:guidance
+   ```
+
+   The Python checks cover measured timing and stale-media rejection. The browser checks compare rendered pointer and spotlight positions with the actual image bounds, including clinical framing, pause, seek, playback-rate changes, resizing, reduced motion, and delayed image loading. The browser command requires the project's Playwright dependency and its Chromium runtime.
+
+Human listening and physical Android validation remain separate QA steps. For this revision, **`humanListeningReviewed: false` and `physicalAndroidTested: false`** remain explicit. Browser geometry checks, decoded audio and a successful Android build do not establish either of those checks.
 

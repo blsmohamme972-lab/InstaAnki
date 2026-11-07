@@ -3,10 +3,10 @@ import { createEmptyCard, fsrs, Rating, TypeConvert } from 'ts-fsrs';
 // Exposure and recall are deliberately separate. Only an answered assessment
 // changes an FSRS card. Stable source IDs survive new artwork/content versions.
 const KEY = 'instaanki.state.v1';
-const defaults = {speed:1, retention:0.9, newPerDay:10, autoPlay:true, autoCheckUpdates:true, reduceMotion:false};
+const defaults = {speed:1, retention:0.9, newPerDay:10, dailyTopicIds:[], autoPlay:true, autoCheckUpdates:true, reduceMotion:false};
 const rates = [0.75,1,1.25,1.5,1.75,2];
 const safeId = id => typeof id === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,119}$/.test(id) && !['__proto__','constructor','prototype'].includes(id);
-const fresh = () => ({schemaVersion:1, settings:{...defaults}, lessons:{}, reviews:[]});
+const fresh = () => ({schemaVersion:1, settings:{...defaults,dailyTopicIds:[]}, lessons:{}, reviews:[]});
 const dateKey = value => {const d=new Date(value);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const validDate = value => typeof value === 'string' && Number.isFinite(Date.parse(value));
 let state=fresh(), loadError=null, committed=JSON.stringify(state);
@@ -60,6 +60,7 @@ function checkedSetting(key,value){
   if(key==='speed'&&rates.includes(Number(value)))return Number(value);
   if(key==='retention'&&Number.isFinite(Number(value))&&Number(value)>=0.75&&Number(value)<=0.97)return Number(value);
   if(key==='newPerDay'&&Number.isInteger(Number(value))&&Number(value)>=1&&Number(value)<=100)return Number(value);
+  if(key==='dailyTopicIds'&&Array.isArray(value)&&value.length<=256&&value.every(safeId))return [...new Set(value)];
   if(['autoPlay','autoCheckUpdates','reduceMotion'].includes(key)&&typeof value==='boolean')return value;
   throw new Error('Invalid setting.');
 }

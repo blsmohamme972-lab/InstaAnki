@@ -69,10 +69,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sdk-dir", type=Path, default=Path(os.environ.get("INSTAANKI_SDK_DIR", ROOT.parent / "android-toolchain")))
     parser.add_argument("--web-dir", type=Path, default=ROOT / "web")
-    parser.add_argument("--output", type=Path, default=ROOT / "dist" / "InstaAnki-0.1.0.apk")
+    parser.add_argument("--output", type=Path, default=ROOT / "dist" / "InstaAnki-0.1.1.apk")
     parser.add_argument("--key-dir", type=Path, default=ROOT.parent / ".instaanki-signing")
-    parser.add_argument("--version-code", default="1")
-    parser.add_argument("--version-name", default="0.1.0")
+    parser.add_argument("--version-code", default="2")
+    parser.add_argument("--version-name", default="0.1.1")
     parser.add_argument("--include-private", action="store_true", help="Include private-content/app-assets/ (book cover only) in this PERSONAL APK.")
     args = parser.parse_args()
     if not (args.web_dir / "index.html").is_file():

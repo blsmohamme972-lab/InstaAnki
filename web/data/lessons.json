@@ -1,7 +1,7 @@
 [
   {
     "id": "shahzad2015-q054",
-    "version": 1,
+    "version": 2,
     "title": "Coronary Dominance: Follow the PDA",
     "specialty": "Cardiac Surgery",
     "primarySpecialtyId": "specialty.cardiac",
@@ -28,7 +28,7 @@
         "label": "Coronary Arteries"
       }
     ],
-    "durationSeconds": 71.70666666666666,
+    "durationSeconds": 71.166625,
     "audioUrl": "media/audio/lesson-shahzad2015-q054-v1.mp3",
     "poster": "media/mnemonic/coronary-palace.png",
     "locus": {
@@ -62,33 +62,28 @@
       {
         "id": "scene-01",
         "start": 0.0,
-        "end": 10.552666666666667,
+        "end": 10.294,
         "image": "media/mnemonic/coronary-palace.png",
         "kind": "mnemonic",
         "caption": "The back-door key",
         "transcript": "At the rear door of the cardiac gallery, picture a curved circumflex key. Keep that same doorway as your memory location whenever coronary dominance returns.",
         "camera": {
           "from": {
-            "x": 0.41,
-            "y": 0.61,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.41,
-            "y": 0.61,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.41,
-          "y": 0.61,
-          "r": 0.28
         }
       },
       {
         "id": "scene-02",
-        "start": 10.552666666666667,
-        "end": 20.605333333333334,
+        "start": 10.294,
+        "end": 20.122,
         "image": "media/real/coronary-dominance-angiograms.png",
         "kind": "clinical",
         "caption": "Dominance follows PDA origin",
@@ -104,121 +99,96 @@
             "y": 0.5,
             "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.74,
-          "y": 0.5,
-          "r": 0.26
         }
       },
       {
         "id": "scene-03",
-        "start": 20.605333333333334,
-        "end": 31.521333333333335,
+        "start": 20.122,
+        "end": 31.063333333333333,
         "image": "media/mnemonic/coronary-palace.png",
         "kind": "mnemonic",
         "caption": "Left dominance: circumflex to PDA",
         "transcript": "In a left-dominant circulation, the posterior descending artery comes from the circumflex. Its septal branches supply the posterior part of the interventricular septum.",
         "camera": {
           "from": {
-            "x": 0.91,
-            "y": 0.55,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.91,
-            "y": 0.55,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.91,
-          "y": 0.55,
-          "r": 0.28
         }
       },
       {
         "id": "scene-04",
-        "start": 31.521333333333335,
-        "end": 41.626666666666665,
+        "start": 31.063333333333333,
+        "end": 41.08866666666667,
         "image": "media/mnemonic/coronary-palace.png",
         "kind": "mnemonic",
         "caption": "Lateral wall plus posterior septum",
         "transcript": "The circumflex also supplies the lateral left ventricular wall through its branches. A clot at its origin can therefore threaten both territories downstream.",
         "camera": {
           "from": {
-            "x": 0.62,
-            "y": 0.55,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.62,
-            "y": 0.55,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.62,
-          "y": 0.55,
-          "r": 0.28
         }
       },
       {
         "id": "scene-05",
-        "start": 41.626666666666665,
-        "end": 51.851333333333336,
+        "start": 41.08866666666667,
+        "end": 51.056,
         "image": "media/mnemonic/coronary-palace.png",
         "kind": "mnemonic",
         "caption": "Combine the two territories",
         "transcript": "For the book's example, combine the lateral left ventricular wall with the posterior septum. Identifying only one of those regions would leave out part of the pattern.",
         "camera": {
           "from": {
-            "x": 0.73,
-            "y": 0.55,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.73,
-            "y": 0.55,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.73,
-          "y": 0.55,
-          "r": 0.28
         }
       },
       {
         "id": "scene-06",
-        "start": 51.851333333333336,
-        "end": 62.70666666666666,
+        "start": 51.056,
+        "end": 62.166625,
         "image": "media/mnemonic/coronary-palace.png",
         "kind": "mnemonic",
         "caption": "Retrieve the territory",
         "transcript": "Return to the rear door: the circumflex key opens the lateral room and the back septal room. The recall cue is simple: left dominance, circumflex supplies the back.",
         "camera": {
           "from": {
-            "x": 0.41,
-            "y": 0.61,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.41,
-            "y": 0.61,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.41,
-          "y": 0.61,
-          "r": 0.28
         }
       }
     ],
     "realImageOutro": {
-      "start": 62.70666666666666,
-      "end": 71.70666666666666
+      "start": 62.166625,
+      "end": 71.166625
     },
     "realImages": [
       {
@@ -272,11 +242,339 @@
           "checked_on": "2026-11-07"
         }
       ]
+    },
+    "visualGuidance": {
+      "schemaVersion": 1,
+      "audioSha256": "d66dc9ebd1c2e1a2bf38ec1a3751722525680149bb0e346d46cc2d766f3a48f7",
+      "images": {
+        "media/mnemonic/coronary-palace.png": {
+          "sha256": "07db19e1ecdb5862c5f6b0b530c6022d45b465f49f9098e5486e2fb5f43a672f",
+          "width": 1024,
+          "height": 1536
+        },
+        "media/real/coronary-dominance-angiograms.png": {
+          "sha256": "c05a32baa2a5bde37d86bdb8d300f54c38840a93ba22366e965be04542aa9fa2",
+          "width": 1535,
+          "height": 613
+        }
+      },
+      "targets": {
+        "rear-door": {
+          "image": "media/mnemonic/coronary-palace.png",
+          "label": "Rear doorway · fixed memory location",
+          "x": 0.2490234,
+          "y": 0.5859375,
+          "rx": 0.1074219,
+          "ry": 0.1204427,
+          "zoom": 1.15,
+          "spotX": 0.2441406,
+          "spotY": 0.59375
+        },
+        "circumflex-key": {
+          "image": "media/mnemonic/coronary-palace.png",
+          "label": "Curved key · circumflex artery",
+          "x": 0.3798828,
+          "y": 0.641276,
+          "rx": 0.0683594,
+          "ry": 0.1132812,
+          "zoom": 1.2,
+          "spotX": 0.4111328,
+          "spotY": 0.6028646
+        },
+        "lateral-wall": {
+          "image": "media/mnemonic/coronary-palace.png",
+          "label": "Side wall · lateral LV territory",
+          "x": 0.6269531,
+          "y": 0.6158854,
+          "rx": 0.1445312,
+          "ry": 0.1184896,
+          "zoom": 1.15,
+          "spotX": 0.6396484,
+          "spotY": 0.5755208
+        },
+        "posterior-bridge": {
+          "image": "media/mnemonic/coronary-palace.png",
+          "label": "Rear bridge · posterior septal territory",
+          "x": 0.9150391,
+          "y": 0.516276,
+          "rx": 0.0830078,
+          "ry": 0.0566406,
+          "zoom": 1.12,
+          "spotX": 0.9121094,
+          "spotY": 0.5351562
+        },
+        "clinical-pda": {
+          "image": "media/real/coronary-dominance-angiograms.png",
+          "label": "PDA indicated by source arrows · panel (b)",
+          "x": 0.6084691,
+          "y": 0.8189233,
+          "rx": 0.0553746,
+          "ry": 0.1190865,
+          "zoom": 1,
+          "spotX": 0.6162866,
+          "spotY": 0.8156607
+        }
+      },
+      "cues": [
+        {
+          "id": "s01-p01",
+          "sceneId": "scene-01",
+          "text": "At the rear door of the cardiac gallery,",
+          "targetId": "rear-door",
+          "start": 0.0,
+          "end": 2.4033333333333333,
+          "voiceStart": 0.18,
+          "voiceEnd": 2.3233333333333333,
+          "startSample": 0,
+          "endSample": 57680,
+          "voiceStartSample": 4320,
+          "voiceEndSample": 55760
+        },
+        {
+          "id": "s01-p02",
+          "sceneId": "scene-01",
+          "text": "picture a curved circumflex key.",
+          "targetId": "circumflex-key",
+          "start": 2.4033333333333333,
+          "end": 4.540666666666667,
+          "voiceStart": 2.4033333333333333,
+          "voiceEnd": 4.460666666666667,
+          "startSample": 57680,
+          "endSample": 108976,
+          "voiceStartSample": 57680,
+          "voiceEndSample": 107056
+        },
+        {
+          "id": "s01-p03",
+          "sceneId": "scene-01",
+          "text": "Keep that same doorway as your memory location whenever coronary dominance returns.",
+          "targetId": "rear-door",
+          "start": 4.540666666666667,
+          "end": 10.294,
+          "voiceStart": 4.540666666666667,
+          "voiceEnd": 10.064,
+          "startSample": 108976,
+          "endSample": 247056,
+          "voiceStartSample": 108976,
+          "voiceEndSample": 241536
+        },
+        {
+          "id": "s02-p01",
+          "sceneId": "scene-02",
+          "text": "Coronary dominance follows the artery that gives rise to the posterior descending artery.",
+          "targetId": "clinical-pda",
+          "start": 10.294,
+          "end": 15.982666666666667,
+          "voiceStart": 10.294,
+          "voiceEnd": 15.902666666666667,
+          "startSample": 247056,
+          "endSample": 383584,
+          "voiceStartSample": 247056,
+          "voiceEndSample": 381664
+        },
+        {
+          "id": "s02-p02",
+          "sceneId": "scene-02",
+          "text": "On the angiogram, trace that vessel",
+          "targetId": "clinical-pda",
+          "start": 15.982666666666667,
+          "end": 18.196,
+          "voiceStart": 15.982666666666667,
+          "voiceEnd": 18.116,
+          "startSample": 383584,
+          "endSample": 436704,
+          "voiceStartSample": 383584,
+          "voiceEndSample": 434784
+        },
+        {
+          "id": "s02-p03",
+          "sceneId": "scene-02",
+          "text": "back to its parent artery.",
+          "targetId": null,
+          "start": 18.196,
+          "end": 20.122,
+          "voiceStart": 18.196,
+          "voiceEnd": 19.892,
+          "startSample": 436704,
+          "endSample": 482928,
+          "voiceStartSample": 436704,
+          "voiceEndSample": 477408
+        },
+        {
+          "id": "s03-p01",
+          "sceneId": "scene-03",
+          "text": "In a left-dominant circulation, the posterior descending artery comes from the circumflex.",
+          "targetId": "circumflex-key",
+          "start": 20.122,
+          "end": 25.72533333333333,
+          "voiceStart": 20.122,
+          "voiceEnd": 25.645333333333333,
+          "startSample": 482928,
+          "endSample": 617408,
+          "voiceStartSample": 482928,
+          "voiceEndSample": 615488
+        },
+        {
+          "id": "s03-p02",
+          "sceneId": "scene-03",
+          "text": "Its septal branches supply the posterior part of the interventricular septum.",
+          "targetId": "posterior-bridge",
+          "start": 25.72533333333333,
+          "end": 31.063333333333333,
+          "voiceStart": 25.72533333333333,
+          "voiceEnd": 30.833333333333332,
+          "startSample": 617408,
+          "endSample": 745520,
+          "voiceStartSample": 617408,
+          "voiceEndSample": 740000
+        },
+        {
+          "id": "s04-p01",
+          "sceneId": "scene-04",
+          "text": "The circumflex also supplies the lateral left ventricular wall through its branches.",
+          "targetId": "lateral-wall",
+          "start": 31.063333333333333,
+          "end": 36.368,
+          "voiceStart": 31.063333333333333,
+          "voiceEnd": 36.288,
+          "startSample": 745520,
+          "endSample": 872832,
+          "voiceStartSample": 745520,
+          "voiceEndSample": 870912
+        },
+        {
+          "id": "s04-p02",
+          "sceneId": "scene-04",
+          "text": "A clot at its origin can therefore threaten both territories downstream.",
+          "targetId": null,
+          "start": 36.368,
+          "end": 41.08866666666667,
+          "voiceStart": 36.368,
+          "voiceEnd": 40.858666666666664,
+          "startSample": 872832,
+          "endSample": 986128,
+          "voiceStartSample": 872832,
+          "voiceEndSample": 980608
+        },
+        {
+          "id": "s05-p01",
+          "sceneId": "scene-05",
+          "text": "For the book's example, combine the lateral left ventricular wall",
+          "targetId": "lateral-wall",
+          "start": 41.08866666666667,
+          "end": 44.71,
+          "voiceStart": 41.08866666666667,
+          "voiceEnd": 44.63,
+          "startSample": 986128,
+          "endSample": 1073040,
+          "voiceStartSample": 986128,
+          "voiceEndSample": 1071120
+        },
+        {
+          "id": "s05-p02",
+          "sceneId": "scene-05",
+          "text": "with the posterior septum.",
+          "targetId": "posterior-bridge",
+          "start": 44.71,
+          "end": 46.443333333333335,
+          "voiceStart": 44.71,
+          "voiceEnd": 46.36333333333334,
+          "startSample": 1073040,
+          "endSample": 1114640,
+          "voiceStartSample": 1073040,
+          "voiceEndSample": 1112720
+        },
+        {
+          "id": "s05-p03",
+          "sceneId": "scene-05",
+          "text": "Identifying only one of those regions would leave out part of the pattern.",
+          "targetId": null,
+          "start": 46.443333333333335,
+          "end": 51.056,
+          "voiceStart": 46.443333333333335,
+          "voiceEnd": 50.826,
+          "startSample": 1114640,
+          "endSample": 1225344,
+          "voiceStartSample": 1114640,
+          "voiceEndSample": 1219824
+        },
+        {
+          "id": "s06-p01",
+          "sceneId": "scene-06",
+          "text": "Return to the rear door:",
+          "targetId": "rear-door",
+          "start": 51.056,
+          "end": 52.501333333333335,
+          "voiceStart": 51.056,
+          "voiceEnd": 52.42133333333334,
+          "startSample": 1225344,
+          "endSample": 1260032,
+          "voiceStartSample": 1225344,
+          "voiceEndSample": 1258112
+        },
+        {
+          "id": "s06-p02",
+          "sceneId": "scene-06",
+          "text": "the circumflex key opens",
+          "targetId": "circumflex-key",
+          "start": 52.501333333333335,
+          "end": 54.309333333333335,
+          "voiceStart": 52.501333333333335,
+          "voiceEnd": 54.22933333333334,
+          "startSample": 1260032,
+          "endSample": 1303424,
+          "voiceStartSample": 1260032,
+          "voiceEndSample": 1301504
+        },
+        {
+          "id": "s06-p03",
+          "sceneId": "scene-06",
+          "text": "the lateral room",
+          "targetId": "lateral-wall",
+          "start": 54.309333333333335,
+          "end": 55.456,
+          "voiceStart": 54.309333333333335,
+          "voiceEnd": 55.376,
+          "startSample": 1303424,
+          "endSample": 1330944,
+          "voiceStartSample": 1303424,
+          "voiceEndSample": 1329024
+        },
+        {
+          "id": "s06-p04",
+          "sceneId": "scene-06",
+          "text": "and the back septal room.",
+          "targetId": "posterior-bridge",
+          "start": 55.456,
+          "end": 57.092625,
+          "voiceStart": 55.456,
+          "voiceEnd": 57.012625,
+          "startSample": 1330944,
+          "endSample": 1370223,
+          "voiceStartSample": 1330944,
+          "voiceEndSample": 1368303
+        },
+        {
+          "id": "s06-p05",
+          "sceneId": "scene-06",
+          "text": "The recall cue is simple: left dominance, circumflex supplies the back.",
+          "targetId": "posterior-bridge",
+          "start": 57.092625,
+          "end": 62.166625,
+          "voiceStart": 57.092625,
+          "voiceEnd": 61.816625,
+          "startSample": 1370223,
+          "endSample": 1491999,
+          "voiceStartSample": 1370223,
+          "voiceEndSample": 1483599
+        }
+      ],
+      "outroTargetId": "clinical-pda"
     }
   },
   {
     "id": "shahzad2015-q005",
-    "version": 1,
+    "version": 2,
     "title": "Extralobar Sequestration: Its Own Pleural Coat",
     "specialty": "Thoracic Surgery",
     "primarySpecialtyId": "specialty.thoracic",
@@ -307,7 +605,7 @@
         "label": "Pleura"
       }
     ],
-    "durationSeconds": 76.88195833333333,
+    "durationSeconds": 74.54508333333334,
     "audioUrl": "media/audio/lesson-shahzad2015-q005-v1.mp3",
     "poster": "media/mnemonic/sequestration-palace.png",
     "locus": {
@@ -341,59 +639,49 @@
       {
         "id": "scene-01",
         "start": 0.0,
-        "end": 11.426,
+        "end": 10.648,
         "image": "media/mnemonic/sequestration-palace.png",
         "kind": "mnemonic",
         "caption": "Extra means an extra coat",
         "transcript": "At the coat hook in the thoracic gallery, imagine an extra lung parcel wearing its own coat. Keep this same hook as the permanent location for extralobar sequestration.",
         "camera": {
           "from": {
-            "x": 0.48,
-            "y": 0.73,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.48,
-            "y": 0.73,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.48,
-          "y": 0.73,
-          "r": 0.28
         }
       },
       {
         "id": "scene-02",
-        "start": 11.426,
-        "end": 24.61466666666667,
+        "start": 10.648,
+        "end": 23.354666666666667,
         "image": "media/mnemonic/sequestration-palace.png",
         "kind": "mnemonic",
         "caption": "Systemic arterial supply",
         "transcript": "Pulmonary sequestration is abnormal lung tissue without the usual connection to the tracheobronchial tree. It receives arterial blood from the systemic circulation, commonly through an aortic branch.",
         "camera": {
           "from": {
-            "x": 0.65,
-            "y": 0.36,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.65,
-            "y": 0.36,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.65,
-          "y": 0.36,
-          "r": 0.28
         }
       },
       {
         "id": "scene-03",
-        "start": 24.61466666666667,
-        "end": 35.275958333333335,
+        "start": 23.354666666666667,
+        "end": 33.913291666666666,
         "image": "media/real/extralobar-sequestration-thoracoscopy.jpg",
         "kind": "clinical",
         "caption": "Its own visceral pleura",
@@ -409,95 +697,75 @@
             "y": 0.5,
             "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.25,
-          "y": 0.25,
-          "r": 0.26
         }
       },
       {
         "id": "scene-04",
-        "start": 35.275958333333335,
-        "end": 45.820625,
+        "start": 33.913291666666666,
+        "end": 43.97591666666667,
         "image": "media/mnemonic/sequestration-palace.png",
         "kind": "mnemonic",
         "caption": "The pleural relationship",
         "transcript": "An intralobar sequestration instead lies within the surrounding lung and shares its pleural covering. The difference tested here is the relationship to visceral pleura.",
         "camera": {
           "from": {
-            "x": 0.28,
-            "y": 0.4,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.28,
-            "y": 0.4,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.28,
-          "y": 0.4,
-          "r": 0.28
         }
       },
       {
         "id": "scene-05",
-        "start": 45.820625,
-        "end": 57.197291666666665,
+        "start": 43.97591666666667,
+        "end": 55.081208333333336,
         "image": "media/mnemonic/sequestration-palace.png",
         "kind": "mnemonic",
         "caption": "Read the covering",
         "transcript": "Use the relationship to pleura to identify the extralobar form, and keep the feeding vessel as a separate anatomical feature. This distinction makes the question much easier.",
         "camera": {
           "from": {
-            "x": 0.82,
-            "y": 0.47,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.82,
-            "y": 0.47,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.82,
-          "y": 0.47,
-          "r": 0.28
         }
       },
       {
         "id": "scene-06",
-        "start": 57.197291666666665,
-        "end": 67.88195833333333,
+        "start": 55.081208333333336,
+        "end": 65.54508333333334,
         "image": "media/mnemonic/sequestration-palace.png",
         "kind": "mnemonic",
         "caption": "Retrieve the extra coat",
         "transcript": "Return to the coat hook and say: extra means an extra coat. In this lesson, that coat represents its own visceral pleura. Retrieve the feature before choosing an answer.",
         "camera": {
           "from": {
-            "x": 0.48,
-            "y": 0.73,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.48,
-            "y": 0.73,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.48,
-          "y": 0.73,
-          "r": 0.28
         }
       }
     ],
     "realImageOutro": {
-      "start": 67.88195833333333,
-      "end": 76.88195833333333
+      "start": 65.54508333333334,
+      "end": 74.54508333333334
     },
     "realImages": [
       {
@@ -550,11 +818,361 @@
           "checked_on": "2026-11-07"
         }
       ]
+    },
+    "visualGuidance": {
+      "schemaVersion": 1,
+      "audioSha256": "7225a777c6642472c3aac68c8912b87e23edf8bc83bac496838d32e75de04f98",
+      "images": {
+        "media/mnemonic/sequestration-palace.png": {
+          "sha256": "e1916db3d6f429b7eef27d200815bb5fddc7186d9a2f790210794d91034d7bac",
+          "width": 1024,
+          "height": 1536
+        },
+        "media/real/extralobar-sequestration-thoracoscopy.jpg": {
+          "sha256": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8",
+          "width": 787,
+          "height": 620
+        }
+      },
+      "targets": {
+        "coat-hook": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "Coat hook · fixed memory location",
+          "x": 0.4697266,
+          "y": 0.5507812,
+          "rx": 0.0546875,
+          "ry": 0.0507812,
+          "zoom": 1.18,
+          "spotX": 0.4716797,
+          "spotY": 0.5488281
+        },
+        "extra-coat": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "Extra coat · own visceral pleura",
+          "x": 0.3896484,
+          "y": 0.6276042,
+          "rx": 0.2636719,
+          "ry": 0.1373698,
+          "zoom": 1.12,
+          "spotX": 0.4726562,
+          "spotY": 0.7213542
+        },
+        "lung-parcel": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "Lung parcel · sequestered tissue",
+          "x": 0.4189453,
+          "y": 0.7584635,
+          "rx": 0.1621094,
+          "ry": 0.1061198,
+          "zoom": 1.15,
+          "spotX": 0.4765625,
+          "spotY": 0.7272135
+        },
+        "systemic-pipe": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "External red pipe · systemic artery",
+          "x": 0.703125,
+          "y": 0.2942708,
+          "rx": 0.0839844,
+          "ry": 0.1295573,
+          "zoom": 1.15,
+          "spotX": 0.6679688,
+          "spotY": 0.3736979
+        },
+        "shared-dome": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "Shared glass dome · surrounding lung pleura",
+          "x": 0.5546875,
+          "y": 0.4016927,
+          "rx": 0.2792969,
+          "ry": 0.1933594,
+          "zoom": 1.08,
+          "spotX": 0.2890625,
+          "spotY": 0.3886719
+        },
+        "separate-dome": {
+          "image": "media/mnemonic/sequestration-palace.png",
+          "label": "Separate glass dome · extralobar covering",
+          "x": 0.9511719,
+          "y": 0.422526,
+          "rx": 0.1650391,
+          "ry": 0.139974,
+          "zoom": 1.1,
+          "spotX": 0.8300781,
+          "spotY": 0.4746094
+        },
+        "clinical-pleura": {
+          "image": "media/real/extralobar-sequestration-thoracoscopy.jpg",
+          "label": "Own pleural covering · source panel A",
+          "x": 0.1905972,
+          "y": 0.2145161,
+          "rx": 0.133418,
+          "ry": 0.15,
+          "zoom": 1,
+          "spotX": 0.249047,
+          "spotY": 0.2403226
+        }
+      },
+      "cues": [
+        {
+          "id": "s01-p01",
+          "sceneId": "scene-01",
+          "text": "At the coat hook in the thoracic gallery,",
+          "targetId": "coat-hook",
+          "start": 0.0,
+          "end": 2.51,
+          "voiceStart": 0.18,
+          "voiceEnd": 2.43,
+          "startSample": 0,
+          "endSample": 60240,
+          "voiceStartSample": 4320,
+          "voiceEndSample": 58320
+        },
+        {
+          "id": "s01-p02",
+          "sceneId": "scene-01",
+          "text": "imagine an extra lung parcel wearing its own coat.",
+          "targetId": "extra-coat",
+          "start": 2.51,
+          "end": 5.694,
+          "voiceStart": 2.51,
+          "voiceEnd": 5.614,
+          "startSample": 60240,
+          "endSample": 136656,
+          "voiceStartSample": 60240,
+          "voiceEndSample": 134736
+        },
+        {
+          "id": "s01-p03",
+          "sceneId": "scene-01",
+          "text": "Keep this same hook as the permanent location for extralobar sequestration.",
+          "targetId": "coat-hook",
+          "start": 5.694,
+          "end": 10.648,
+          "voiceStart": 5.694,
+          "voiceEnd": 10.418,
+          "startSample": 136656,
+          "endSample": 255552,
+          "voiceStartSample": 136656,
+          "voiceEndSample": 250032
+        },
+        {
+          "id": "s02-p01",
+          "sceneId": "scene-02",
+          "text": "Pulmonary sequestration is abnormal lung tissue",
+          "targetId": "lung-parcel",
+          "start": 10.648,
+          "end": 13.8,
+          "voiceStart": 10.648,
+          "voiceEnd": 13.72,
+          "startSample": 255552,
+          "endSample": 331200,
+          "voiceStartSample": 255552,
+          "voiceEndSample": 329280
+        },
+        {
+          "id": "s02-p02",
+          "sceneId": "scene-02",
+          "text": "without the usual connection to the tracheobronchial tree.",
+          "targetId": null,
+          "start": 13.8,
+          "end": 17.248666666666665,
+          "voiceStart": 13.8,
+          "voiceEnd": 17.168666666666667,
+          "startSample": 331200,
+          "endSample": 413968,
+          "voiceStartSample": 331200,
+          "voiceEndSample": 412048
+        },
+        {
+          "id": "s02-p03",
+          "sceneId": "scene-02",
+          "text": "It receives arterial blood from the systemic circulation, commonly through an aortic branch.",
+          "targetId": "systemic-pipe",
+          "start": 17.248666666666665,
+          "end": 23.354666666666667,
+          "voiceStart": 17.248666666666665,
+          "voiceEnd": 23.124666666666666,
+          "startSample": 413968,
+          "endSample": 560512,
+          "voiceStartSample": 413968,
+          "voiceEndSample": 554992
+        },
+        {
+          "id": "s03-p01",
+          "sceneId": "scene-03",
+          "text": "Extralobar means the sequestered tissue has a separate visceral pleural covering.",
+          "targetId": "clinical-pleura",
+          "start": 23.354666666666667,
+          "end": 28.532625,
+          "voiceStart": 23.354666666666667,
+          "voiceEnd": 28.452625,
+          "startSample": 560512,
+          "endSample": 684783,
+          "voiceStartSample": 560512,
+          "voiceEndSample": 682863
+        },
+        {
+          "id": "s03-p02",
+          "sceneId": "scene-03",
+          "text": "In the operative photograph, focus on the distinct pleural envelope around the lesion.",
+          "targetId": "clinical-pleura",
+          "start": 28.532625,
+          "end": 33.913291666666666,
+          "voiceStart": 28.532625,
+          "voiceEnd": 33.68329166666667,
+          "startSample": 684783,
+          "endSample": 813919,
+          "voiceStartSample": 684783,
+          "voiceEndSample": 808399
+        },
+        {
+          "id": "s04-p01",
+          "sceneId": "scene-04",
+          "text": "An intralobar sequestration instead lies within the surrounding lung",
+          "targetId": null,
+          "start": 33.913291666666666,
+          "end": 38.19595833333333,
+          "voiceStart": 33.913291666666666,
+          "voiceEnd": 38.11595833333333,
+          "startSample": 813919,
+          "endSample": 916703,
+          "voiceStartSample": 813919,
+          "voiceEndSample": 914783
+        },
+        {
+          "id": "s04-p02",
+          "sceneId": "scene-04",
+          "text": "and shares its pleural covering.",
+          "targetId": "shared-dome",
+          "start": 38.19595833333333,
+          "end": 40.10991666666666,
+          "voiceStart": 38.19595833333333,
+          "voiceEnd": 40.029916666666665,
+          "startSample": 916703,
+          "endSample": 962638,
+          "voiceStartSample": 916703,
+          "voiceEndSample": 960718
+        },
+        {
+          "id": "s04-p03",
+          "sceneId": "scene-04",
+          "text": "The difference tested here is the relationship to visceral pleura.",
+          "targetId": "extra-coat",
+          "start": 40.10991666666666,
+          "end": 43.97591666666667,
+          "voiceStart": 40.10991666666666,
+          "voiceEnd": 43.745916666666666,
+          "startSample": 962638,
+          "endSample": 1055422,
+          "voiceStartSample": 962638,
+          "voiceEndSample": 1049902
+        },
+        {
+          "id": "s05-p01",
+          "sceneId": "scene-05",
+          "text": "Use the relationship to pleura to identify the extralobar form,",
+          "targetId": "separate-dome",
+          "start": 43.97591666666667,
+          "end": 48.14925,
+          "voiceStart": 43.97591666666667,
+          "voiceEnd": 48.06925,
+          "startSample": 1055422,
+          "endSample": 1155582,
+          "voiceStartSample": 1055422,
+          "voiceEndSample": 1153662
+        },
+        {
+          "id": "s05-p02",
+          "sceneId": "scene-05",
+          "text": "and keep the feeding vessel as a separate anatomical feature.",
+          "targetId": "systemic-pipe",
+          "start": 48.14925,
+          "end": 52.00454166666667,
+          "voiceStart": 48.14925,
+          "voiceEnd": 51.92454166666667,
+          "startSample": 1155582,
+          "endSample": 1248109,
+          "voiceStartSample": 1155582,
+          "voiceEndSample": 1246189
+        },
+        {
+          "id": "s05-p03",
+          "sceneId": "scene-05",
+          "text": "This distinction makes the question much easier.",
+          "targetId": null,
+          "start": 52.00454166666667,
+          "end": 55.081208333333336,
+          "voiceStart": 52.00454166666667,
+          "voiceEnd": 54.85120833333333,
+          "startSample": 1248109,
+          "endSample": 1321949,
+          "voiceStartSample": 1248109,
+          "voiceEndSample": 1316429
+        },
+        {
+          "id": "s06-p01",
+          "sceneId": "scene-06",
+          "text": "Return to the coat hook and say:",
+          "targetId": "coat-hook",
+          "start": 55.081208333333336,
+          "end": 56.84520833333333,
+          "voiceStart": 55.081208333333336,
+          "voiceEnd": 56.765208333333334,
+          "startSample": 1321949,
+          "endSample": 1364285,
+          "voiceStartSample": 1321949,
+          "voiceEndSample": 1362365
+        },
+        {
+          "id": "s06-p02",
+          "sceneId": "scene-06",
+          "text": "extra means an extra coat.",
+          "targetId": "extra-coat",
+          "start": 56.84520833333333,
+          "end": 58.7805,
+          "voiceStart": 56.84520833333333,
+          "voiceEnd": 58.7005,
+          "startSample": 1364285,
+          "endSample": 1410732,
+          "voiceStartSample": 1364285,
+          "voiceEndSample": 1408812
+        },
+        {
+          "id": "s06-p03",
+          "sceneId": "scene-06",
+          "text": "In this lesson, that coat represents its own visceral pleura.",
+          "targetId": "extra-coat",
+          "start": 58.7805,
+          "end": 62.529125,
+          "voiceStart": 58.7805,
+          "voiceEnd": 62.449125,
+          "startSample": 1410732,
+          "endSample": 1500699,
+          "voiceStartSample": 1410732,
+          "voiceEndSample": 1498779
+        },
+        {
+          "id": "s06-p04",
+          "sceneId": "scene-06",
+          "text": "Retrieve the feature before choosing an answer.",
+          "targetId": null,
+          "start": 62.529125,
+          "end": 65.54508333333334,
+          "voiceStart": 62.529125,
+          "voiceEnd": 65.19508333333333,
+          "startSample": 1500699,
+          "endSample": 1573082,
+          "voiceStartSample": 1500699,
+          "voiceEndSample": 1564682
+        }
+      ],
+      "outroTargetId": "clinical-pleura"
     }
   },
   {
     "id": "shahzad2015-q182",
-    "version": 1,
+    "version": 2,
     "title": "Vascular Resistance: The Fourth-Power Rule",
     "specialty": "Vascular Surgery",
     "primarySpecialtyId": "specialty.vascular",
@@ -581,7 +1199,7 @@
         "label": "Poiseuille's Law"
       }
     ],
-    "durationSeconds": 73.99329166666666,
+    "durationSeconds": 71.9685,
     "audioUrl": "media/audio/lesson-shahzad2015-q182-v1.mp3",
     "poster": "media/mnemonic/resistance-palace.png",
     "locus": {
@@ -615,7 +1233,7 @@
       {
         "id": "scene-01",
         "start": 0.0,
-        "end": 10.349333333333334,
+        "end": 9.965291666666667,
         "image": "media/mnemonic/resistance-palace.png",
         "kind": "mnemonic",
         "caption": "Four locks: fourth power",
@@ -623,103 +1241,83 @@
         "camera": {
           "from": {
             "x": 0.5,
-            "y": 0.2,
-            "scale": 1.015
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
             "x": 0.5,
-            "y": 0.2,
-            "scale": 1.075
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.5,
-          "y": 0.2,
-          "r": 0.28
         }
       },
       {
         "id": "scene-02",
-        "start": 10.349333333333334,
-        "end": 20.658,
+        "start": 9.965291666666667,
+        "end": 19.865291666666668,
         "image": "media/mnemonic/resistance-palace.png",
         "kind": "mnemonic",
         "caption": "Resistance follows one over radius to the fourth",
         "transcript": "For steady laminar flow in the ideal tube model, resistance is proportional to viscosity and length, and inversely proportional to the fourth power of radius.",
         "camera": {
           "from": {
-            "x": 0.27,
-            "y": 0.59,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.27,
-            "y": 0.59,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.27,
-          "y": 0.59,
-          "r": 0.28
         }
       },
       {
         "id": "scene-03",
-        "start": 20.658,
-        "end": 29.804625,
+        "start": 19.865291666666668,
+        "end": 28.655291666666667,
         "image": "media/mnemonic/resistance-palace.png",
         "kind": "mnemonic",
         "caption": "Two to the fourth is sixteen",
         "transcript": "If diameter doubles, radius doubles too. Raise that factor of two to the fourth power: two times two times two times two equals sixteen.",
         "camera": {
           "from": {
-            "x": 0.66,
-            "y": 0.58,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.66,
-            "y": 0.58,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.66,
-          "y": 0.58,
-          "r": 0.28
         }
       },
       {
         "id": "scene-04",
-        "start": 29.804625,
-        "end": 41.30929166666667,
+        "start": 28.655291666666667,
+        "end": 39.69925,
         "image": "media/mnemonic/resistance-palace.png",
         "kind": "mnemonic",
         "caption": "Sixteen divided by sixteen equals one",
         "transcript": "Resistance therefore becomes one sixteenth of its original value when length and viscosity stay unchanged. Starting from sixteen resistance units, the new value is one unit.",
         "camera": {
           "from": {
-            "x": 0.66,
-            "y": 0.58,
-            "scale": 1.015
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
-            "x": 0.66,
-            "y": 0.58,
-            "scale": 1.075
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.66,
-          "y": 0.58,
-          "r": 0.28
         }
       },
       {
         "id": "scene-05",
-        "start": 41.30929166666667,
-        "end": 53.96595833333333,
+        "start": 39.69925,
+        "end": 51.80920833333333,
         "image": "media/mnemonic/resistance-palace.png",
         "kind": "mnemonic",
         "caption": "Use the model assumptions",
@@ -727,25 +1325,20 @@
         "camera": {
           "from": {
             "x": 0.5,
-            "y": 0.55,
-            "scale": 1.015
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
             "x": 0.5,
-            "y": 0.55,
-            "scale": 1.075
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.5,
-          "y": 0.55,
-          "r": 0.28
         }
       },
       {
         "id": "scene-06",
-        "start": 53.96595833333333,
-        "end": 64.99329166666666,
+        "start": 51.80920833333333,
+        "end": 62.9685,
         "image": "media/mnemonic/resistance-palace.png",
         "kind": "mnemonic",
         "caption": "Retrieve the fourth-power rule",
@@ -753,25 +1346,20 @@
         "camera": {
           "from": {
             "x": 0.5,
-            "y": 0.2,
-            "scale": 1.015
+            "y": 0.5,
+            "scale": 1
           },
           "to": {
             "x": 0.5,
-            "y": 0.2,
-            "scale": 1.075
+            "y": 0.5,
+            "scale": 1
           }
-        },
-        "spotlight": {
-          "x": 0.5,
-          "y": 0.2,
-          "r": 0.28
         }
       }
     ],
     "realImageOutro": {
-      "start": 64.99329166666666,
-      "end": 73.99329166666666
+      "start": 62.9685,
+      "end": 71.9685
     },
     "realImages": [
       {
@@ -823,6 +1411,337 @@
           "checked_on": "2026-11-07"
         }
       ]
+    },
+    "visualGuidance": {
+      "schemaVersion": 1,
+      "audioSha256": "38a962c05ead5a3b9ef984cdd011ea86644067fcc8776f4105f27520fc2c4fc6",
+      "images": {
+        "media/mnemonic/resistance-palace.png": {
+          "sha256": "60ea64fd19cce9d21aff5d1601625299687baab2e5667e90a0c5bf8ee4ebcb41",
+          "width": 1024,
+          "height": 1536
+        },
+        "media/real/artery-cross-section.png": {
+          "sha256": "e835434db7751e97dcaff6632849baecb9315dd382d80e3d8064b9863944199d",
+          "width": 1914,
+          "height": 1637
+        }
+      },
+      "targets": {
+        "four-locks": {
+          "image": "media/mnemonic/resistance-palace.png",
+          "label": "Four locks · fourth-power rule",
+          "x": 0.59375,
+          "y": 0.2083333,
+          "rx": 0.3613281,
+          "ry": 0.0644531,
+          "zoom": 1.15,
+          "spotX": 0.5,
+          "spotY": 0.1927083
+        },
+        "wide-opening": {
+          "image": "media/mnemonic/resistance-palace.png",
+          "label": "Wide opening · larger radius",
+          "x": 0.8486328,
+          "y": 0.4583333,
+          "rx": 0.2783203,
+          "ry": 0.1855469,
+          "zoom": 1.12,
+          "spotX": 0.6660156,
+          "spotY": 0.5898438
+        },
+        "relieved-guard": {
+          "image": "media/mnemonic/resistance-palace.png",
+          "label": "Relieved gatekeeper · lower resistance",
+          "x": 0.6708984,
+          "y": 0.5546875,
+          "rx": 0.0917969,
+          "ry": 0.0585938,
+          "zoom": 1.2,
+          "spotX": 0.6708984,
+          "spotY": 0.5572917
+        },
+        "arterial-lumen": {
+          "image": "media/real/artery-cross-section.png",
+          "label": "Arterial lumen · anatomical example",
+          "x": 0.522466,
+          "y": 0.5284056,
+          "rx": 0.2246604,
+          "ry": 0.2351863,
+          "zoom": 1,
+          "spotX": 0.545977,
+          "spotY": 0.5253513
+        }
+      },
+      "cues": [
+        {
+          "id": "s01-p01",
+          "sceneId": "scene-01",
+          "text": "At the double doors of the vascular gallery, imagine four number locks above the frame.",
+          "targetId": "four-locks",
+          "start": 0.0,
+          "end": 5.400625,
+          "voiceStart": 0.18,
+          "voiceEnd": 5.320625,
+          "startSample": 0,
+          "endSample": 129615,
+          "voiceStartSample": 4320,
+          "voiceEndSample": 127695
+        },
+        {
+          "id": "s01-p02",
+          "sceneId": "scene-01",
+          "text": "Widening the doorway changes resistance",
+          "targetId": "wide-opening",
+          "start": 5.400625,
+          "end": 7.720625,
+          "voiceStart": 5.400625,
+          "voiceEnd": 7.640625,
+          "startSample": 129615,
+          "endSample": 185295,
+          "voiceStartSample": 129615,
+          "voiceEndSample": 183375
+        },
+        {
+          "id": "s01-p03",
+          "sceneId": "scene-01",
+          "text": "through a fourth-power relationship.",
+          "targetId": "four-locks",
+          "start": 7.720625,
+          "end": 9.965291666666667,
+          "voiceStart": 7.720625,
+          "voiceEnd": 9.735291666666667,
+          "startSample": 185295,
+          "endSample": 239167,
+          "voiceStartSample": 185295,
+          "voiceEndSample": 233647
+        },
+        {
+          "id": "s02-p01",
+          "sceneId": "scene-02",
+          "text": "For steady laminar flow in the ideal tube model,",
+          "targetId": null,
+          "start": 9.965291666666667,
+          "end": 13.094625,
+          "voiceStart": 9.965291666666667,
+          "voiceEnd": 13.014625,
+          "startSample": 239167,
+          "endSample": 314271,
+          "voiceStartSample": 239167,
+          "voiceEndSample": 312351
+        },
+        {
+          "id": "s02-p02",
+          "sceneId": "scene-02",
+          "text": "resistance is proportional to viscosity and length,",
+          "targetId": null,
+          "start": 13.094625,
+          "end": 16.287958333333332,
+          "voiceStart": 13.094625,
+          "voiceEnd": 16.207958333333334,
+          "startSample": 314271,
+          "endSample": 390911,
+          "voiceStartSample": 314271,
+          "voiceEndSample": 388991
+        },
+        {
+          "id": "s02-p03",
+          "sceneId": "scene-02",
+          "text": "and inversely proportional to the fourth power of radius.",
+          "targetId": "four-locks",
+          "start": 16.287958333333332,
+          "end": 19.865291666666668,
+          "voiceStart": 16.287958333333332,
+          "voiceEnd": 19.635291666666667,
+          "startSample": 390911,
+          "endSample": 476767,
+          "voiceStartSample": 390911,
+          "voiceEndSample": 471247
+        },
+        {
+          "id": "s03-p01",
+          "sceneId": "scene-03",
+          "text": "If diameter doubles, radius doubles too.",
+          "targetId": "wide-opening",
+          "start": 19.865291666666668,
+          "end": 22.727958333333333,
+          "voiceStart": 19.865291666666668,
+          "voiceEnd": 22.64795833333333,
+          "startSample": 476767,
+          "endSample": 545471,
+          "voiceStartSample": 476767,
+          "voiceEndSample": 543551
+        },
+        {
+          "id": "s03-p02",
+          "sceneId": "scene-03",
+          "text": "Raise that factor of two to the fourth power:",
+          "targetId": "four-locks",
+          "start": 22.727958333333333,
+          "end": 25.227291666666666,
+          "voiceStart": 22.727958333333333,
+          "voiceEnd": 25.147291666666668,
+          "startSample": 545471,
+          "endSample": 605455,
+          "voiceStartSample": 545471,
+          "voiceEndSample": 603535
+        },
+        {
+          "id": "s03-p03",
+          "sceneId": "scene-03",
+          "text": "two times two times two times two equals sixteen.",
+          "targetId": null,
+          "start": 25.227291666666666,
+          "end": 28.655291666666667,
+          "voiceStart": 25.227291666666666,
+          "voiceEnd": 28.425291666666666,
+          "startSample": 605455,
+          "endSample": 687727,
+          "voiceStartSample": 605455,
+          "voiceEndSample": 682207
+        },
+        {
+          "id": "s04-p01",
+          "sceneId": "scene-04",
+          "text": "Resistance therefore becomes one sixteenth of its original value",
+          "targetId": "relieved-guard",
+          "start": 28.655291666666667,
+          "end": 32.617958333333334,
+          "voiceStart": 28.655291666666667,
+          "voiceEnd": 32.537958333333336,
+          "startSample": 687727,
+          "endSample": 782831,
+          "voiceStartSample": 687727,
+          "voiceEndSample": 780911
+        },
+        {
+          "id": "s04-p02",
+          "sceneId": "scene-04",
+          "text": "when length and viscosity stay unchanged.",
+          "targetId": null,
+          "start": 32.617958333333334,
+          "end": 35.245958333333334,
+          "voiceStart": 32.617958333333334,
+          "voiceEnd": 35.165958333333336,
+          "startSample": 782831,
+          "endSample": 845903,
+          "voiceStartSample": 782831,
+          "voiceEndSample": 843983
+        },
+        {
+          "id": "s04-p03",
+          "sceneId": "scene-04",
+          "text": "Starting from sixteen resistance units, the new value is one unit.",
+          "targetId": null,
+          "start": 35.245958333333334,
+          "end": 39.69925,
+          "voiceStart": 35.245958333333334,
+          "voiceEnd": 39.46925,
+          "startSample": 845903,
+          "endSample": 952782,
+          "voiceStartSample": 845903,
+          "voiceEndSample": 947262
+        },
+        {
+          "id": "s05-p01",
+          "sceneId": "scene-05",
+          "text": "This is an idealized laminar-flow relationship.",
+          "targetId": null,
+          "start": 39.69925,
+          "end": 42.934583333333336,
+          "voiceStart": 39.69925,
+          "voiceEnd": 42.85458333333333,
+          "startSample": 952782,
+          "endSample": 1030430,
+          "voiceStartSample": 952782,
+          "voiceEndSample": 1028510
+        },
+        {
+          "id": "s05-p02",
+          "sceneId": "scene-05",
+          "text": "In real circulation, pulsation, branching, and vessel compliance affect how pressure and flow behave.",
+          "targetId": null,
+          "start": 42.934583333333336,
+          "end": 49.456541666666666,
+          "voiceStart": 42.934583333333336,
+          "voiceEnd": 49.37654166666667,
+          "startSample": 1030430,
+          "endSample": 1186957,
+          "voiceStartSample": 1030430,
+          "voiceEndSample": 1185037
+        },
+        {
+          "id": "s05-p03",
+          "sceneId": "scene-05",
+          "text": "Keep the model assumptions in mind.",
+          "targetId": null,
+          "start": 49.456541666666666,
+          "end": 51.80920833333333,
+          "voiceStart": 49.456541666666666,
+          "voiceEnd": 51.579208333333334,
+          "startSample": 1186957,
+          "endSample": 1243421,
+          "voiceStartSample": 1186957,
+          "voiceEndSample": 1237901
+        },
+        {
+          "id": "s06-p01",
+          "sceneId": "scene-06",
+          "text": "Return to the double doors and the four locks.",
+          "targetId": "four-locks",
+          "start": 51.80920833333333,
+          "end": 54.566541666666666,
+          "voiceStart": 51.80920833333333,
+          "voiceEnd": 54.48654166666667,
+          "startSample": 1243421,
+          "endSample": 1309597,
+          "voiceStartSample": 1243421,
+          "voiceEndSample": 1307677
+        },
+        {
+          "id": "s06-p02",
+          "sceneId": "scene-06",
+          "text": "Remember: double diameter,",
+          "targetId": "wide-opening",
+          "start": 54.566541666666666,
+          "end": 56.49120833333333,
+          "voiceStart": 54.566541666666666,
+          "voiceEnd": 56.411208333333335,
+          "startSample": 1309597,
+          "endSample": 1355789,
+          "voiceStartSample": 1309597,
+          "voiceEndSample": 1353869
+        },
+        {
+          "id": "s06-p03",
+          "sceneId": "scene-06",
+          "text": "divide resistance by sixteen.",
+          "targetId": "relieved-guard",
+          "start": 56.49120833333333,
+          "end": 58.66116666666667,
+          "voiceStart": 56.49120833333333,
+          "voiceEnd": 58.58116666666667,
+          "startSample": 1355789,
+          "endSample": 1407868,
+          "voiceStartSample": 1355789,
+          "voiceEndSample": 1405948
+        },
+        {
+          "id": "s06-p04",
+          "sceneId": "scene-06",
+          "text": "The answer to this example is one peripheral resistance unit.",
+          "targetId": null,
+          "start": 58.66116666666667,
+          "end": 62.9685,
+          "voiceStart": 58.66116666666667,
+          "voiceEnd": 62.6185,
+          "startSample": 1407868,
+          "endSample": 1511244,
+          "voiceStartSample": 1407868,
+          "voiceEndSample": 1502844
+        }
+      ],
+      "outroTargetId": "arterial-lumen"
     }
   }
 ]

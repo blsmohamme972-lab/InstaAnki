@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tempfile
 from urllib.parse import unquote, urlsplit
+from guidance import verify_guidance
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -434,6 +435,11 @@ def verify_lesson(lesson, document, question, web_root, registry_path=None, timi
     if "narrationDuration" in timing:
         require_close(number(timing["narrationDuration"], "timing.narrationDuration"), outro_start, "Narration/outro boundary")
 
+    try:
+        guidance_validation = verify_guidance(lesson, timing, web_root)
+    except (ValueError, KeyError, TypeError, OSError) as exc:
+        fail(f"Visual/audio guidance validation failed: {exc}")
+
     ffprobe = shutil.which("ffprobe")
     if not ffprobe:
         fail("ffprobe is required to validate the actual audio before completion")
@@ -485,6 +491,7 @@ def verify_lesson(lesson, document, question, web_root, registry_path=None, timi
         "durationSeconds": duration,
         "actualAudioDurationSeconds": audio_duration,
         "sceneCount": len(scenes),
+        "visualGuidance": guidance_validation,
         "realImageCount": len(real_images),
         "audioTimingSha256": file_hash(timing_file),
         "mediaSha256": {str(path.relative_to(web_root)): file_hash(path) for path in sorted(assets)},

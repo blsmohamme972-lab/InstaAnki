@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 1,
+  "product": "InstaAnki",
+  "releaseType": "personal-preview",
+  "preparedOn": "2026-11-07",
+  "apk": {
+    "file": "InstaAnki-0.1.1.apk",
+    "packageName": "com.instaanki.app",
+    "version": "0.1.1",
+    "versionCode": 2,
+    "minSdk": 26,
+    "targetSdk": 35,
+    "bytes": 14555734,
+    "sha256": "1b0c1011b9f71973f8c87eb32fe8febd91b8fa4dc16559e80b23e05fa718c59b",
+    "includesPrivateContent": true
+  },
+  "signatureVerification": {
+    "v2": true,
+    "v3": true,
+    "alignmentPassed": true,
+    "certificateSha256": "545768dcedb118ffa17b73cdf9edca14f4576d59376839489abb861492622ea7",
+    "matchesDelivered010": true,
+    "signingMaterialAbsentFromApk": true
+  },
+  "changeAreas": [
+    {
+      "id": "visual-guidance",
+      "description": "Exact image-anchored hand-arrow and elliptical spotlight, driven by measured narration phrases and shared camera geometry.",
+      "narratedPhrases": 55,
+      "namedTargets": 16,
+      "phraseAlignment": "independently-synthesized-phrase-samples",
+      "forcedWordAlignment": false,
+      "pausedTargetsRemainVisible": true,
+      "seekAndPlaybackRateFollowAudioClock": true,
+      "reducedMotionPreservesGuidance": true,
+      "clinicalCameraZoom": 1,
+      "staticRealImageOutroSeconds": 9,
+      "unannotatedOrUnjustifiedTargetsInvented": false,
+      "audioImageAndPlanHashesValidated": true
+    },
+    {
+      "id": "daily-topic-selection",
+      "settingsLocation": "Settings > Spaced recall > Daily lesson topics, below New lessons each day",
+      "supports": [
+        "All",
+        "one specialty",
+        "one parent topic",
+        "one child tag",
+        "multiple topics"
+      ],
+      "parentIncludesDescendants": true,
+      "multipleSelectionOperator": "OR",
+      "duplicateLessonsAdded": false,
+      "filterAppliedBeforeDailyNewLimit": true,
+      "persistedSetting": "dailyTopicIds",
+      "emptySelectionMeans": "All",
+      "includedInLearningBackup": true,
+      "dueAndSavedRemainAvailable": true,
+      "changesRecallScheduling": false
+    },
+    {
+      "id": "lesson-flow",
+      "description": "Explicit video, question and result steps with preserved unfinished attempts and accessible replay/next actions.",
+      "firstEnrollmentInterruptsVideo": false,
+      "dueReviewsRemainQuestionFirst": true,
+      "pendingSelectionAndAttemptPreserved": true,
+      "replayPreservesAnsweredResult": true,
+      "replayCreatesDuplicateGrade": false,
+      "explicitPracticeRemainsPractice": true,
+      "incorrectOrUnknownScheduledReviewRating": "Again"
+    }
+  ],
+  "assetInspection": {
+    "bundledLessons": 3,
+    "updatedLessonIds": [
+      "shahzad2015-q054",
+      "shahzad2015-q005",
+      "shahzad2015-q182"
+    ],
+    "bookProgress": {
+      "completed": 3,
+      "total": 200,
+      "percent": 1.5,
+      "questionNumbers": [
+        5,
+        54,
+        182
+      ],
+      "remainingNotProduced": 197
+    },
+    "narratedPhraseCount": 55,
+    "sceneCount": 18,
+    "namedTargetCount": 16,
+    "privateAssets": [
+      "book-cover.jpeg"
+    ],
+    "checkedBundledAssetsMatchFrozenSource": [
+      {
+        "path": "index.html",
+        "bytes": 10493,
+        "sha256": "dab7aaf8b1a10c12ab2bafc5bf83dcef1ff88d727ae80c29b037e514b3e7511a"
+      },
+      {
+        "path": "app.js",
+        "bytes": 89714,
+        "sha256": "b3178e0f17e6544059643cbd07be250c17c7daf228d96dbda42dd4a800996599"
+      },
+      {
+        "path": "styles.css",
+        "bytes": 40531,
+        "sha256": "61ba871c14d0389b5c22bb58548cf6570fcb26896b46366abcd4e40967fbcaec"
+      },
+      {
+        "path": "guidance.js",
+        "bytes": 5098,
+        "sha256": "d3381d7654994b0d4488bc959fbade85df1c1f5d026b69018b8adc02d4e53cb0"
+      },
+      {
+        "path": "topic-selection.js",
+        "bytes": 8143,
+        "sha256": "8820e1cafa80ea1f338f3d3a0151836b99ef932371de9b08f965d0a8d379048d"
+      },
+      {
+        "path": "learning.js",
+        "bytes": 42779,
+        "sha256": "6c5ec6306e731134302b866c9d1533187604a783d7c0105f8b2198ad4b87dc5c"
+      },
+      {
+        "path": "data/lessons.json",
+        "bytes": 59534,
+        "sha256": "555db88e38e8caaf431544274f5728f1f3793a7167992b5a9b0faf3622b36cc0"
+      },
+      {
+        "path": "data/taxonomy.json",
+        "bytes": 47000,
+        "sha256": "7f934091576e8f81eb6d6f915fb930050902e6f8bbf3e36d94b8316123ba2191"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "shahzad2015-q054",
+        "version": 2,
+        "sourceQuestionId": "shahzad-raja-2015-200-practice-questions-q054",
+        "lessonSha256": "f3c1e2655ba5ba541a6eedc2929987c6f3e9c37f7e9312e2ad2dde26f24552fa",
+        "quizSha256": "3f7fe6609192d77680a55cfdd59370adb37e242f6be7cdbfbf90ae6f91f57eca",
+        "durationSeconds": 71.166625,
+        "actualAudioDurationSeconds": 71.232,
+        "sceneCount": 6,
+        "narratedCueCount": 18,
+        "targetCount": 5,
+        "outroTargetId": "clinical-pda",
+        "outroDurationSeconds": 9,
+        "alignment": "independently-synthesized-phrase-samples",
+        "audioAndImageSha256BindingsVerified": true,
+        "audioTimingSha256": "e9fb523de09c2a92557ee2366bb076cf705b8fd13ad47df353eaacbb17b43f60",
+        "mediaSha256": {
+          "media/audio/lesson-shahzad2015-q054-v1.mp3": "d66dc9ebd1c2e1a2bf38ec1a3751722525680149bb0e346d46cc2d766f3a48f7",
+          "media/mnemonic/coronary-palace.png": "07db19e1ecdb5862c5f6b0b530c6022d45b465f49f9098e5486e2fb5f43a672f",
+          "media/real/coronary-dominance-angiograms.png": "c05a32baa2a5bde37d86bdb8d300f54c38840a93ba22366e965be04542aa9fa2"
+        }
+      },
+      {
+        "id": "shahzad2015-q005",
+        "version": 2,
+        "sourceQuestionId": "shahzad-raja-2015-200-practice-questions-q005",
+        "lessonSha256": "8323906176d70628fde01aabf1be927cce3f84500a6b14ada27ee6860f692c9b",
+        "quizSha256": "2dcf69694aca9546f83285b6ecefa73553dde504d581378b43799033ae4f6b01",
+        "durationSeconds": 74.54508333333334,
+        "actualAudioDurationSeconds": 74.616,
+        "sceneCount": 6,
+        "narratedCueCount": 18,
+        "targetCount": 7,
+        "outroTargetId": "clinical-pleura",
+        "outroDurationSeconds": 9,
+        "alignment": "independently-synthesized-phrase-samples",
+        "audioAndImageSha256BindingsVerified": true,
+        "audioTimingSha256": "88b9426b0c55f94a8256f8f1c85ce32ba9442b34c3ce531413e9bad99b307579",
+        "mediaSha256": {
+          "media/audio/lesson-shahzad2015-q005-v1.mp3": "7225a777c6642472c3aac68c8912b87e23edf8bc83bac496838d32e75de04f98",
+          "media/mnemonic/sequestration-palace.png": "e1916db3d6f429b7eef27d200815bb5fddc7186d9a2f790210794d91034d7bac",
+          "media/real/extralobar-sequestration-thoracoscopy.jpg": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8"
+        }
+      },
+      {
+        "id": "shahzad2015-q182",
+        "version": 2,
+        "sourceQuestionId": "shahzad-raja-2015-200-practice-questions-q182",
+        "lessonSha256": "4ee9a292a2193236449119b14c2b99d02a6ccc221a0c4ea02ddf320c8fa1021d",
+        "quizSha256": "b2f53b7c12211796d315332f6e004ac6d87eddbc05ceec46b5db62a0fffb5563",
+        "durationSeconds": 71.9685,
+        "actualAudioDurationSeconds": 72.024,
+        "sceneCount": 6,
+        "narratedCueCount": 19,
+        "targetCount": 4,
+        "outroTargetId": "arterial-lumen",
+        "outroDurationSeconds": 9,
+        "alignment": "independently-synthesized-phrase-samples",
+        "audioAndImageSha256BindingsVerified": true,
+        "audioTimingSha256": "e830e7ed2f456efff2f7e8daf4db12d1b5248daccba78eead3774585cb6299ab",
+        "mediaSha256": {
+          "media/audio/lesson-shahzad2015-q182-v1.mp3": "38a962c05ead5a3b9ef984cdd011ea86644067fcc8776f4105f27520fc2c4fc6",
+          "media/mnemonic/resistance-palace.png": "60ea64fd19cce9d21aff5d1601625299687baab2e5667e90a0c5bf8ee4ebcb41",
+          "media/real/artery-cross-section.png": "e835434db7751e97dcaff6632849baecb9315dd382d80e3d8064b9863944199d"
+        }
+      }
+    ]
+  },
+  "tests": {
+    "javascriptUnit": {
+      "passed": 22,
+      "failed": 0,
+      "command": "npm test"
+    },
+    "pythonGuidance": {
+      "passed": 8,
+      "failed": 0,
+      "command": "python tests/test_guidance_pipeline.py"
+    },
+    "browserSmoke": {
+      "passed": 15,
+      "failed": 0,
+      "command": "npm run test:browser",
+      "testNames": [
+        "all three lessons load; real MP3 metadata decodes",
+        "actual playback automatically enrolls without grading",
+        "seek shows an uncropped clinical figure and its license",
+        "speed change persists and scene state follows seeking",
+        "real image outro precedes MCQ, correct answer schedules Good once",
+        "like and private note persist without changing recall",
+        "publications show the real cover and200source questions",
+        "due entry gates playback with question; unknown answer gives Again",
+        "early practice never moves the due date",
+        "failed answer save stays editable; retry records exactly once",
+        "backup round-trip and invalid backup preserve local data",
+        "settings check catalog and retention changes without reset",
+        "all three lessons play local audio and show timed mnemonic and real-image scenes without external network",
+        "mobile layouts have no horizontal overflow at360/390/430",
+        "no uncaught JavaScript errors under native-equivalent CSP"
+      ],
+      "physicalAndroidTested": false
+    },
+    "browserGuidance": {
+      "passed": 11,
+      "failed": 0,
+      "command": "npm run test:guidance",
+      "testNames": [
+        "all authored cue tips and spotlight regions align at 360×640",
+        "all authored cue tips and spotlight regions align at 390×844",
+        "all authored cue tips and spotlight regions align at 430×932",
+        "forward and backward seeking select exact half-open cue intervals",
+        "paused guidance stays visible and motionless on its image feature",
+        "the Reduce camera motion setting preserves precise pointer and spotlight guidance",
+        "rate changes and live playback use the narration clock across a target boundary",
+        "resizing a paused clinical image keeps overlays attached to the bitmap",
+        "image loading hides the old pointer; late image completion cannot retarget a new scene",
+        "null targets and targets authored for a different image remain unpointed",
+        "no uncaught player errors under the native-equivalent content policy"
+      ],
+      "physicalAndroidTested": false,
+      "geometrySamples": 191,
+      "geometryReference": "Independently measured DOM image bounds and authored image coordinates; not the player geometry helper.",
+      "acceptanceToleranceCssPx": 1,
+      "maxTipErrorPx": 2.5617249721115865e-05,
+      "maxSpotlightErrorPx": 0.0006910596395593652,
+      "maxArrowEndpointErrorPx": 2.5617249721115865e-05,
+      "viewports": [
+        {
+          "width": 360,
+          "height": 640
+        },
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 430,
+          "height": 932
+        }
+      ]
+    },
+    "browserDailyTopics": {
+      "passed": 9,
+      "failed": 0,
+      "command": "npm run test:topics",
+      "testNames": [
+        "Thoracic daily topics persist across reload and select only the matching lesson",
+        "Cardiac and Thoracic selections form a union without duplicate lessons",
+        "canceling topic edits keeps the saved preference and its feed unchanged",
+        "canonical parent selection matches a child annotation; alias search and lesson count remain accurate",
+        "a valid topic with no produced lessons shows an explanatory empty state",
+        "All clears the saved topic constraint and restores the full feed",
+        "topic filtering precedes the daily new-lesson limit",
+        "Due and Saved remain available outside daily topics without altering scheduled recall",
+        "daily-topic flows produce no uncaught player errors"
+      ],
+      "physicalAndroidTested": false
+    },
+    "browserLessonFlow": {
+      "passed": 9,
+      "failed": 0,
+      "command": "node tests/lesson-flow-browser.cjs",
+      "testNames": [
+        "new lesson has clear steps; first enrollment does not interrupt an unfinished video",
+        "closing a pending question preserves its selection and attempt; Play returns to the question",
+        "practice on an unseen lesson remains practice after watching and returns to the review screen",
+        "due reviews are question-first; explanation becomes practice without rescheduling or looping the session",
+        "replaying an answered video restores its feedback and never creates a second grade",
+        "one-lesson selections end with clear choices and replay returns to the saved result",
+        "incorrect and unknown answers still schedule Again; feedback states the correct answer in text",
+        "feedback keeps Next and Replay visible and usable at 390×844 and 360×640 without manual scrolling",
+        "flow changes produce no uncaught browser errors"
+      ],
+      "physicalAndroidTested": false,
+      "realAudioPlayback": true
+    },
+    "nativeJvmBaseline": {
+      "totalAssertions": 44,
+      "allPassed": true,
+      "contentImporterAssertions": 24,
+      "downloadUrlGateAssertions": 13,
+      "backupParserAssertions": 7,
+      "baselineResultsReused": true,
+      "nativeSourcesUnchangedSinceBaseline": true,
+      "scope": "Existing native importer, downloader and backup-parser baseline; not Android execution."
+    }
+  },
+  "continuity": {
+    "samePackageAs010": true,
+    "sameSigningCertificateAsDelivered010": true,
+    "learningStorageNamespace": "instaanki.state.v1",
+    "sqliteDatabase": "instaanki.db",
+    "sameStorageIdentityAs010": true,
+    "stableLessonIds": true,
+    "lessonMetadataVersion": 2,
+    "productionProgressIsLearnerProgress": false,
+    "productionLedger": "production/books/shahzad-raja-2015-200-practice-questions.json"
+  },
+  "physicalAndroidTested": false,
+  "humanListeningReviewed": false,
+  "pendingVerification": {
+    "physicalAndroidTested": false,
+    "emulatorTested": false,
+    "humanListeningReviewed": false,
+    "nativeDocumentPickerTestedOnDevice": false,
+    "installationOrUpdateFrom010TestedOnDevice": false,
+    "publicApkDownloadInstallTested": false
+  },
+  "distribution": {
+    "audience": "personal",
+    "apkDelivery": "private",
+    "publicApkReleasePublishedForThisRevision": false,
+    "publicApkReleaseUrl": null,
+    "dataOnlyContentPacksReplacePlayerImplementation": false,
+    "interfaceUpdateMethod": "Install the newer APK signed with the same certificate through Android."
+  },
+  "evidenceReports": [
+    "dist/InstaAnki-0.1.1.apk.json",
+    "test-results/android-final/verification.json",
+    "test-results/audio-guidance-report.json",
+    "test-results/browser-report.json",
+    "test-results/guidance/report.json",
+    "test-results/daily-topics/report.json",
+    "test-results/lesson-flow-report.json"
+  ],
+  "limitations": [
+    "Only the three existing produced lessons were updated. The full 200-question source bank has not been produced as lessons.",
+    "Browser and JVM checks do not establish physical Android or emulator behavior.",
+    "Technical MP3 decoding and sample-derived alignment are not a human listening review.",
+    "The geometry measurements test rendering against authored image coordinates, not independent clinical accuracy.",
+    "The APK checksum identifies this personal build with its private cover; another build can have different bytes.",
+    "The public verification record does not announce a public APK release or a tested public download/install path."
+  ]
+}

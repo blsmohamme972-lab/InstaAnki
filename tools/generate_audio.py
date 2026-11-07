@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render local English narration with sample-derived scene timestamps.
+"""Render local English narration with sample-derived phrase and scene timestamps.
 
 Requires Python packages kokoro-onnx, onnxruntime, numpy and soundfile, plus
 ffmpeg/ffprobe. Models stay outside the repository. No network calls are made.
@@ -29,6 +29,7 @@ import numpy as np
 import onnxruntime as ort
 import soundfile as sf
 from kokoro_onnx import Kokoro
+from guidance import canonical_hash, validate_plan
 
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -69,6 +70,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, default=PROJECT / "private-content/starter-lessons-draft.json")
     parser.add_argument("--output", type=Path, default=PROJECT / "web/media/audio")
+    parser.add_argument("--guidance", type=Path, default=PROJECT / "production/visual-guidance.json")
     parser.add_argument("--model", type=Path, default=RUNTIME / "tts/kokoro-v1.0.onnx")
     parser.add_argument("--voices", type=Path, default=RUNTIME / "tts/voices-v1.0.bin")
     parser.add_argument("--cache", type=Path, default=RUNTIME / "tts-cache")
@@ -76,21 +78,28 @@ def main() -> None:
     parser.add_argument("--speed", type=float, default=0.96)
     parser.add_argument("--outro", type=float, default=9.0)
     parser.add_argument("--gap", type=float, default=0.23)
+    parser.add_argument("--phrase-gap", type=float, default=0.08)
     parser.add_argument("--threads", type=int, default=min(4, os.cpu_count() or 1))
     parser.add_argument("--lesson", action="append", help="Generate only this lesson ID; repeatable.")
     parser.add_argument("--force", action="store_true", help="Regenerate cached scene audio.")
     args = parser.parse_args()
-    for path in (args.input, args.model, args.voices):
+    for path in (args.input, args.model, args.voices, args.guidance):
         if not path.is_file():
             parser.error(f"Required file does not exist: {path}")
     if not 0.9 <= args.speed <= 1.0:
         parser.error("Use a speed between 0.90 and 1.00 for these narration scripts.")
     if not 8.0 <= args.outro <= 10.0:
         parser.error("The final real-image stage must last 8–10 seconds.")
-    if not 0.0 <= args.gap <= 0.5 or args.threads < 1:
+    if not 0.0 <= args.gap <= 0.5 or not 0 <= args.phrase_gap <= 0.25 or args.threads < 1:
         parser.error("Gap must be 0–0.5 seconds and thread count must be positive.")
 
     draft = json.loads(args.input.read_text())
+    guidance_document = json.loads(args.guidance.read_text())
+    if guidance_document.get("schemaVersion") != 1:
+        parser.error("Unsupported visual guidance plan schema")
+    guidance_plans = {item["audioLessonId"]: item for item in guidance_document["lessons"]}
+    if len(guidance_plans) != len(guidance_document["lessons"]):
+        parser.error("Guidance audioLessonId values must be unique")
     lessons = [lesson for lesson in draft["lessons"]
                if not args.lesson or lesson["id"] in args.lesson]
     if not lessons:
@@ -129,7 +138,9 @@ def main() -> None:
         "model": {"filename": args.model.name, "sha256": model_hash, "sourceUrl": MODEL_URL},
         "voices": {"filename": args.voices.name, "sha256": voices_hash, "sourceUrl": VOICES_URL},
         "inputSha256": sha256(args.input),
-        "alignment": "Exact sample boundaries of independently synthesized scenes; not estimated word alignment.",
+        "alignment": "Exact sample boundaries of independently synthesized target phrases; no estimated word timing.",
+        "phraseGapSeconds": args.phrase_gap,
+        "guidancePlanSha256": sha256(args.guidance),
         "humanListeningReviewed": False,
         "automatedChecks": ["Nonempty mono audio", "Finite samples", "Non-silent narration",
                             "Decoded MP3 below full scale", "60–90 second total duration",
@@ -141,58 +152,78 @@ def main() -> None:
         if any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_" for c in lesson_id):
             raise ValueError(f"Unsafe lesson ID: {lesson_id}")
         print(f"Rendering {lesson_id}", flush=True)
+        plan = guidance_plans.get(lesson_id)
+        if plan is None:
+            raise ValueError(f"No reviewed visual guidance plan for {lesson_id}")
+        validate_plan(plan, lesson["scenes"], PROJECT / "web")
         segments = []
         sample_rate = None
-        for scene in lesson["scenes"]:
+        for scene, planned_scene in zip(lesson["scenes"], plan["scenes"]):
             text = scene["voice_text"].strip()
-            # The reviewed starter scripts already spell out clinical abbreviations.
-            # Preserve their wording; any future pronunciation override is explicit.
             spoken_text = scene.get("spoken_text", text).strip()
-            cache_input = {"text": spoken_text, "voice": args.voice, "speed": args.speed,
-                           "language": "en-us", "engineVersion": engine_version,
-                           "modelSha256": model_hash, "voicesSha256": voices_hash,
-                           "sentencePause": 0.25, "clausePause": 0.1}
-            cache_key = hashlib.sha256(json.dumps(cache_input, sort_keys=True).encode()).hexdigest()
-            cache_file = args.cache / f"{cache_key}.wav"
-            if cache_file.exists() and not args.force:
-                samples, sr = sf.read(cache_file, dtype="float32")
-                print(f"  {scene['id']}: cached {len(samples) / sr:.2f}s", flush=True)
-            else:
-                samples, sr = engine.create(spoken_text, voice=args.voice, speed=args.speed,
-                                            lang="en-us", sentence_pause=0.25, clause_pause=0.1)
-                samples = np.asarray(samples, dtype=np.float32)
-                validate_audio(samples, f"{lesson_id}/{scene['id']}")
-                sf.write(cache_file, samples, sr, subtype="FLOAT")
-                print(f"  {scene['id']}: synthesized {len(samples) / sr:.2f}s", flush=True)
-            validate_audio(samples, f"{lesson_id}/{scene['id']}")
-            if sample_rate is not None and sample_rate != sr:
-                raise ValueError("Sample rate changed between scenes")
-            sample_rate = sr
-            segments.append((scene, text, spoken_text, samples))
+            phrases = []
+            for phrase in planned_scene["phrases"]:
+                cache_input = {"text": phrase["text"], "voice": args.voice, "speed": args.speed,
+                               "language": "en-us", "engineVersion": engine_version,
+                               "modelSha256": model_hash, "voicesSha256": voices_hash,
+                               "sentencePause": 0.25, "clausePause": 0.1}
+                cache_key = hashlib.sha256(json.dumps(cache_input, sort_keys=True).encode()).hexdigest()
+                cache_file = args.cache / f"{cache_key}.wav"
+                if cache_file.exists() and not args.force:
+                    samples, sr = sf.read(cache_file, dtype="float32")
+                    print(f"  {phrase['id']}: cached {len(samples) / sr:.2f}s", flush=True)
+                else:
+                    samples, sr = engine.create(phrase["text"], voice=args.voice, speed=args.speed,
+                                                lang="en-us", sentence_pause=0.25, clause_pause=0.1)
+                    samples = np.asarray(samples, dtype=np.float32)
+                    validate_audio(samples, f"{lesson_id}/{phrase['id']}")
+                    sf.write(cache_file, samples, sr, subtype="FLOAT")
+                    print(f"  {phrase['id']}: synthesized {len(samples) / sr:.2f}s", flush=True)
+                validate_audio(samples, f"{lesson_id}/{phrase['id']}")
+                if sample_rate is not None and sample_rate != sr:
+                    raise ValueError("Sample rate changed between phrases")
+                sample_rate = sr
+                phrases.append((phrase, samples))
+            segments.append((scene, text, spoken_text, phrases))
 
         sample_rate = int(sample_rate)
         lead_samples = round(0.18 * sample_rate)
         gap_samples = round(args.gap * sample_rate)
+        phrase_gap_samples = round(args.phrase_gap * sample_rate)
         tail_samples = round(0.35 * sample_rate)
         parts = [np.zeros(lead_samples, dtype=np.float32)]
         cursor = lead_samples
-        scene_timings = []
-        for index, (scene, text, spoken_text, samples) in enumerate(segments):
+        scene_timings, cue_timings = [], []
+        for index, (scene, text, spoken_text, phrases) in enumerate(segments):
             start_sample = 0 if index == 0 else cursor
             voice_start_sample = cursor
-            parts.append(samples)
-            cursor += len(samples)
-            voice_end_sample = cursor
-            pause_samples = tail_samples if index == len(segments) - 1 else gap_samples
-            parts.append(np.zeros(pause_samples, dtype=np.float32))
-            cursor += pause_samples
+            for phrase_index, (phrase, samples) in enumerate(phrases):
+                cue_start_sample = start_sample if phrase_index == 0 else cursor
+                cue_voice_start = cursor
+                parts.append(samples)
+                cursor += len(samples)
+                cue_voice_end = cursor
+                if phrase_index == len(phrases) - 1:
+                    pause_samples = tail_samples if index == len(segments) - 1 else gap_samples
+                else:
+                    pause_samples = phrase_gap_samples
+                parts.append(np.zeros(pause_samples, dtype=np.float32))
+                cursor += pause_samples
+                cue_timings.append({
+                    "id": phrase["id"], "sceneId": scene["id"],
+                    "text": phrase["text"], "targetId": phrase.get("targetId"),
+                    "start": cue_start_sample / sample_rate, "end": cursor / sample_rate,
+                    "voiceStart": cue_voice_start / sample_rate, "voiceEnd": cue_voice_end / sample_rate,
+                    "startSample": cue_start_sample, "endSample": cursor,
+                    "voiceStartSample": cue_voice_start, "voiceEndSample": cue_voice_end,
+                })
             scene_timings.append({
                 "id": scene["id"], "start": start_sample / sample_rate,
                 "end": cursor / sample_rate, "duration": (cursor - start_sample) / sample_rate,
                 "voiceStart": voice_start_sample / sample_rate,
-                "voiceEnd": voice_end_sample / sample_rate,
+                "voiceEnd": cue_voice_end / sample_rate,
                 "startSample": start_sample, "endSample": cursor,
-                "voiceStartSample": voice_start_sample, "voiceEndSample": voice_end_sample,
+                "voiceStartSample": voice_start_sample, "voiceEndSample": cue_voice_end,
                 "text": text, "spokenText": spoken_text,
             })
         narration_samples = cursor
@@ -234,13 +265,16 @@ def main() -> None:
             if abs(len(decoded) / decoded_sr - timeline_duration) > 0.1:
                 raise ValueError(f"Unexpected codec padding: {lesson_id}")
         timing = {
-            "schemaVersion": 1, "lessonId": lesson_id,
+            "schemaVersion": 2, "lessonId": lesson_id,
             "audioPath": f"/media/audio/{audio_path.name}",
+            "audioSha256": sha256(audio_path),
+            "visualGuidancePlanSha256": canonical_hash(plan),
+            "alignment": "independently-synthesized-phrase-samples",
             "sampleRate": sample_rate, "totalSamples": cursor,
             "duration": timeline_duration, "containerDuration": container_duration,
             "narrationDuration": narration_samples / sample_rate,
             "sourceNarrationSha256": hashlib.sha256("\n".join(s[1] for s in segments).encode()).hexdigest(),
-            "scenes": scene_timings,
+            "scenes": scene_timings, "cues": cue_timings,
             "realImageOutro": {"start": narration_samples / sample_rate, "end": timeline_duration,
                                "duration": outro_samples / sample_rate,
                                "startSample": narration_samples, "endSample": cursor,
@@ -257,7 +291,7 @@ def main() -> None:
             "outroDuration": args.outro, "sampleRate": sample_rate,
             "normalizationGain": gain, "sourcePeakBeforeGain": raw_check["peak"],
             "pcmValidation": pcm_check, "decodedValidation": decoded_check,
-            "humanListeningReviewed": False,
+            "humanListeningReviewed": False, "cueCount": len(cue_timings),
         }
         provenance["lessons"] = list(rendered.values())
         write_json(provenance_path, provenance)

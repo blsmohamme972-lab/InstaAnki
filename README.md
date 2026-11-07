@@ -1,10 +1,12 @@
 # InstaAnki
 
-An English-only personal Android app that combines a short-form medical lesson feed with automatic spaced review. **Version 0.1.0 is a built, signed personal preview with three complete lessons.** It has not yet been installed or tested on a physical Android device or emulator.
+An English-only personal Android app that combines a short-form medical lesson feed with automatic spaced review. **Version 0.1.1 is a personal preview with three narrated lessons, precise visual guidance and saved daily-topic choices.** It has not yet been installed or tested on a physical Android device or emulator.
 
 ## What works in this version
 
-- Offline playback of bundled English narration, original 2D visual mnemonics, timed camera/spotlight movement, captions and attributed real medical images at each lesson's end.
+- Offline playback of bundled English narration and original 2D visual mnemonics, with a hand/arrow tip anchored to the exact explained feature, bounded camera motion, a focused spotlight, phrase captions, and attributed clinical images.
+- All three lessons use 55 independently synthesized narration phrases with measured sample boundaries. Camera, pointer, spotlight and captions share the audio clock, including pause, seek and speed changes.
+- Saved daily-topic choices: All, a specialty, a subtopic, or multiple tags. Parent tags include descendants, and filtering happens before the daily new-lesson limit. Due reviews and saved lessons remain available independently.
 - Playback speeds from 0.75× to 2×, seeking and a vertical swipe feed.
 - Automatic enrollment after watching; an MCQ answer, not a like or a replay, determines the FSRS review result. Due reviews start with the question. Early practice preserves the scheduled due date.
 - Native SQLite storage for learning history, saved lessons, private notes and preferences; learning backup export and restore.
@@ -20,9 +22,9 @@ The source collection contains 200 extracted questions. **Three source questions
 
 | Source question | Lesson | Duration |
 |---|---|---|
-| Q5 | Extralobar Sequestration: Its Own Pleural Coat | 76.9 seconds |
-| Q54 | Coronary Dominance: Follow the PDA | 71.7 seconds |
-| Q182 | Vascular Resistance: The Fourth-Power Rule | 74.0 seconds |
+| Q5 | Extralobar Sequestration: Its Own Pleural Coat | 74.5 seconds |
+| Q54 | Coronary Dominance: Follow the PDA | 71.2 seconds |
+| Q182 | Vascular Resistance: The Fourth-Power Rule | 72.0 seconds |
 
 Each lesson has an original explanation, mnemonic symbols, a stable memory location, MP3 narration, a timed real-image outro, an MCQ and source references. Original book text and private source material are excluded from the public app assets. The personal build includes the book cover.
 
@@ -38,11 +40,15 @@ npm run build:web
 npm test
 npx playwright install chromium --only-shell
 npm run test:browser
+npm run test:guidance
+npm run test:topics
+npm run test:flow
+python -m unittest discover -s tests -p 'test_guidance_pipeline.py'
 python android/bootstrap_sdk.py
 python android/build_apk.py
 ```
 
-The output is `dist/InstaAnki-0.1.0.apk`. For a personal build with an authorized cover restored to `private-content/app-assets/`, use:
+The output is `dist/InstaAnki-0.1.1.apk`. For a personal build with an authorized cover restored to `private-content/app-assets/`, use:
 
 ```bash
 python android/build_apk.py --include-private
@@ -50,7 +56,7 @@ python android/build_apk.py --include-private
 
 Keep the signing identity private and reuse it for updates. See [Android build and native behavior](android/README.md) for build options, import limits and backup behavior.
 
-Verification of the prepared personal APK recorded **15 browser checks, 8 learning unit tests and 44 JVM assertions**, all passing, plus APK signature and alignment verification. Browser playback and technical audio decoding were checked; Android runtime behavior and human listening remain unverified. See the [release notes](docs/RELEASE_NOTES_0.1.0.md) and [machine-readable verification](docs/verification-0.1.0.json).
+The [0.1.1 release notes](docs/RELEASE_NOTES_0.1.1.md) and [verification report](docs/verification-0.1.1.json) record this update’s checks. The original [0.1.0 verification](docs/verification-0.1.0.json) remains available as historical evidence. Browser playback, measured target geometry, audio decoding and Android package signing are separate checks; physical Android playback and human listening remain unverified.
 
 ## Content updates and current limits
 

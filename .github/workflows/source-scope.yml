@@ -15,6 +15,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  fresh-empty-app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the proposed source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify the fresh app without restoring any old lesson media
+        run: |
+          python3 -m unittest discover -s tests -p 'test_fresh_distribution.py' -v
+          python3 -m unittest discover -s tests -p 'test_android_fresh_profile.py' -v
+          npm ci
+          npm run build:web:fresh
+      - name: Check the empty collection and application-specific update offers
+        run: |
+          npx playwright install --with-deps chromium --only-shell
+          npm run test:fresh
   original-book-policy:
     runs-on: ubuntu-latest
     steps:

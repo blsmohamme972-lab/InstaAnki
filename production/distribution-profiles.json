@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "profiles": {
+    "fresh": {
+      "schemaVersion": 1,
+      "profile": "fresh",
+      "app": {
+        "packageName": "com.instaanki.fresh",
+        "version": "0.3.0",
+        "versionCode": 4
+      },
+      "purpose": "Explicitly requested fresh installation with no bundled lessons",
+      "approvedBookId": "shahzad-raja-2015-200-practice-questions",
+      "bundledLessonCount": 0,
+      "preserveProductionHistory": true,
+      "newProductionEnabled": false
+    }
+  }
+}

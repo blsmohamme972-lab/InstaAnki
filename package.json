@@ -1,16 +1,19 @@
 {
   "name": "instaanki",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Personal offline Android medical mnemonic learning with FSRS",
   "type": "commonjs",
   "scripts": {
     "source:check": "python tools/check_source_scope.py",
     "build:web": "node tools/build_web.mjs",
+    "build:web:fresh": "node tools/build_web.mjs --profile fresh",
     "test": "node --test tests/*.test.cjs",
     "test:browser": "node tests/browser-smoke.cjs",
     "build:pack": "python tools/build_pack.py",
     "build:apk": "python android/build_apk.py --include-private",
+    "build:apk:fresh": "npm run build:web:fresh && python android/build_apk.py --profile fresh --web-dir build/fresh-web",
+    "test:fresh": "node tests/fresh-browser.cjs",
     "test:guidance": "node tests/guidance-browser.cjs",
     "test:topics": "node tests/topics-browser.cjs",
     "test:flow": "node tests/lesson-flow-browser.cjs"

@@ -21,7 +21,7 @@ def main():
     policy.require_book(BOOK)
     policy.source_records(policy.ledger())
     draft=read(PRIVATE/'starter-lessons-draft.json')
-    source_bindings=policy.validate_authoring(draft,draft['lessons'])
+    source_bindings=policy.validate_audio_authoring(draft,draft['lessons'])
     guidance_document=read(ROOT/'production/visual-guidance.json')
     guidance_plans={item['audioLessonId']:item for item in guidance_document['lessons']}
     if len(guidance_plans)!=len(guidance_document['lessons']):

@@ -6,13 +6,14 @@ The user explicitly stopped new-video production. Work only on app errors, inter
 
 The subsequent prompt-update request authorizes improving the image prompt, reference-study instructions and pre-generation checkpoint. It does not authorize generating or replacing images, narration or lessons. Follow the mandatory workflow below whenever a later instruction authorizes mnemonic artwork.
 
-On 2026-11-07 the user explicitly requested: "No need for old videos! Start fresh." The approved fresh distribution is **InstaAnki Fresh**, package **com.instaanki.fresh**, initially version **0.3.0 / code 4**. It ships an empty lesson collection and no old lesson media or progress. The three verified Raja lessons remain historical records and QA inputs, not bundled fresh content. Keep the historical production count truthful at 3/200 and show zero installed lessons in the fresh app. The approved source remains the same Raja book.
+On 2026-11-07 the user explicitly requested: "No need for old videos! Start fresh." The approved fresh distribution is **InstaAnki Fresh**, package **com.instaanki.fresh**, initially version **0.3.0 / code 4**. It ships an empty lesson collection and no old lesson media or progress. The public baseline contains three historical Raja lessons, not bundled fresh content. Derive production counts from the verified ledger: the public baseline is 3/200, but a later explicitly authorized private batch may truthfully advance it. Never overwrite newer verified counts with the baseline number. A newly built empty Fresh app still has zero bundled lessons; installed lessons are counted separately. The approved source remains the same Raja book.
 
 ## Active source and user intent
 
 The active source is **200 Practice Questions in Cardiothoracic Surgery**, Shahzad G. Raja, 2015. Keep that original book as the only active publication. Its stable book ID is `shahzad-raja-2015-200-practice-questions`. The fresh app ships no lessons; the three existing lessons remain historical and QA records. Current work does not continue lesson production.
 
 - Read `production/source-policy.json` and `docs/SOURCE_SCOPE.md` before creating, assembling, generating audio for, completing, packaging, or publishing lessons.
+- A later request for a finite test batch authorizes only its recorded questions and limit. Follow `docs/limited-production-trials.md`; do not enable general production or reuse a completed trial for more questions. A request to audit, repair code or update prompts does not authorize generating media.
 - Do not substitute a different book, general medical knowledge, an independently authored collection, or a new publication when the requested source is unavailable. Explain the missing evidence and pursue legitimate recovery of the same source.
 - Do not relabel the archived Medical Foundations lessons as Raja lessons. Similar topics and new images are not proof that a lesson represents a particular book question.
 - A future explicit user instruction may change the source scope. Record that actual instruction, update the source policy and its tests deliberately, and preserve truthful source identities. Never invent user approval or add a force/bypass option to keep production moving.
@@ -23,7 +24,7 @@ The active source is **200 Practice Questions in Cardiothoracic Surgery**, Shahz
 - The production tools bind the source extraction and selected questions to hashes. Run their checks before generating expensive artwork or audio, and again before completion and delivery.
 - Before asset generation, actually compare the authored lesson and quiz to the source and record the per-question `sourceReview` with the source-record, authored-content and quiz fingerprints. A copied `sourceEvidence` object or a calculated hash is not a completed review. Changed narration, captions, title, locus or quiz requires a fresh comparison and review record.
 - Existing exactly verified starter lessons may be repackaged under the policy's immutable replay checks. This does not authorize new source-derived lessons without evidence.
-- Keep question identities stable and count only verified produced records. The current original-book total is 3/200 (Q5, Q54, Q182). A separate collection does not increase that count.
+- Keep question and lesson identities stable and count only verified produced records. The public baseline is 3/200 (Q5, Q54, Q182); read the current ledger before reporting progress or synchronizing publication metadata. A separate collection does not increase that count.
 - Keep raw source text, private archives, encryption keys and Android signing keys outside Git. Recover and verify a durable private backup before relying on it for later batches.
 
 ## Mandatory checkpoint before mnemonic image generation
@@ -41,12 +42,13 @@ The active source is **200 Practice Questions in Cardiothoracic Surgery**, Shahz
 - Content corrections must preserve learning history, private notes, saved lessons and preferences. Never clear app storage or uninstall the app to repair a content selection.
 - Use the narrowly scoped correction tool only to withdraw the exact unrelated imported collection documented in `docs/SOURCE_SCOPE.md`.
 - Record source review, visual inspection, audio decoding and browser timeline checks honestly. Device playback and human listening remain separate checks; do not claim either from a browser/JVM test.
-- Run `npm run source:check` and the relevant source-policy tests before delivering changed content or code. See `docs/production-workflow.md` for the full workflow.
+- For Fresh app work, run `npm run build:web:fresh`, `npm run source:check:fresh` and the relevant source-policy tests. `npm run source:check` validates the separate legacy lesson bundle and requires its pinned media. Do not request an old APK, ZIP or lesson media to run Fresh checks or prompt/source tooling tests. See `docs/production-workflow.md` for the full workflow.
 
 ## Repair and delivery rules
 
 - Reports saved on the phone are not visible to an agent until the user shares the feedback JSON. Read its reason, exact lesson ID/version and hashes; compare with the currently active version before preparing a correction. A stale report must not roll back a newer correction. Dislike, hide, report and quiz grade remain separate actions.
 - Preserve the lesson ID, source identity and learning history when repairing an existing lesson. Review any changed teaching content against that same source. A cosmetic repair does not authorize producing other source questions.
+- Give each additional batch a distinct pack ID. Importing the same pack ID replaces that whole package, so a correction must contain its complete intended lesson set; do not send an unrelated partial batch under an installed pack's ID. Keep lesson IDs stable and increase the lesson revision when changing delivered content. An empty collection withdrawal remains a narrowly scoped explicit correction.
 - Use the lossless media optimizer on generated and retrieved images; verify decoded pixels, alpha, color profile, orientation and dimensions. Retain originals and provenance. Do not reduce quality or resize silently.
 - For the empty Fresh app, use `npm run build:web:fresh`, `npm run test:fresh`, and `npm run build:apk:fresh`. It needs no old APK, lesson ZIP, source media or migration. See `docs/FRESH_INSTALL_0.3.0.md`. Use the compiled fresh web directory as Android input so learning-engine changes are included.
 - Run `tools/prepare_existing_media.py` before legacy-content checks on a clean checkout. It restores only pinned existing lesson media from the supplied update ZIP or the documented licensed source URLs. `--from-pack` restores prepared outputs; lossless comparison tests also need the pinned originals, restored separately or with `--download-sources`. These QA inputs must not be bundled in Fresh. Do not commit newly prepared binary media or temporary ZIPs to Git history.

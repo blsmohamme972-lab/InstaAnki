@@ -263,6 +263,97 @@ class SourceEvidenceTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaises(SourcePolicyError):
                 validate_content_review(question, authored, original["sourceEvidence"], authoring=True)
 
+    def produced_fixture(self):
+        with patch.object(production, "REPO", self.root):
+            claimed = production.claim(self.manifest_path, 1, "synthetic-produced-repair")
+        authored = self.authored_fixture(claimed["questions"][0]["sourceEvidence"])
+        ledger = self.record_fixture_content_review(authored)
+        ledger["questions"][0].update(status="produced", lessonId=authored["id"])
+        write_json(self.manifest_path, ledger)
+        self.policy_doc["newProductionEnabled"] = False
+        write_json(self.root / "production/source-policy.json", self.policy_doc)
+        return authored, ledger
+
+    def test_produced_repair_keeps_its_app_id_before_generation_and_assembly(self):
+        authored, ledger = self.produced_fixture()
+        before = self.manifest_path.read_bytes()
+        policy = SourcePolicy(self.root)
+        policy.validate_authoring({"bookId": ORIGINAL_BOOK}, [authored])
+        assembled = self.assembled_fixture(authored)
+        assembled["id"] = authored["id"]
+        policy.validate_lesson_source(assembled, ledger, ledger["questions"][0])
+        for value, authoring in ((authored, True), (assembled, False)):
+            changed = copy.deepcopy(value)
+            changed["id"] = "renamed-produced-lesson"
+            with self.subTest(authoring=authoring), self.assertRaisesRegex(SourcePolicyError, "canonical lesson ID"):
+                if authoring:
+                    policy.validate_authoring({"bookId": ORIGINAL_BOOK}, [changed])
+                else:
+                    policy.validate_lesson_source(changed, ledger, ledger["questions"][0])
+        self.assertEqual(self.manifest_path.read_bytes(), before)
+
+    def test_audio_repair_keeps_canonical_identity_with_a_distinct_audio_filename(self):
+        authored, _ = self.produced_fixture()
+        audio = {**copy.deepcopy(authored), "id": "distinct-audio-file", "lessonId": authored["id"]}
+        policy = SourcePolicy(self.root)
+        before = self.manifest_path.read_bytes()
+        bindings = policy.validate_audio_authoring({"bookId": ORIGINAL_BOOK}, [audio])
+        self.assertEqual(bindings[audio["id"]], authored["sourceEvidence"])
+        self.assertEqual(content_fingerprints(audio, authoring=True), content_fingerprints(authored, authoring=True))
+        with self.assertRaisesRegex(SourcePolicyError, "dedicated narration validation"):
+            policy.validate_authoring({"bookId": ORIGINAL_BOOK}, [audio])
+        for change in ("missing", "wrong"):
+            broken = copy.deepcopy(audio)
+            if change == "missing":
+                del broken["lessonId"]
+            else:
+                broken["lessonId"] = "wrong-canonical-lesson"
+            with self.subTest(change=change), self.assertRaisesRegex(SourcePolicyError, "canonical lesson ID"):
+                policy.validate_audio_authoring({"bookId": ORIGINAL_BOOK}, [broken])
+        # An input already using its canonical ID keeps working unchanged.
+        policy.validate_audio_authoring({"bookId": ORIGINAL_BOOK}, [authored])
+        self.assertEqual(self.manifest_path.read_bytes(), before)
+
+    def test_new_question_cannot_reuse_another_questions_produced_lesson_id(self):
+        with patch.object(production, "REPO", self.root):
+            claimed = production.claim(self.manifest_path, 2, "synthetic-identity-collision")
+        first = self.authored_fixture(claimed["questions"][0]["sourceEvidence"])
+        ledger = self.record_fixture_content_review(first)
+        ledger["questions"][0].update(status="produced", lessonId=first["id"])
+        second = self.authored_fixture(claimed["questions"][1]["sourceEvidence"])
+        second.update(source_question_number=2, title="Second reviewed synthetic source idea")
+        second["mcq"]["stem"] = self.records[1]["stem"]
+        ledger["questions"][1]["sourceReview"] = {
+            **ledger["questions"][0]["sourceReview"],
+            "sourceRecordSha256": second["sourceEvidence"]["sourceRecordSha256"],
+            "evidenceSha256": canonical_hash(second["sourceEvidence"]),
+            **content_fingerprints(second, authoring=True),
+        }
+        write_json(self.manifest_path, ledger)
+        before = self.manifest_path.read_bytes()
+        with self.assertRaisesRegex(SourcePolicyError, "already assigned to a different source question"):
+            SourcePolicy(self.root).validate_authoring({"bookId": ORIGINAL_BOOK}, [second])
+        second["id"] = "second-synthetic-lesson"
+        SourcePolicy(self.root).validate_authoring({"bookId": ORIGINAL_BOOK}, [second])
+        self.assertEqual(self.manifest_path.read_bytes(), before)
+
+    def test_ambiguous_question_book_or_duplicate_source_selection_is_rejected(self):
+        with patch.object(production, "REPO", self.root):
+            claimed = production.claim(self.manifest_path, 1, "synthetic-identity-aliases")
+        authored = self.authored_fixture(claimed["questions"][0]["sourceEvidence"])
+        self.record_fixture_content_review(authored)
+        before = self.manifest_path.read_bytes()
+        for number in (2, True, "1"):
+            lesson = {**authored, "questionNumber": number}
+            with self.subTest(number=number), self.assertRaisesRegex(SourcePolicyError, "questionNumber differs"):
+                SourcePolicy(self.root).validate_authoring({"bookId": ORIGINAL_BOOK}, [lesson])
+        with self.assertRaisesRegex(SourcePolicyError, "permits only"):
+            SourcePolicy(self.root).validate_authoring({"bookId": ORIGINAL_BOOK, "book_id": "another-book"}, [authored])
+        duplicate = {**authored, "id": "another-id-for-the-same-source"}
+        with self.assertRaisesRegex(SourcePolicyError, "each source question only once"):
+            SourcePolicy(self.root).validate_authoring({"bookId": ORIGINAL_BOOK}, [authored, duplicate])
+        self.assertEqual(self.manifest_path.read_bytes(), before)
+
 
 class PublishedReplayTests(unittest.TestCase):
     @classmethod

@@ -2,7 +2,9 @@
 
 This workflow records which source questions have verified teaching assets and a reviewed browser timeline. It never reads or changes a learner's answers, comments, likes, due dates or FSRS state. Production completion does not certify playback on a physical Android device or a human listening review; those checks are recorded separately and can remain pending.
 
-The active source is the original 2015 Raja book only. Read [SOURCE_SCOPE.md](SOURCE_SCOPE.md) and `production/source-policy.json` first. A missing private source is a production blocker, not permission to substitute an independent collection. The normal claim, generation, assembly, completion and packaging tools enforce this scope. Run `npm run source:check` to check the active app data; the web build and CI run it as well.
+The active source is the original 2015 Raja book only. Read [SOURCE_SCOPE.md](SOURCE_SCOPE.md) and `production/source-policy.json` first. A missing private source is a production blocker, not permission to substitute an independent collection. The normal claim, generation, assembly, completion and packaging tools enforce this scope.
+
+Choose checks for the actual work: `npm run build:web:fresh` followed by `npm run source:check:fresh` validates Fresh without old media. `npm run source:check` validates the separate legacy bundle and needs its pinned assets. Synthetic prompt/source/trial tests need neither an old APK nor an old lesson ZIP. New source-derived lessons still need their actual private book evidence, current authorization and recorded reviews. Read current ledger counts instead of copying the historical 3/200 baseline into a newer private checkpoint.
 
 ## Files and identities
 
@@ -76,6 +78,28 @@ For each claimed source ID:
 The detailed visual criteria are in [visual-production-rules.md](visual-production-rules.md). Writing a script, downloading an image or creating an audio file alone does not mark a source question produced.
 
 The image-prompt gate binds the exact prompt, brief, symbols, locus, source evidence, reviewed teaching content and both visual specifications. It supplements the source review; it does not expand production authorization or replace post-generation visual inspection. Keep its review and ready artifact private. Existing unchanged-media replay and audio-only repair do not require invented retrospective prompt reviews. The Python tool validates records and emits the approved prompt; agents must obey the documented checkpoint when calling external image-generation tools.
+
+### Preserve identity during repairs and audio preparation
+
+A produced question must retain the ledger's exact canonical lesson ID. Authoring rejects renaming it, reusing another question's lesson ID, contradictory question-number fields, and duplicate question selections. These checks happen before artwork or narration preparation, so a renamed draft cannot detach the repaired content from its existing learning history.
+
+Prepared audio has two identities: `id` names the audio files, while `lessonId` identifies the canonical app lesson. `assemble_book_batch.py --prepare-audio` records both. `generate_audio.py` and the historical assembler use the dedicated audio validator; ordinary lesson/image authoring remains strict about the canonical `id`. If an older produced audio draft uses a different filename ID, add the verified canonical `lessonId` from that same question's ledger record. This is identity metadata, not new narration: do not regenerate or rewrite audio provenance merely to add it.
+
+Unknown or duplicate audio `--lesson` selections, unsafe audio IDs and missing or mismatched guidance are rejected before the speech model is initialized or output is rendered.
+
+### Bind target coordinates to the inspected image
+
+For new guidance preparation, each lesson entry in the private `inspected-targets.json` must contain `schemaVersion: 1`, `visuallyInspected: true` as a JSON boolean, the actual `reviewer`, a timezone-aware `reviewedAt`, nonempty `notes`, and named `targets`. Add an `images` map keyed by every poster, primary clinical, scene and target image path. Each image record contains the `sha256`, integer `width` and integer `height` of the bytes actually inspected.
+
+Complete this record only after viewing those images and placing the targets. The tool compares the recorded bytes and dimensions with the current files; it never makes old coordinates valid by silently calculating a new hash. Any changed image requires another actual target inspection. Targets must belong to the image displayed during their narrated scene; clinical-image targets use zoom `1` and retain their full framing.
+
+`prepare_book_guidance.py` rejects unknown/duplicate `--lesson` selections, draft/inspection output aliases, and subset writes that would discard other plans in an existing guidance document. Use a separate `--output` for a subset or prepare the full batch. Valid output is replaced atomically, so a failure preserves the previous guidance. Existing built guidance and measured audio retain their historical provenance; no fabricated retrospective inspection is required for unchanged replay.
+
+### Protect assembly inputs and collection identity
+
+Assembly rejects mixed-book collections, duplicate source questions under different lesson IDs, ID reassignment, revision downgrades and changed same-version lesson metadata. It does not silently discard an incompatible existing collection; correct the intended input scope before retrying.
+
+Lesson output, validation-report output and any merged app output must use distinct paths. They must not alias drafts, guidance, taxonomy, source evidence, source policy or the production ledger. Use the normal private batch defaults, or deliberate distinct paths. Unique temporary files and atomic replacement protect existing files from interrupted writes; assembly still does not mark a lesson produced or approve its clinical/visual quality.
 
 ### Bind the authored content to an actual source review
 

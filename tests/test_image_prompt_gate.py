@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -248,6 +249,42 @@ class ImagePromptGateTests(unittest.TestCase):
                 self.emit()
             self.assertFalse(self.output.exists())
 
+    def test_local_private_and_reserved_examples_cannot_claim_public_inspection(self):
+        original = copy.deepcopy(self.review)
+        examples = [
+            "https://localhost/scene.png", "https://LOCALHOST./scene.png",
+            "https://media.localhost/scene.png", "https://intranet/scene.png",
+            "https://assets.local/scene.png", "https://assets.internal/scene.png",
+            "https://assets.home.arpa/scene.png", "https://assets.invalid/scene.png",
+            "https://assets.test/scene.png", "https://assets.example/scene.png",
+            "https://example.com/scene.png", "https://example.org/scene.png",
+            "https://example.net/scene.png", "https://assets.example.com/scene.png",
+            "https://assets.example.org/scene.png", "https://assets.example.net/scene.png",
+            "https://127.0.0.1/scene.png", "https://[::1]/scene.png",
+            "https://10.42.0.5/scene.png", "https://172.16.0.9/scene.png",
+            "https://192.168.1.9/scene.png", "https://169.254.169.254/scene.png",
+            "https://100.64.0.1/scene.png", "https://[fd00::1]/scene.png",
+            "https://2130706433/scene.png", "https://0x7f.0.0.1/scene.png",
+            "https://media.pixorize.com/\x00scene.png",
+        ]
+        before = self.fixture.manifest_path.read_bytes()
+        for example in examples:
+            self.review = copy.deepcopy(original)
+            self.review["references"][0]["exampleUrl"] = example
+            self.save_review()
+            with self.subTest(example=example), self.assertRaises(gate.PromptReviewError):
+                self.emit()
+            self.assertFalse(self.output.exists())
+            self.assertEqual(self.fixture.manifest_path.read_bytes(), before)
+        # These are syntax-only synthetic fixtures, not asserted real artwork.
+        # Independent CDN hosts and globally routable addresses remain usable
+        # when the reviewer actually records their official-page connection.
+        for example in ("https://i.ytimg.com/vi/synthetic-fixture/scene.png",
+                        "https://8.8.8.8/synthetic-scene.png"):
+            review = copy.deepcopy(original)
+            review["references"][0]["exampleUrl"] = example
+            gate.validate_review(self.request(), review)
+
     def test_timestamps_require_timezones_and_completed_inspection_before_review(self):
         for field, value in (("reviewedAt", "2025-01-01T12:00:00"),
                              ("reviewedAt", "2999-01-01T12:00:00Z"),
@@ -303,6 +340,64 @@ class ImagePromptGateTests(unittest.TestCase):
         self.assertEqual(self.fixture.manifest_path.read_bytes(), ledger_before)
         self.lesson["imagePrompt"] = "Reserve a clear area for separately rendered labels such as [Na+] and [95% CI]."
         gate.validate_art(self.lesson)
+
+    def test_completed_negative_placeholder_instruction_is_valid_but_empty_markers_are_not(self):
+        self.lesson["imagePrompt"] += " Do not render placeholder text in the reserved overlay space."
+        self.lesson["artBrief"]["overlayPlan"] = "Leave clean room for labels; no placeholder text is drawn in the artwork."
+        self.save_draft()
+        self.review["requestSha256"] = self.request()["requestSha256"]
+        self.save_review()
+        self.assertEqual(self.emit()["prompt"], self.lesson["imagePrompt"])
+        self.output.unlink()
+        before = self.fixture.manifest_path.read_bytes()
+        for unfinished in ("{{}}", "{{sourceObjective}}", "PLACEHOLDER", "placeholder: write the objective later"):
+            lesson = copy.deepcopy(self.lesson)
+            lesson["artBrief"]["objective"] = unfinished
+            with self.subTest(unfinished=unfinished), self.assertRaises(gate.PromptReviewError):
+                gate.validate_art(lesson)
+        self.assertFalse(self.output.exists())
+        self.assertEqual(self.fixture.manifest_path.read_bytes(), before)
+
+    def test_private_prompt_cannot_be_emitted_into_public_or_build_trees(self):
+        before = self.fixture.manifest_path.read_bytes()
+        for relative in ("ready-prompt.json", "web/data/ready-prompt.json",
+                         "production/ready-prompt.json", "build/fresh-web/ready-prompt.json",
+                         "dist/ready-prompt.json", "private-content/../web/ready-prompt.json"):
+            output = self.root / relative
+            with self.subTest(relative=relative), self.assertRaisesRegex(gate.PromptReviewError, "private-content"):
+                gate.emit(self.root, self.draft_path, self.lesson["id"], self.review_path, output)
+            self.assertFalse(output.exists())
+            self.assertEqual(self.fixture.manifest_path.read_bytes(), before)
+        self.assertEqual(self.emit()["prompt"], self.lesson["imagePrompt"])
+
+    def test_private_prompt_output_rejects_public_symlink_aliases_and_allows_external_workspace(self):
+        public = self.root / "web"
+        public.mkdir(exist_ok=True)
+        private_alias = self.root / "private-content/public-alias"
+        private_alias.symlink_to(public, target_is_directory=True)
+        before = self.fixture.manifest_path.read_bytes()
+        with tempfile.TemporaryDirectory(prefix="image-prompt-private-fixture-") as temporary:
+            external = Path(temporary)
+            public_alias = public / "external-alias"
+            public_alias.symlink_to(external, target_is_directory=True)
+            external_alias = external / "public-alias"
+            external_alias.symlink_to(public, target_is_directory=True)
+            for output in (private_alias / "ready.json", private_alias / "../ready.json",
+                           public_alias / "ready.json", external_alias / "ready.json"):
+                with self.subTest(output=output), self.assertRaisesRegex(gate.PromptReviewError, "private-content"):
+                    gate.emit(self.root, self.draft_path, self.lesson["id"], self.review_path, output)
+                self.assertFalse(output.exists())
+                self.assertEqual(self.fixture.manifest_path.read_bytes(), before)
+            output = external / "private-ready.json"
+            result = gate.emit(self.root, self.draft_path, self.lesson["id"], self.review_path, output)
+            self.assertEqual(json.loads(output.read_text()), result)
+            self.assertEqual(result["prompt"], self.lesson["imagePrompt"])
+            private_external = self.root / "private-content/external-private"
+            private_external.symlink_to(external, target_is_directory=True)
+            alias_output = private_external / "private-alias-ready.json"
+            alias_result = gate.emit(self.root, self.draft_path, self.lesson["id"], self.review_path, alias_output)
+            self.assertEqual(json.loads(alias_output.read_text()), alias_result)
+            self.assertTrue((external / "private-alias-ready.json").is_file())
 
     def test_unknown_duplicate_wrong_source_and_existing_outputs_are_protected(self):
         with self.assertRaisesRegex(gate.PromptReviewError, "exactly one existing"):

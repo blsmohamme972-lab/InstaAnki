@@ -338,8 +338,9 @@ class SourcePolicy:
         if missing:
             raise SourcePolicyError(
                 "Original Raja source is unavailable: " + ", ".join(missing) + ". "
-                "Restore private-content/ from the verified InstaAnki-Source-Archive.zip, "
-                "then rerun the source check. If only new scans are available, have the "
+                "Restore private-content/ from the verified original-book source backup, "
+                "then rerun the source check. No old APK, lesson ZIP or generated videos are required. "
+                "If only the original book PDF or new scans are available, have the "
                 "re-extraction reviewed and its new fingerprint explicitly approved in the "
                 "source policy; do not rename another collection. New production is blocked.")
         expected = self.policy["source"]["questionsSha256"]
@@ -420,18 +421,34 @@ class SourcePolicy:
                 f"Q{question['number']} lacks the current source-evidence checkpoint. "
                 "Claim the verified source question first; preserve its sourceEvidence in the authoring input.")
 
+    def check_lesson_identity(self, lesson_id, document, question):
+        """A repair keeps the existing app identity and its learning history."""
+        if not text(lesson_id):
+            raise SourcePolicyError("Authoring lessons need a nonempty canonical lesson ID")
+        if question.get("status") == "produced" and lesson_id != question.get("lessonId"):
+            raise SourcePolicyError(
+                f"Q{question['number']} is already produced as {question.get('lessonId')!r}; "
+                "preserve that canonical lesson ID when repairing it. A narration input with "
+                "a distinct audio id must also declare its canonical lessonId; adding that "
+                "identity metadata does not require an old APK or media regeneration.")
+        if any(other["number"] != question["number"] and other.get("lessonId") == lesson_id
+               for other in document["questions"]):
+            raise SourcePolicyError("Canonical lesson ID is already assigned to a different source question")
+
     def validate_authoring(self, document, lessons):
         if not isinstance(document, dict) or not lessons:
             raise SourcePolicyError("Authoring input must contain source-bound lessons")
         # A top-level declaration is optional only when every lesson carries an
         # explicit, checked sourceEvidence object. Audio filenames are not identity.
-        declared = first(document, "bookId", "book_id")
-        if declared is not None:
-            self.require_book(declared)
+        for field in ("bookId", "book_id"):
+            if field in document:
+                self.require_book(document[field])
         ledger = self.ledger()
         by_number = {q["number"]: q for q in ledger["questions"]}
-        bindings = {}
+        bindings, selected_numbers = {}, set()
         for lesson in lessons:
+            if not isinstance(lesson, dict):
+                raise SourcePolicyError("Authoring lessons must be source-bound objects")
             supplied = lesson.get("sourceEvidence", {})
             if not isinstance(supplied, dict) or not supplied:
                 raise SourcePolicyError(
@@ -441,6 +458,12 @@ class SourcePolicy:
             n = lesson.get("source_question_number", supplied.get("questionNumber"))
             if isinstance(n, bool) or not isinstance(n, int) or n not in by_number:
                 raise SourcePolicyError("Authoring lesson has no stable original source question number")
+            if ("questionNumber" in lesson and
+                    (type(lesson["questionNumber"]) is not int or lesson["questionNumber"] != n)):
+                raise SourcePolicyError("Authoring questionNumber differs from its source_question_number/evidence identity")
+            if n in selected_numbers:
+                raise SourcePolicyError("An authoring batch must select each source question only once")
+            selected_numbers.add(n)
             question = by_number[n]
             if question.get("status") != "produced":
                 self.require_new_production(n, batch_id=question.get("batchId"))
@@ -450,9 +473,31 @@ class SourcePolicy:
                 raise SourcePolicyError(f"Q{n} authoring source evidence differs from the verified claim")
             if not text(lesson.get("id")) or lesson["id"] in bindings:
                 raise SourcePolicyError("Authoring lessons need unique stable IDs")
+            if "lessonId" in lesson and lesson["lessonId"] != lesson["id"]:
+                raise SourcePolicyError("Canonical authoring id and lessonId differ; use the dedicated narration validation for an audio id")
+            self.check_lesson_identity(lesson["id"], ledger, question)
             validate_content_review(question, lesson, evidence, authoring=True)
             bindings[lesson["id"]] = evidence
         return bindings
+
+    def validate_audio_authoring(self, document, lessons):
+        """Validate the app identity separately from a narration file's ID.
+
+        Prepared narration carries lessonId for its canonical app lesson while
+        id continues to name its audio files. This does not alter reviewed text,
+        content fingerprints, audio bytes, or measured timing.
+        """
+        if not isinstance(lessons, list) or not lessons:
+            raise SourcePolicyError("Narration input must contain source-bound lessons")
+        canonical, audio_ids = [], set()
+        for lesson in lessons:
+            if not isinstance(lesson, dict) or not text(lesson.get("id")) or lesson["id"] in audio_ids:
+                raise SourcePolicyError("Narration inputs require unique nonempty audio IDs")
+            audio_ids.add(lesson["id"])
+            canonical.append({**lesson, "id": lesson.get("lessonId", lesson["id"])})
+        bindings = self.validate_authoring(document, canonical)
+        return {audio["id"]: bindings[authored["id"]]
+                for audio, authored in zip(lessons, canonical)}
 
     def validate_lesson_source(self, lesson, document, question):
         self.check_ledger(document)
@@ -462,6 +507,7 @@ class SourcePolicy:
         self.require_book(source.get("bookId"))
         if source.get("questionNumber") != question["number"]:
             raise SourcePolicyError("Lesson and ledger question identities differ")
+        self.check_lesson_identity(lesson.get("id"), document, question)
         evidence = self.evidence_for(document, question)
         self.check_claim_binding(question, evidence)
         if (source.get("questionId") != evidence["questionId"]

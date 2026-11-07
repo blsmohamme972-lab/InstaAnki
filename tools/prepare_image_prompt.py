@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import hashlib
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -40,7 +41,7 @@ class PromptReviewError(ValueError):
 
 def required_text(value, label, *, words=1):
     if (not isinstance(value, str) or len(value.strip().split()) < words
-            or re.search(r"\b(?:TODO|TBD|CHANGEME|PLACEHOLDER)\b|\{\{[^}]+\}\}", value, re.I)):
+            or re.search(r"\b(?:TODO|TBD|CHANGEME)\b|\{\{[^}]*\}\}|^\s*PLACEHOLDER\s*(?::|$)", value, re.I)):
         raise PromptReviewError(f"{label} needs meaningful completed text, not a placeholder")
     return value
 
@@ -72,8 +73,26 @@ def url(value, label):
     except ValueError:
         raise PromptReviewError(f"{label} is not a valid public HTTPS URL") from None
     if (parsed.scheme != "https" or not host or parsed.username or parsed.password
-            or port not in (None, 443) or "\\" in value or any(c.isspace() for c in value)):
+            or port not in (None, 443) or "\\" in value
+            or any(c.isspace() or ord(c) < 32 or ord(c) == 127 for c in value)):
         raise PromptReviewError(f"{label} must be a public HTTPS URL without credentials")
+    # Reject plainly non-public or documentation-only references without making
+    # DNS/network requests. The reviewer still must inspect the actual link.
+    normalized_host = host.rstrip(".")
+    try:
+        address = ipaddress.ip_address(normalized_host)
+    except ValueError:
+        local_domains = ("localhost", "localdomain", "local", "internal",
+                         "home.arpa", "test", "invalid", "example",
+                         "example.com", "example.org", "example.net")
+        numeric_address = r"(?:0[xX][0-9a-fA-F]+|[0-9]+)(?:\.(?:0[xX][0-9a-fA-F]+|[0-9]+)){0,3}"
+        if ("." not in normalized_host or re.fullmatch(numeric_address, normalized_host)
+                or any(normalized_host == domain or normalized_host.endswith("." + domain)
+                       for domain in local_domains)):
+            raise PromptReviewError(f"{label} must identify a public reference, not a local or reserved host")
+    else:
+        if not address.is_global:
+            raise PromptReviewError(f"{label} must identify a public reference, not a private or reserved address")
     for domain in PROVIDERS.values():
         if domain in host and host != domain and not host.endswith("." + domain):
             raise PromptReviewError(f"{label} uses a misleading provider hostname")
@@ -246,6 +265,35 @@ def write_new_output(path, bundle):
         temporary.unlink(missing_ok=True)
 
 
+def private_output_path(repo, path):
+    """Keep source-derived prompts out of the repository's public/build trees.
+
+    Private workspaces outside this repository, including private-content
+    symlinks to them, are supported; this local check cannot certify how an
+    external directory is shared or deployed elsewhere.
+    Check both the requested path and its resolved target so a symlink cannot
+    turn a public-tree output into a seemingly external/private destination.
+    """
+    path = Path(path)
+    if path.exists() or path.is_symlink():
+        raise PromptReviewError("Output already exists; preserve it and choose a new private output path")
+    repo = Path(repo).resolve()
+    private_root = repo / "private-content"
+    requested = Path(os.path.abspath(path))
+    try:
+        # Resolve the original path: normalizing '..' before following a parent
+        # symlink would change the destination's actual filesystem meaning.
+        resolved = path.resolve()
+    except RuntimeError as error:
+        raise PromptReviewError("Output path contains an invalid symlink chain") from error
+    for candidate in (requested, resolved):
+        if candidate.is_relative_to(repo) and not candidate.is_relative_to(private_root):
+            raise PromptReviewError(
+                "Source-derived prompt output inside this repository must stay under private-content; "
+                "never write it into web, build, dist or public production files")
+    return resolved
+
+
 def emit(repo, input_path, lesson_id, review_path, output_path):
     request = prepare_request(repo, input_path, lesson_id)
     review = read_json(review_path)
@@ -254,7 +302,7 @@ def emit(repo, input_path, lesson_id, review_path, output_path):
             or canonical_hash(read_json(review_path)) != receipt["reviewSha256"]):
         raise PromptReviewError("Inputs changed during preflight; no prompt was emitted")
     bundle = {"prompt": request["binding"]["imagePrompt"], "receipt": receipt}
-    write_new_output(output_path, bundle)
+    write_new_output(private_output_path(repo, output_path), bundle)
     return bundle
 
 

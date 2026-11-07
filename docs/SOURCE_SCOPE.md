@@ -12,7 +12,7 @@ Exact previously published starter content can be repackaged using the already-p
 
 ## Delivery and builds
 
-`npm run source:check` validates the active publication and bundled lessons. Both actual builders invoke the check, including direct Node invocation and the Android builder's selected web directory. Normal pack generation checks lessons plus publication metadata, including truthful produced counts and question identities. A claim can lag in the app display as ready; it cannot become a falsely produced lesson.
+For Fresh, run `npm run build:web:fresh` then `npm run source:check:fresh`; no old media is required. `npm run source:check` validates the separate legacy publication and bundled lessons, which requires its pinned existing media. Both actual builders invoke the appropriate check, including direct Node invocation and the Android builder's selected web directory. Normal pack generation checks lessons plus publication metadata, including truthful produced counts and question identities. A claim can lag in the app display as ready; it cannot become a falsely produced lesson.
 
 The source-scope workflow exercises wrong-source, missing-evidence, changed-content, misleading-metadata and direct-builder regressions. These checks enforce production and delivery; they do not replace clinical review or retrofit restrictions into an already-installed general-purpose importer.
 

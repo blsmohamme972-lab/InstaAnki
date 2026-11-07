@@ -96,7 +96,14 @@ public final class CollectionCorrectionTest {
         Path original = Path.of(args[0]).toAbsolutePath(), correction = Path.of(args[1]).toAbsolutePath();
         Path output = Path.of(args[2]).toAbsolutePath(); Files.createDirectories(output);
         Path working = Files.createTempDirectory(output, "native-run-");
-        ContentPacks packs = new ContentPacks(working.resolve("packs").toFile());
+        JSONArray fixtureBooks;
+        // This historical recovery harness explicitly chooses the archive's
+        // publication as its synthetic trust baseline. The Android app reads
+        // its approved books only from signed, bundled www/data/books.json.
+        try (ZipFile archive = new ZipFile(original.toFile()); InputStream input = archive.getInputStream(archive.getEntry("manifest.json"))) {
+            fixtureBooks = new JSONObject(new String(input.readAllBytes(), StandardCharsets.UTF_8)).getJSONArray("books");
+        }
+        ContentPacks packs = new ContentPacks(working.resolve("packs").toFile(), fixtureBooks);
         // This is a filesystem isolation sentinel, not a substitute for Android SQLite testing.
         Path state = working.resolve("separate-learning-state-sentinel.json");
         Files.writeString(state, "{\"note\":\"Do not change learning storage\",\"reviews\":[1]}\n");

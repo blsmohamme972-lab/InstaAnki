@@ -55,6 +55,15 @@ safe local media URL, title, caption, author, license, HTTPS source and license
 URLs, attribution, `aiGenerated:false`, and the exact local image SHA-256.
 Optimize and inspect final image bytes before preparing guidance.
 
+The target-inspection record must bind each poster, primary clinical, scene and
+target image to its actually inspected hash and dimensions, alongside the real
+reviewer, timezone-aware review time and notes. `visuallyInspected` must be the
+JSON boolean `true`; a nonempty string is not approval. See the
+[target-inspection workflow](production-workflow.md#bind-target-coordinates-to-the-inspected-image)
+for the required fields. Changing an image requires reinspection before guidance
+can be rebuilt. A subset selection must use its own output when an existing
+guidance file also contains other lessons.
+
 Both `realImage` and every `realImages` record must already use the canonical
 format before source review: an explicit `url` beginning with `media/` without a
 leading slash, a nonempty string `license`, and an explicit HTTPS `licenseUrl`.
@@ -119,6 +128,11 @@ evidence is available. A later request for more questions requires its own
 explicit reviewed authorization; do not reuse this trial to expand the set.
 
 For a Fresh data ZIP, select only the approved trial and its original-book publication.
+Use a distinct pack ID for each additional batch. Reusing an installed pack ID
+replaces that entire package rather than appending its lessons. A repair keeps
+the original lesson IDs, uses a higher lesson revision, and carries the complete
+intended contents of that package. Do not overwrite an earlier batch with a
+different subset under the same pack ID.
 Historical production counters may truthfully include older produced records;
 the imported trial contains only its explicitly selected lessons. A catalog entry for Fresh
 must declare `minAppVersionCode:4` and

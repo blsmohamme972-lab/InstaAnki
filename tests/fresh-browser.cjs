@@ -71,7 +71,12 @@ async function forceAction(page, attribute, value) {
 }
 async function main() {
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(web, 'data/lessons.json'))), []);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(web, 'data/distribution.json'))).app.packageName, 'com.instaanki.fresh');
+  const distribution = JSON.parse(fs.readFileSync(path.join(web, 'data/distribution.json')));
+  assert.equal(distribution.app.packageName, 'com.instaanki.fresh');
+  const ledger = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../production/books', distribution.approvedBookId + '.json')));
+  const produced = ledger.questions.filter(question => question.status === 'produced').sort((left, right) => left.number - right.number);
+  const producedNumbers = produced.map(question => question.number);
+  const producedIds = produced.map(question => question.lessonId).filter(Boolean);
   fs.mkdirSync(output, { recursive: true });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   origin = `http://127.0.0.1:${server.address().port}`;
@@ -97,24 +102,28 @@ async function main() {
     }
   });
 
-  await check('Publications preserve historical 3/200 without presenting old lessons as installed', async () => {
+  await check('Publications match the current verified production ledger without presenting historical lessons as installed', async () => {
     const { context, page, mediaRequests } = await session();
     try {
       await page.locator('[data-tab="publications"]').click();
       assert.equal(await page.locator('.publication-card').count(), 1);
       assert.match(await page.locator('.installed-summary').textContent(), /0lessons on this device/);
-      assert.match(await page.locator('.book-progress-head').textContent(), /Historical production3 \/ 200/);
+      assert.ok((await page.locator('.book-progress-head').textContent()).includes(`Historical production${produced.length} / ${ledger.totalQuestions}`));
       assert.equal(await page.locator('img[data-cover]').count(), 0);
       await page.screenshot({ path: path.join(output, 'publications-390.png') });
       await page.locator('.publication-card').click();
-      assert.match(await page.locator('#modal-body').textContent(), /3 lessons historically produced.*0 lessons on this device/s);
-      await page.locator('[data-question="5"]').click();
-      assert.match(await page.locator('#toast').textContent(), /produced previously.*not installed/);
+      const publicationText = await page.locator('#modal-body').textContent();
+      assert.ok(publicationText.includes(`${produced.length} lessons historically produced`));
+      assert.ok(publicationText.includes('0 lessons on this device'));
+      if (producedNumbers.length) {
+        await page.locator(`[data-question="${producedNumbers[0]}"]`).click();
+        assert.match(await page.locator('#toast').textContent(), /produced previously.*not installed/);
+      }
       await page.locator('[data-copy-plan]').click();
       const brief = await page.evaluate(() => testCopied);
       assert.match(brief, /^Repair the InstaAnki app only\. This fresh collection has no installed lessons\./);
-      assert.match(brief, /Produced source question numbers: 5, 54, 182/);
-      assert.match(brief, /Historical produced lesson IDs:.*shahzad2015-q005/);
+      assert.ok(brief.includes(`Produced source question numbers: ${producedNumbers.join(', ') || 'none'}`));
+      assert.ok(brief.includes(`Historical produced lesson IDs: ${producedIds.join(', ') || 'none'}`));
       assert.match(brief, /Do not create new videos/);
       assert.doesNotMatch(brief, /Next batch|Continue the InstaAnki/);
       await page.locator('[data-action="close-modal"]').click();

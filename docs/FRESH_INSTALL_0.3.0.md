@@ -28,10 +28,12 @@ The explicit fresh-start instruction resolves that dependency by authorizing a s
 ```bash
 npm ci
 npm run build:web:fresh
+npm run source:check:fresh
 python3 -m unittest discover -s tests -p 'test_fresh_distribution.py' -v
 python3 -m unittest discover -s tests -p 'test_android_fresh_profile.py' -v
 npx playwright install --with-deps chromium --only-shell
 npm run test:fresh
+npm run test:imports
 python3 android/bootstrap_sdk.py
 python3 android/build_apk.py --profile fresh --web-dir build/fresh-web --unsigned
 ```

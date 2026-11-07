@@ -154,15 +154,17 @@ class VisualSourceReviewTests(unittest.TestCase):
     def test_audio_authoring_preserves_visual_binding_without_changing_spoken_content(self):
         audio_document = audio_input({"lessons": [self.authored]})
         audio = audio_document["lessons"][0]
+        self.assertEqual(audio["id"], self.authored["audioLessonId"])
+        self.assertEqual(audio["lessonId"], self.authored["id"])
         self.assertEqual(audio["realImages"], self.authored["realImages"])
         self.assertEqual(audio["presentationPlan"], self.authored["presentationPlan"])
         self.assertEqual(audio["scenes"], self.authored["scenes"])
         self.assertEqual(content_fingerprints(audio, authoring=True), content_fingerprints(self.authored, authoring=True))
-        SourcePolicy(self.fixture.root).validate_authoring(audio_document, [audio])
+        SourcePolicy(self.fixture.root).validate_audio_authoring(audio_document, [audio])
         audio["realImages"][0]["caption"] = "Changed only in the prepared audio input"
         self.assertNotEqual(audio["realImages"], self.authored["realImages"])
         with self.assertRaisesRegex(SourcePolicyError, "visualSupplementSha256"):
-            SourcePolicy(self.fixture.root).validate_authoring(audio_document, [audio])
+            SourcePolicy(self.fixture.root).validate_audio_authoring(audio_document, [audio])
 
     def test_older_audio_input_cannot_drop_already_reviewed_visual_content(self):
         document = audio_input({"lessons": [self.authored]})
@@ -170,7 +172,7 @@ class VisualSourceReviewTests(unittest.TestCase):
         del audio["realImages"]
         del audio["presentationPlan"]
         with self.assertRaisesRegex(SourcePolicyError, "missing its reviewed visualSupplementSha256"):
-            SourcePolicy(self.fixture.root).validate_authoring(document, [audio])
+            SourcePolicy(self.fixture.root).validate_audio_authoring(document, [audio])
 
 
 class ImmutablePublishedVisualReplayTests(unittest.TestCase):

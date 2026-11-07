@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-07T00:00:00Z",
+  "repository": "blsmohamme972-lab/InstaAnki",
+  "latestApp": {
+    "version": "0.1.0",
+    "versionCode": 1,
+    "notes": "Initial personal APK. Native code updates require a new signed APK."
+  },
+  "packs": []
+}

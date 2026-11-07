@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "InstaAnki Question Tag Annotation v1",
-  "description": "English controlled-vocabulary annotation for one source question. Examples are illustrative and do not extract any uploaded book.",
+  "title": "InstaAnki Question Tag Annotation v1.1",
+  "description": "Controlled English vocabulary annotation for one source question. The optional concept_ids facet describes tested anatomical or physiological principles without inferring a diagnosis.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -35,7 +35,7 @@
       "minimum": 1
     },
     "taxonomy_version": {
-      "const": "1.0.0"
+      "const": "1.1.0"
     },
     "annotation_revision": {
       "type": "integer",
@@ -102,6 +102,7 @@
         "domain.trauma",
         "domain.perioperative",
         "domain.vascular_compression",
+        "domain.vascular_physiology",
         null
       ]
     },
@@ -136,7 +137,8 @@
           "domain.aortic",
           "domain.trauma",
           "domain.perioperative",
-          "domain.vascular_compression"
+          "domain.vascular_compression",
+          "domain.vascular_physiology"
         ]
       },
       "uniqueItems": true,
@@ -179,7 +181,9 @@
           "condition.abdominal_aortic_aneurysm",
           "condition.thoracic_aortic_aneurysm",
           "condition.stanford_type_a_dissection",
-          "condition.stanford_type_b_dissection"
+          "condition.stanford_type_b_dissection",
+          "condition.pulmonary_sequestration",
+          "condition.extralobar_pulmonary_sequestration"
         ]
       },
       "uniqueItems": true,
@@ -401,7 +405,13 @@
               "phase.postoperative",
               "population.adult",
               "population.pediatric",
-              "population.neonatal"
+              "population.neonatal",
+              "domain.vascular_physiology",
+              "concept.coronary_dominance",
+              "concept.vascular_resistance",
+              "concept.poiseuille_law",
+              "condition.pulmonary_sequestration",
+              "condition.extralobar_pulmonary_sequestration"
             ]
           },
           "source_field": {
@@ -432,6 +442,20 @@
         "minLength": 1
       },
       "uniqueItems": true
+    },
+    "concept_ids": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "concept.coronary_dominance",
+          "concept.vascular_resistance",
+          "concept.poiseuille_law"
+        ]
+      },
+      "uniqueItems": true,
+      "maxItems": 3,
+      "default": [],
+      "description": "Optional tested non-disease concepts; absent is interpreted as an empty list."
     }
   },
   "allOf": [

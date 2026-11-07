@@ -1,0 +1,1888 @@
+{
+  "schemaVersion": 1,
+  "bookId": "shahzad-raja-2015-200-practice-questions",
+  "title": "200 Practice Questions in Cardiothoracic Surgery",
+  "author": "Shahzad G. Raja",
+  "year": 2015,
+  "totalQuestions": 200,
+  "completedVideos": 3,
+  "completedQuestionNumbers": [
+    5,
+    54,
+    182
+  ],
+  "updatedAt": "2026-11-07T15:14:01.520773Z",
+  "source": {
+    "extracted": true,
+    "originalPdfRetained": false,
+    "privateArchiveLocation": "source-vault/raja2015.iaenc (authenticated encrypted source archive; separate private recovery key required)",
+    "extractionSha256": "b34823f25b23d78353132b0f3985681c2377639aaae8e1436b91659ffeb2a4ef"
+  },
+  "questions": [
+    {
+      "number": 1,
+      "id": "shahzad-raja-2015-200-practice-questions-q001",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 2,
+      "id": "shahzad-raja-2015-200-practice-questions-q002",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 3,
+      "id": "shahzad-raja-2015-200-practice-questions-q003",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 4,
+      "id": "shahzad-raja-2015-200-practice-questions-q004",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 5,
+      "id": "shahzad-raja-2015-200-practice-questions-q005",
+      "status": "produced",
+      "batchId": null,
+      "lessonId": "shahzad2015-q005",
+      "expectedTagIds": [
+        "specialty.thoracic",
+        "domain.lung",
+        "focus.anatomy",
+        "condition.extralobar_pulmonary_sequestration",
+        "anatomy.lung",
+        "anatomy.pleura"
+      ],
+      "expectedCorrectIndex": 4,
+      "expectedQuizSha256": "2dcf69694aca9546f83285b6ecefa73553dde504d581378b43799033ae4f6b01",
+      "sourceReview": {
+        "reviewedAt": "2026-11-07T15:13:24.461428Z",
+        "scope": "Source-aligned original teaching objective and keyed answer; no certification of all source-book management statements.",
+        "sourceAnswerLetter": "E",
+        "sourceRecordSha256": "962dda02198f70f8cc4121c72e4e4054a2194feb316069172179f17a02c67991",
+        "sourceQuestionPages": [
+          {
+            "pdf_page": 14,
+            "printed_page": 2
+          }
+        ],
+        "sourceAnswerPages": [
+          {
+            "pdf_page": 83,
+            "printed_page": 71
+          }
+        ],
+        "reviewedSourceFlags": [],
+        "remainingSourceFlags": []
+      },
+      "producedAt": "2026-11-07T15:14:01.455220Z",
+      "productionValidation": {
+        "lessonId": "shahzad2015-q005",
+        "lessonVersion": 1,
+        "lessonSha256": "a32d202e609b2d6cf105cd156708e46cda3647f969c45730ec5e50e8ea1ebef0",
+        "quizSha256": "2dcf69694aca9546f83285b6ecefa73553dde504d581378b43799033ae4f6b01",
+        "sourceQuestionId": "shahzad-raja-2015-200-practice-questions-q005",
+        "taxonomyVersion": "1.1.0",
+        "tagIds": [
+          "specialty.thoracic",
+          "domain.lung",
+          "focus.anatomy",
+          "condition.extralobar_pulmonary_sequestration",
+          "anatomy.lung",
+          "anatomy.pleura"
+        ],
+        "durationSeconds": 76.88195833333333,
+        "actualAudioDurationSeconds": 76.944,
+        "sceneCount": 6,
+        "realImageCount": 1,
+        "audioTimingSha256": "ecccc8cefae01d9ffb6d5dfe89115cbb929334e955818e47992f722e6d034b5e",
+        "mediaSha256": {
+          "media/audio/lesson-shahzad2015-q005-v1.mp3": "bdbfadc526a7ea4cfb91ee1d77379248feb8b76e1cb88a1c0f758d18c453385b",
+          "media/mnemonic/sequestration-palace.png": "e1916db3d6f429b7eef27d200815bb5fddc7186d9a2f790210794d91034d7bac",
+          "media/real/extralobar-sequestration-thoracoscopy.jpg": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8"
+        },
+        "checkedAt": "2026-11-07T15:14:01.454550Z"
+      },
+      "qaReport": {
+        "schemaVersion": 1,
+        "bookId": "shahzad-raja-2015-200-practice-questions",
+        "questionNumber": 5,
+        "lessonId": "shahzad2015-q005",
+        "reviewedAt": "2026-11-07T15:14:01.164355Z",
+        "sourceChecked": true,
+        "visualInspected": true,
+        "audioDecoded": true,
+        "timelineBrowserTested": true,
+        "physicalAndroidTested": false,
+        "humanListeningReviewed": false,
+        "notes": [
+          "Three original English teaching objectives and keyed MCQs were compared with the corresponding privately retained structured source records: Q5, Q54 and Q182.",
+          "Q182 formula layout was visually verified against preserved source question and answer page renders. Its source review resolution is recorded in the production ledger.",
+          "All three final 2D mnemonic images and the three real source figures were visually inspected. The clinical captions distinguish the specific relevant panels and do not present symbolic drawings as anatomy.",
+          "All three MP3 files decoded completely with ffmpeg without errors. Scene/transcript/timing companions and 60-90 second runtime passed the production validator.",
+          "Browser smoke tests passed for loading all three lessons, playback enrollment, seeking, speed persistence, timed real-image outro and quiz, local learning state, due review, backup, catalog and mobile widths.",
+          "Each lesson playing mnemonic frame and timed clinical outro was inspected during the final browser review. Four lock symbols are visible in the vascular lesson and labels do not cover its focal cues.",
+          "Human listening and installation/playback on a physical Android device remain pending; these are explicitly recorded and are not implied by the production count."
+        ],
+        "lessonEvidence": {
+          "lessonSha256": "a32d202e609b2d6cf105cd156708e46cda3647f969c45730ec5e50e8ea1ebef0",
+          "browserFrames": {
+            "mnemonic": {
+              "file": "test-results/shahzad2015-q005-mnemonic.png",
+              "sha256": "3c1b21d096ee786b94d0d19fa555bf77d33d500da3c5105c5f7f773ec96ee2a5"
+            },
+            "real": {
+              "file": "test-results/shahzad2015-q005-real.png",
+              "sha256": "c570eeb1922ee4adc7e63747b880c630d60c4fe4643991ab22c1bc7c42ba6aef"
+            }
+          }
+        },
+        "reportSha256": "f63cc9aa0d26d0117b68d3a8894e807072c03e7248bba578562eb69326e56521",
+        "scope": "verified_lesson_assets_and_browser_timeline"
+      },
+      "assetQaRecordedAt": "2026-11-07T15:14:01.455227Z",
+      "pendingDeviceQA": true,
+      "pendingHumanListeningQA": true
+    },
+    {
+      "number": 6,
+      "id": "shahzad-raja-2015-200-practice-questions-q006",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 7,
+      "id": "shahzad-raja-2015-200-practice-questions-q007",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 8,
+      "id": "shahzad-raja-2015-200-practice-questions-q008",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "source_option_order_nonsequential"
+      ]
+    },
+    {
+      "number": 9,
+      "id": "shahzad-raja-2015-200-practice-questions-q009",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 10,
+      "id": "shahzad-raja-2015-200-practice-questions-q010",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 11,
+      "id": "shahzad-raja-2015-200-practice-questions-q011",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 12,
+      "id": "shahzad-raja-2015-200-practice-questions-q012",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 13,
+      "id": "shahzad-raja-2015-200-practice-questions-q013",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 14,
+      "id": "shahzad-raja-2015-200-practice-questions-q014",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 15,
+      "id": "shahzad-raja-2015-200-practice-questions-q015",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 16,
+      "id": "shahzad-raja-2015-200-practice-questions-q016",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 17,
+      "id": "shahzad-raja-2015-200-practice-questions-q017",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 18,
+      "id": "shahzad-raja-2015-200-practice-questions-q018",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 19,
+      "id": "shahzad-raja-2015-200-practice-questions-q019",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 20,
+      "id": "shahzad-raja-2015-200-practice-questions-q020",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 21,
+      "id": "shahzad-raja-2015-200-practice-questions-q021",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 22,
+      "id": "shahzad-raja-2015-200-practice-questions-q022",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 23,
+      "id": "shahzad-raja-2015-200-practice-questions-q023",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate",
+        "image_only_options",
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 24,
+      "id": "shahzad-raja-2015-200-practice-questions-q024",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 25,
+      "id": "shahzad-raja-2015-200-practice-questions-q025",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 26,
+      "id": "shahzad-raja-2015-200-practice-questions-q026",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 27,
+      "id": "shahzad-raja-2015-200-practice-questions-q027",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 28,
+      "id": "shahzad-raja-2015-200-practice-questions-q028",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 29,
+      "id": "shahzad-raja-2015-200-practice-questions-q029",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 30,
+      "id": "shahzad-raja-2015-200-practice-questions-q030",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 31,
+      "id": "shahzad-raja-2015-200-practice-questions-q031",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 32,
+      "id": "shahzad-raja-2015-200-practice-questions-q032",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 33,
+      "id": "shahzad-raja-2015-200-practice-questions-q033",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 34,
+      "id": "shahzad-raja-2015-200-practice-questions-q034",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 35,
+      "id": "shahzad-raja-2015-200-practice-questions-q035",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 36,
+      "id": "shahzad-raja-2015-200-practice-questions-q036",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 37,
+      "id": "shahzad-raja-2015-200-practice-questions-q037",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 38,
+      "id": "shahzad-raja-2015-200-practice-questions-q038",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 39,
+      "id": "shahzad-raja-2015-200-practice-questions-q039",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 40,
+      "id": "shahzad-raja-2015-200-practice-questions-q040",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 41,
+      "id": "shahzad-raja-2015-200-practice-questions-q041",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 42,
+      "id": "shahzad-raja-2015-200-practice-questions-q042",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 43,
+      "id": "shahzad-raja-2015-200-practice-questions-q043",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 44,
+      "id": "shahzad-raja-2015-200-practice-questions-q044",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "image_only_explanation",
+        "image_only_explanation"
+      ]
+    },
+    {
+      "number": 45,
+      "id": "shahzad-raja-2015-200-practice-questions-q045",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 46,
+      "id": "shahzad-raja-2015-200-practice-questions-q046",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 47,
+      "id": "shahzad-raja-2015-200-practice-questions-q047",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 48,
+      "id": "shahzad-raja-2015-200-practice-questions-q048",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 49,
+      "id": "shahzad-raja-2015-200-practice-questions-q049",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "duplicated_answer_in_source"
+      ]
+    },
+    {
+      "number": 50,
+      "id": "shahzad-raja-2015-200-practice-questions-q050",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 51,
+      "id": "shahzad-raja-2015-200-practice-questions-q051",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 52,
+      "id": "shahzad-raja-2015-200-practice-questions-q052",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 53,
+      "id": "shahzad-raja-2015-200-practice-questions-q053",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 54,
+      "id": "shahzad-raja-2015-200-practice-questions-q054",
+      "status": "produced",
+      "batchId": null,
+      "lessonId": "shahzad2015-q054",
+      "expectedTagIds": [
+        "specialty.cardiac",
+        "domain.coronary",
+        "focus.anatomy",
+        "concept.coronary_dominance",
+        "anatomy.coronary_arteries"
+      ],
+      "expectedCorrectIndex": 1,
+      "expectedQuizSha256": "3f7fe6609192d77680a55cfdd59370adb37e242f6be7cdbfbf90ae6f91f57eca",
+      "sourceReview": {
+        "reviewedAt": "2026-11-07T15:13:24.461523Z",
+        "scope": "Source-aligned original teaching objective and keyed answer; no certification of all source-book management statements.",
+        "sourceAnswerLetter": "B",
+        "sourceRecordSha256": "ac40549eebf4ec775034f975f5c85fb7cd72fb31a132087decb9aa747752fe52",
+        "sourceQuestionPages": [
+          {
+            "pdf_page": 32,
+            "printed_page": 20
+          }
+        ],
+        "sourceAnswerPages": [
+          {
+            "pdf_page": 116,
+            "printed_page": 104
+          },
+          {
+            "pdf_page": 117,
+            "printed_page": 105
+          }
+        ],
+        "reviewedSourceFlags": [],
+        "remainingSourceFlags": []
+      },
+      "producedAt": "2026-11-07T15:14:01.393702Z",
+      "productionValidation": {
+        "lessonId": "shahzad2015-q054",
+        "lessonVersion": 1,
+        "lessonSha256": "0aa1a3d39c3c62d77d01d5321e12c92415eead662e2cd4a119c53c5451cf95e4",
+        "quizSha256": "3f7fe6609192d77680a55cfdd59370adb37e242f6be7cdbfbf90ae6f91f57eca",
+        "sourceQuestionId": "shahzad-raja-2015-200-practice-questions-q054",
+        "taxonomyVersion": "1.1.0",
+        "tagIds": [
+          "specialty.cardiac",
+          "domain.coronary",
+          "focus.anatomy",
+          "concept.coronary_dominance",
+          "anatomy.coronary_arteries"
+        ],
+        "durationSeconds": 71.70666666666666,
+        "actualAudioDurationSeconds": 71.76,
+        "sceneCount": 6,
+        "realImageCount": 1,
+        "audioTimingSha256": "8eb93938def8f5acf0c6ad25c41c6358d867782bf31e3235a688da5609cc5d3d",
+        "mediaSha256": {
+          "media/audio/lesson-shahzad2015-q054-v1.mp3": "0c65ff04ac88ea2f57fd24f8c47990a9acde34c724f742f3fcedfe644da310ab",
+          "media/mnemonic/coronary-palace.png": "07db19e1ecdb5862c5f6b0b530c6022d45b465f49f9098e5486e2fb5f43a672f",
+          "media/real/coronary-dominance-angiograms.png": "c05a32baa2a5bde37d86bdb8d300f54c38840a93ba22366e965be04542aa9fa2"
+        },
+        "checkedAt": "2026-11-07T15:14:01.392680Z"
+      },
+      "qaReport": {
+        "schemaVersion": 1,
+        "bookId": "shahzad-raja-2015-200-practice-questions",
+        "questionNumber": 54,
+        "lessonId": "shahzad2015-q054",
+        "reviewedAt": "2026-11-07T15:14:01.164355Z",
+        "sourceChecked": true,
+        "visualInspected": true,
+        "audioDecoded": true,
+        "timelineBrowserTested": true,
+        "physicalAndroidTested": false,
+        "humanListeningReviewed": false,
+        "notes": [
+          "Three original English teaching objectives and keyed MCQs were compared with the corresponding privately retained structured source records: Q5, Q54 and Q182.",
+          "Q182 formula layout was visually verified against preserved source question and answer page renders. Its source review resolution is recorded in the production ledger.",
+          "All three final 2D mnemonic images and the three real source figures were visually inspected. The clinical captions distinguish the specific relevant panels and do not present symbolic drawings as anatomy.",
+          "All three MP3 files decoded completely with ffmpeg without errors. Scene/transcript/timing companions and 60-90 second runtime passed the production validator.",
+          "Browser smoke tests passed for loading all three lessons, playback enrollment, seeking, speed persistence, timed real-image outro and quiz, local learning state, due review, backup, catalog and mobile widths.",
+          "Each lesson playing mnemonic frame and timed clinical outro was inspected during the final browser review. Four lock symbols are visible in the vascular lesson and labels do not cover its focal cues.",
+          "Human listening and installation/playback on a physical Android device remain pending; these are explicitly recorded and are not implied by the production count."
+        ],
+        "lessonEvidence": {
+          "lessonSha256": "0aa1a3d39c3c62d77d01d5321e12c92415eead662e2cd4a119c53c5451cf95e4",
+          "browserFrames": {
+            "mnemonic": {
+              "file": "test-results/shahzad2015-q054-mnemonic.png",
+              "sha256": "17b1b57191730b5e2dfcdf72f94778542ba66f9036df82981c8ec748067ba305"
+            },
+            "real": {
+              "file": "test-results/shahzad2015-q054-real.png",
+              "sha256": "baa517679a0452e29845f4e83fce5ba6911fe68b8db224ba395e9265e8511f9a"
+            }
+          }
+        },
+        "reportSha256": "f63cc9aa0d26d0117b68d3a8894e807072c03e7248bba578562eb69326e56521",
+        "scope": "verified_lesson_assets_and_browser_timeline"
+      },
+      "assetQaRecordedAt": "2026-11-07T15:14:01.393708Z",
+      "pendingDeviceQA": true,
+      "pendingHumanListeningQA": true
+    },
+    {
+      "number": 55,
+      "id": "shahzad-raja-2015-200-practice-questions-q055",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 56,
+      "id": "shahzad-raja-2015-200-practice-questions-q056",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 57,
+      "id": "shahzad-raja-2015-200-practice-questions-q057",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 58,
+      "id": "shahzad-raja-2015-200-practice-questions-q058",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 59,
+      "id": "shahzad-raja-2015-200-practice-questions-q059",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 60,
+      "id": "shahzad-raja-2015-200-practice-questions-q060",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 61,
+      "id": "shahzad-raja-2015-200-practice-questions-q061",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 62,
+      "id": "shahzad-raja-2015-200-practice-questions-q062",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 63,
+      "id": "shahzad-raja-2015-200-practice-questions-q063",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 64,
+      "id": "shahzad-raja-2015-200-practice-questions-q064",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 65,
+      "id": "shahzad-raja-2015-200-practice-questions-q065",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 66,
+      "id": "shahzad-raja-2015-200-practice-questions-q066",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 67,
+      "id": "shahzad-raja-2015-200-practice-questions-q067",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 68,
+      "id": "shahzad-raja-2015-200-practice-questions-q068",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 69,
+      "id": "shahzad-raja-2015-200-practice-questions-q069",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 70,
+      "id": "shahzad-raja-2015-200-practice-questions-q070",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 71,
+      "id": "shahzad-raja-2015-200-practice-questions-q071",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 72,
+      "id": "shahzad-raja-2015-200-practice-questions-q072",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 73,
+      "id": "shahzad-raja-2015-200-practice-questions-q073",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 74,
+      "id": "shahzad-raja-2015-200-practice-questions-q074",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 75,
+      "id": "shahzad-raja-2015-200-practice-questions-q075",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 76,
+      "id": "shahzad-raja-2015-200-practice-questions-q076",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 77,
+      "id": "shahzad-raja-2015-200-practice-questions-q077",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 78,
+      "id": "shahzad-raja-2015-200-practice-questions-q078",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 79,
+      "id": "shahzad-raja-2015-200-practice-questions-q079",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 80,
+      "id": "shahzad-raja-2015-200-practice-questions-q080",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 81,
+      "id": "shahzad-raja-2015-200-practice-questions-q081",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 82,
+      "id": "shahzad-raja-2015-200-practice-questions-q082",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "duplicated_answer_in_source"
+      ]
+    },
+    {
+      "number": 83,
+      "id": "shahzad-raja-2015-200-practice-questions-q083",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 84,
+      "id": "shahzad-raja-2015-200-practice-questions-q084",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 85,
+      "id": "shahzad-raja-2015-200-practice-questions-q085",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 86,
+      "id": "shahzad-raja-2015-200-practice-questions-q086",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 87,
+      "id": "shahzad-raja-2015-200-practice-questions-q087",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 88,
+      "id": "shahzad-raja-2015-200-practice-questions-q088",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 89,
+      "id": "shahzad-raja-2015-200-practice-questions-q089",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 90,
+      "id": "shahzad-raja-2015-200-practice-questions-q090",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 91,
+      "id": "shahzad-raja-2015-200-practice-questions-q091",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 92,
+      "id": "shahzad-raja-2015-200-practice-questions-q092",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 93,
+      "id": "shahzad-raja-2015-200-practice-questions-q093",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 94,
+      "id": "shahzad-raja-2015-200-practice-questions-q094",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 95,
+      "id": "shahzad-raja-2015-200-practice-questions-q095",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 96,
+      "id": "shahzad-raja-2015-200-practice-questions-q096",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 97,
+      "id": "shahzad-raja-2015-200-practice-questions-q097",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 98,
+      "id": "shahzad-raja-2015-200-practice-questions-q098",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 99,
+      "id": "shahzad-raja-2015-200-practice-questions-q099",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 100,
+      "id": "shahzad-raja-2015-200-practice-questions-q100",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 101,
+      "id": "shahzad-raja-2015-200-practice-questions-q101",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 102,
+      "id": "shahzad-raja-2015-200-practice-questions-q102",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 103,
+      "id": "shahzad-raja-2015-200-practice-questions-q103",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "source_option_labels_missing_reconstructed_by_order",
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 104,
+      "id": "shahzad-raja-2015-200-practice-questions-q104",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 105,
+      "id": "shahzad-raja-2015-200-practice-questions-q105",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 106,
+      "id": "shahzad-raja-2015-200-practice-questions-q106",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 107,
+      "id": "shahzad-raja-2015-200-practice-questions-q107",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 108,
+      "id": "shahzad-raja-2015-200-practice-questions-q108",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 109,
+      "id": "shahzad-raja-2015-200-practice-questions-q109",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 110,
+      "id": "shahzad-raja-2015-200-practice-questions-q110",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 111,
+      "id": "shahzad-raja-2015-200-practice-questions-q111",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 112,
+      "id": "shahzad-raja-2015-200-practice-questions-q112",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 113,
+      "id": "shahzad-raja-2015-200-practice-questions-q113",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 114,
+      "id": "shahzad-raja-2015-200-practice-questions-q114",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 115,
+      "id": "shahzad-raja-2015-200-practice-questions-q115",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 116,
+      "id": "shahzad-raja-2015-200-practice-questions-q116",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 117,
+      "id": "shahzad-raja-2015-200-practice-questions-q117",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 118,
+      "id": "shahzad-raja-2015-200-practice-questions-q118",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 119,
+      "id": "shahzad-raja-2015-200-practice-questions-q119",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 120,
+      "id": "shahzad-raja-2015-200-practice-questions-q120",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 121,
+      "id": "shahzad-raja-2015-200-practice-questions-q121",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 122,
+      "id": "shahzad-raja-2015-200-practice-questions-q122",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 123,
+      "id": "shahzad-raja-2015-200-practice-questions-q123",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 124,
+      "id": "shahzad-raja-2015-200-practice-questions-q124",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 125,
+      "id": "shahzad-raja-2015-200-practice-questions-q125",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 126,
+      "id": "shahzad-raja-2015-200-practice-questions-q126",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 127,
+      "id": "shahzad-raja-2015-200-practice-questions-q127",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 128,
+      "id": "shahzad-raja-2015-200-practice-questions-q128",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 129,
+      "id": "shahzad-raja-2015-200-practice-questions-q129",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 130,
+      "id": "shahzad-raja-2015-200-practice-questions-q130",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 131,
+      "id": "shahzad-raja-2015-200-practice-questions-q131",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 132,
+      "id": "shahzad-raja-2015-200-practice-questions-q132",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 133,
+      "id": "shahzad-raja-2015-200-practice-questions-q133",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 134,
+      "id": "shahzad-raja-2015-200-practice-questions-q134",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 135,
+      "id": "shahzad-raja-2015-200-practice-questions-q135",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 136,
+      "id": "shahzad-raja-2015-200-practice-questions-q136",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 137,
+      "id": "shahzad-raja-2015-200-practice-questions-q137",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 138,
+      "id": "shahzad-raja-2015-200-practice-questions-q138",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 139,
+      "id": "shahzad-raja-2015-200-practice-questions-q139",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 140,
+      "id": "shahzad-raja-2015-200-practice-questions-q140",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 141,
+      "id": "shahzad-raja-2015-200-practice-questions-q141",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 142,
+      "id": "shahzad-raja-2015-200-practice-questions-q142",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 143,
+      "id": "shahzad-raja-2015-200-practice-questions-q143",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 144,
+      "id": "shahzad-raja-2015-200-practice-questions-q144",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 145,
+      "id": "shahzad-raja-2015-200-practice-questions-q145",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 146,
+      "id": "shahzad-raja-2015-200-practice-questions-q146",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 147,
+      "id": "shahzad-raja-2015-200-practice-questions-q147",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 148,
+      "id": "shahzad-raja-2015-200-practice-questions-q148",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 149,
+      "id": "shahzad-raja-2015-200-practice-questions-q149",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 150,
+      "id": "shahzad-raja-2015-200-practice-questions-q150",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 151,
+      "id": "shahzad-raja-2015-200-practice-questions-q151",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 152,
+      "id": "shahzad-raja-2015-200-practice-questions-q152",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 153,
+      "id": "shahzad-raja-2015-200-practice-questions-q153",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 154,
+      "id": "shahzad-raja-2015-200-practice-questions-q154",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 155,
+      "id": "shahzad-raja-2015-200-practice-questions-q155",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 156,
+      "id": "shahzad-raja-2015-200-practice-questions-q156",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 157,
+      "id": "shahzad-raja-2015-200-practice-questions-q157",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 158,
+      "id": "shahzad-raja-2015-200-practice-questions-q158",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 159,
+      "id": "shahzad-raja-2015-200-practice-questions-q159",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 160,
+      "id": "shahzad-raja-2015-200-practice-questions-q160",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 161,
+      "id": "shahzad-raja-2015-200-practice-questions-q161",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 162,
+      "id": "shahzad-raja-2015-200-practice-questions-q162",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 163,
+      "id": "shahzad-raja-2015-200-practice-questions-q163",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 164,
+      "id": "shahzad-raja-2015-200-practice-questions-q164",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 165,
+      "id": "shahzad-raja-2015-200-practice-questions-q165",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 166,
+      "id": "shahzad-raja-2015-200-practice-questions-q166",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 167,
+      "id": "shahzad-raja-2015-200-practice-questions-q167",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 168,
+      "id": "shahzad-raja-2015-200-practice-questions-q168",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 169,
+      "id": "shahzad-raja-2015-200-practice-questions-q169",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 170,
+      "id": "shahzad-raja-2015-200-practice-questions-q170",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 171,
+      "id": "shahzad-raja-2015-200-practice-questions-q171",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 172,
+      "id": "shahzad-raja-2015-200-practice-questions-q172",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 173,
+      "id": "shahzad-raja-2015-200-practice-questions-q173",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 174,
+      "id": "shahzad-raja-2015-200-practice-questions-q174",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate",
+        "image_only_explanation",
+        "image_only_explanation"
+      ]
+    },
+    {
+      "number": 175,
+      "id": "shahzad-raja-2015-200-practice-questions-q175",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate",
+        "source_answer_cross_reference"
+      ]
+    },
+    {
+      "number": 176,
+      "id": "shahzad-raja-2015-200-practice-questions-q176",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 177,
+      "id": "shahzad-raja-2015-200-practice-questions-q177",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 178,
+      "id": "shahzad-raja-2015-200-practice-questions-q178",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 179,
+      "id": "shahzad-raja-2015-200-practice-questions-q179",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 180,
+      "id": "shahzad-raja-2015-200-practice-questions-q180",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "duplicated_answer_in_source"
+      ]
+    },
+    {
+      "number": 181,
+      "id": "shahzad-raja-2015-200-practice-questions-q181",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ]
+    },
+    {
+      "number": 182,
+      "id": "shahzad-raja-2015-200-practice-questions-q182",
+      "status": "produced",
+      "batchId": null,
+      "lessonId": "shahzad2015-q182",
+      "extractionReview": {
+        "status": "resolved",
+        "reviewedAt": "2026-11-07T14:46:25.395558Z",
+        "sourceFlagHistory": [
+          "layout_sensitive_source"
+        ],
+        "sourcePages": {
+          "question": {
+            "pdfPage": 72,
+            "printedPage": 60
+          },
+          "answer": {
+            "pdfPage": 175,
+            "printedPage": 163
+          }
+        },
+        "evidence": "The question and answer page renders were visually checked. The equation is an inverse fourth-power relation; doubling diameter gives one sixteenth of the resistance, so 16 PRU becomes 1 PRU, answer A. The layout flag remains in the private source transcription history.",
+        "scope": "source_layout_and_key_verification; no device or audio-listening claim"
+      },
+      "sourceReviewFlags": [
+        "layout_sensitive_source"
+      ],
+      "expectedTagIds": [
+        "specialty.vascular",
+        "domain.vascular_physiology",
+        "focus.physiology",
+        "concept.vascular_resistance",
+        "concept.poiseuille_law"
+      ],
+      "expectedCorrectIndex": 0,
+      "expectedQuizSha256": "b2f53b7c12211796d315332f6e004ac6d87eddbc05ceec46b5db62a0fffb5563",
+      "sourceReview": {
+        "reviewedAt": "2026-11-07T15:13:24.461609Z",
+        "scope": "Source-aligned original teaching objective and keyed answer; no certification of all source-book management statements.",
+        "sourceAnswerLetter": "A",
+        "sourceRecordSha256": "798792998bb9408de5318d601d95d8a205c0d4be56efebb307aa5abc2fcdaa9e",
+        "sourceQuestionPages": [
+          {
+            "pdf_page": 72,
+            "printed_page": 60
+          }
+        ],
+        "sourceAnswerPages": [
+          {
+            "pdf_page": 175,
+            "printed_page": 163
+          }
+        ],
+        "reviewedSourceFlags": [
+          "layout_sensitive_source"
+        ],
+        "remainingSourceFlags": [],
+        "resolution": "Read the preserved question and answer page renders. The resistance expression has r to the fourth power in the denominator; unchanged length and viscosity plus doubled diameter yields one sixteenth of the original resistance. The generated lesson and key preserve that relationship.",
+        "layoutEvidence": [
+          {
+            "path": "source-page-renders/pdf-page-072.png",
+            "sha256": "8c354a64a5da8d6dc656ca28819bbaa085ac6265db942c24e0b768a4ce94de7f"
+          },
+          {
+            "path": "source-page-renders/pdf-page-175.png",
+            "sha256": "dcd725da44c6d7cee9bfebef9cdf8ddd958c4c13319f90c7c2bfbdb1226c2514"
+          }
+        ]
+      },
+      "producedAt": "2026-11-07T15:14:01.520751Z",
+      "productionValidation": {
+        "lessonId": "shahzad2015-q182",
+        "lessonVersion": 1,
+        "lessonSha256": "cf770b0ccd0bb9e0fcf6836876042a0adde27c665c0e2214e0a2144f77ecbe61",
+        "quizSha256": "b2f53b7c12211796d315332f6e004ac6d87eddbc05ceec46b5db62a0fffb5563",
+        "sourceQuestionId": "shahzad-raja-2015-200-practice-questions-q182",
+        "taxonomyVersion": "1.1.0",
+        "tagIds": [
+          "specialty.vascular",
+          "domain.vascular_physiology",
+          "focus.physiology",
+          "concept.vascular_resistance",
+          "concept.poiseuille_law"
+        ],
+        "durationSeconds": 73.99329166666666,
+        "actualAudioDurationSeconds": 74.064,
+        "sceneCount": 6,
+        "realImageCount": 1,
+        "audioTimingSha256": "077bfda2d3d803f57736a8e8f056e0cbb1a68a49faf35d10219b1b99e5b5159d",
+        "mediaSha256": {
+          "media/audio/lesson-shahzad2015-q182-v1.mp3": "f03e330c6c3d59732c9dbb319af5b5f059e0a1669006ad83bddc7ae01773ac8c",
+          "media/mnemonic/resistance-palace.png": "60ea64fd19cce9d21aff5d1601625299687baab2e5667e90a0c5bf8ee4ebcb41",
+          "media/real/artery-cross-section.png": "e835434db7751e97dcaff6632849baecb9315dd382d80e3d8064b9863944199d"
+        },
+        "checkedAt": "2026-11-07T15:14:01.519961Z"
+      },
+      "qaReport": {
+        "schemaVersion": 1,
+        "bookId": "shahzad-raja-2015-200-practice-questions",
+        "questionNumber": 182,
+        "lessonId": "shahzad2015-q182",
+        "reviewedAt": "2026-11-07T15:14:01.164355Z",
+        "sourceChecked": true,
+        "visualInspected": true,
+        "audioDecoded": true,
+        "timelineBrowserTested": true,
+        "physicalAndroidTested": false,
+        "humanListeningReviewed": false,
+        "notes": [
+          "Three original English teaching objectives and keyed MCQs were compared with the corresponding privately retained structured source records: Q5, Q54 and Q182.",
+          "Q182 formula layout was visually verified against preserved source question and answer page renders. Its source review resolution is recorded in the production ledger.",
+          "All three final 2D mnemonic images and the three real source figures were visually inspected. The clinical captions distinguish the specific relevant panels and do not present symbolic drawings as anatomy.",
+          "All three MP3 files decoded completely with ffmpeg without errors. Scene/transcript/timing companions and 60-90 second runtime passed the production validator.",
+          "Browser smoke tests passed for loading all three lessons, playback enrollment, seeking, speed persistence, timed real-image outro and quiz, local learning state, due review, backup, catalog and mobile widths.",
+          "Each lesson playing mnemonic frame and timed clinical outro was inspected during the final browser review. Four lock symbols are visible in the vascular lesson and labels do not cover its focal cues.",
+          "Human listening and installation/playback on a physical Android device remain pending; these are explicitly recorded and are not implied by the production count."
+        ],
+        "lessonEvidence": {
+          "lessonSha256": "cf770b0ccd0bb9e0fcf6836876042a0adde27c665c0e2214e0a2144f77ecbe61",
+          "browserFrames": {
+            "mnemonic": {
+              "file": "test-results/shahzad2015-q182-mnemonic.png",
+              "sha256": "86e76dc834dd8342626c183384cfad355ce0576f606b9f7e441f0ccc23c727eb"
+            },
+            "real": {
+              "file": "test-results/shahzad2015-q182-real.png",
+              "sha256": "13460adf2ae98570df4080256cba51dba04d32ac76b36536e36ed2b3904015e0"
+            }
+          }
+        },
+        "reportSha256": "f63cc9aa0d26d0117b68d3a8894e807072c03e7248bba578562eb69326e56521",
+        "scope": "verified_lesson_assets_and_browser_timeline"
+      },
+      "assetQaRecordedAt": "2026-11-07T15:14:01.520757Z",
+      "pendingDeviceQA": true,
+      "pendingHumanListeningQA": true
+    },
+    {
+      "number": 183,
+      "id": "shahzad-raja-2015-200-practice-questions-q183",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 184,
+      "id": "shahzad-raja-2015-200-practice-questions-q184",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 185,
+      "id": "shahzad-raja-2015-200-practice-questions-q185",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 186,
+      "id": "shahzad-raja-2015-200-practice-questions-q186",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 187,
+      "id": "shahzad-raja-2015-200-practice-questions-q187",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 188,
+      "id": "shahzad-raja-2015-200-practice-questions-q188",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 189,
+      "id": "shahzad-raja-2015-200-practice-questions-q189",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 190,
+      "id": "shahzad-raja-2015-200-practice-questions-q190",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 191,
+      "id": "shahzad-raja-2015-200-practice-questions-q191",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 192,
+      "id": "shahzad-raja-2015-200-practice-questions-q192",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 193,
+      "id": "shahzad-raja-2015-200-practice-questions-q193",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 194,
+      "id": "shahzad-raja-2015-200-practice-questions-q194",
+      "status": "needs_review",
+      "batchId": null,
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "visual_dependency_candidate"
+      ]
+    },
+    {
+      "number": 195,
+      "id": "shahzad-raja-2015-200-practice-questions-q195",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 196,
+      "id": "shahzad-raja-2015-200-practice-questions-q196",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 197,
+      "id": "shahzad-raja-2015-200-practice-questions-q197",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 198,
+      "id": "shahzad-raja-2015-200-practice-questions-q198",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 199,
+      "id": "shahzad-raja-2015-200-practice-questions-q199",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    },
+    {
+      "number": 200,
+      "id": "shahzad-raja-2015-200-practice-questions-q200",
+      "status": "ready",
+      "batchId": null,
+      "lessonId": null
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "auditKind": "source_integrity_and_checkpoint_recovery",
+  "auditedAt": "2026-11-07T15:04:18.394351Z",
+  "bookId": "shahzad-raja-2015-200-practice-questions",
+  "scope": "Structural source and recovery checks; this is not a medical, visual, device, or listening sign-off and must not be used alone to mark lessons produced.",
+  "source": {
+    "questionCount": 200,
+    "uniqueSequentialNumbers": true,
+    "uniqueStableIds": true,
+    "fiveOptionsAndValidKeyForEveryQuestion": true,
+    "sourcePageReferencesInRange": true,
+    "figureCount": 32,
+    "allFigureReferencesResolve": true,
+    "allFigureFilesDecode": true,
+    "layoutPageRenders": 55,
+    "allLayoutReferencesResolve": true,
+    "allAnswerCrossReferencesResolve": true,
+    "pdfFilesInProject": 0,
+    "questionsSha256": "b34823f25b23d78353132b0f3985681c2377639aaae8e1436b91659ffeb2a4ef"
+  },
+  "productionSnapshot": {
+    "completedVideos": 0,
+    "ready": 157,
+    "needsReview": 43,
+    "claimed": 0,
+    "authoritativeLedger": "production/books/shahzad-raja-2015-200-practice-questions.json"
+  },
+  "starterSourceMappings": [
+    {
+      "questionNumber": 54,
+      "lessonId": "shahzad2015-q054",
+      "sourceAnswerLetter": "B",
+      "sourcePrintedQuestionPage": 20,
+      "sourcePrintedAnswerPages": [
+        104,
+        105
+      ],
+      "technicalLessonValidationPassed": true,
+      "durationSeconds": 71.70666666666666
+    },
+    {
+      "questionNumber": 5,
+      "lessonId": "shahzad2015-q005",
+      "sourceAnswerLetter": "E",
+      "sourcePrintedQuestionPage": 2,
+      "sourcePrintedAnswerPages": [
+        71
+      ],
+      "technicalLessonValidationPassed": true,
+      "durationSeconds": 76.88195833333333
+    },
+    {
+      "questionNumber": 182,
+      "lessonId": "shahzad2015-q182",
+      "sourceAnswerLetter": "A",
+      "sourcePrintedQuestionPage": 60,
+      "sourcePrintedAnswerPages": [
+        163
+      ],
+      "technicalLessonValidationPassed": true,
+      "durationSeconds": 73.99329166666666
+    }
+  ],
+  "checkpointTests": {
+    "passed": 10,
+    "usedTemporaryManifest": true,
+    "realManifestChanged": false,
+    "cases": [
+      "Same batch resumes its original selection, ignoring a new requested count.",
+      "Claims survive reread with the same stable source IDs.",
+      "Release frees only unfinished claims.",
+      "A released batch reclaims its original IDs.",
+      "A resume conflict cannot steal another batch claim or modify the checkpoint.",
+      "Three concurrent processes claim disjoint four-question batches.",
+      "Out-of-order completion counters derive from produced records, not maximum question number.",
+      "Read-only next skips completed and blocked records without modifying the file.",
+      "Legacy interrupted batch resumes without losing already produced records.",
+      "Releasing a batch preserves its produced record and count."
+    ]
+  },
+  "vaultTests": {
+    "format": "instaanki-encrypted-source-vault-v1",
+    "algorithm": "AES-256-GCM",
+    "verifiedSourceFiles": 104,
+    "allSourceFilesMatchCurrentWorkspace": true,
+    "originalPdfIncluded": false,
+    "duplicateAppAssetsIncluded": false,
+    "ciphertextTamperRejected": true,
+    "headerTamperRejected": true,
+    "recoverAllFilesAndVerifyHashes": true,
+    "rejectNonemptyRecoveryDirectory": true,
+    "keyMaterialPrinted": false,
+    "secretKeyOutsideRepository": true,
+    "keyFileMode": "0600",
+    "keyDirectoryMode": "0700",
+    "durableKeyBackupRequired": true
+  },
+  "limitations": [
+    "No claim that all 200 medical answers remain valid under current practice.",
+    "Source records still requiring review remain blocked.",
+    "Image and audio production/browser QA must be recorded separately.",
+    "An encrypted vault is unrecoverable without its matching separately preserved private key."
+  ]
+}

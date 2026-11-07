@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-07T14:41:48.804119+00:00",
+  "engine": "kokoro-onnx",
+  "engineVersion": "0.6.1",
+  "onnxruntimeVersion": "1.31.1",
+  "executionProvider": "CPUExecutionProvider",
+  "localSynthesis": true,
+  "voice": "af_sarah",
+  "language": "en-us",
+  "speed": 0.96,
+  "model": {
+    "filename": "kokoro-v1.0.onnx",
+    "sha256": "beb0d1848dee9a49da392cc3df26958d46cfa35d321edf434f52949153f0df3a",
+    "sourceUrl": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx"
+  },
+  "voices": {
+    "filename": "voices-v1.0.bin",
+    "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d",
+    "sourceUrl": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin"
+  },
+  "inputSha256": "d46c3b7ca2d8b6d28e340acecb1fa422b6420af9e0f038158b201497f63ec782",
+  "alignment": "Exact sample boundaries of independently synthesized scenes; not estimated word alignment.",
+  "humanListeningReviewed": false,
+  "automatedChecks": [
+    "Nonempty mono audio",
+    "Finite samples",
+    "Non-silent narration",
+    "Decoded MP3 below full scale",
+    "60\u201390 second total duration",
+    "8\u201310 second final real-image stage",
+    "Container and PCM durations agree"
+  ],
+  "lessons": [
+    {
+      "lessonId": "lesson-shahzad2015-q054-v1",
+      "audioFile": "lesson-shahzad2015-q054-v1.mp3",
+      "timingFile": "lesson-shahzad2015-q054-v1.timing.json",
+      "sha256": "0c65ff04ac88ea2f57fd24f8c47990a9acde34c724f742f3fcedfe644da310ab",
+      "bytes": 861499,
+      "duration": 71.70666666666666,
+      "containerDuration": 71.76,
+      "narrationDuration": 62.70666666666666,
+      "outroDuration": 9.0,
+      "sampleRate": 24000,
+      "normalizationGain": 1.0,
+      "sourcePeakBeforeGain": 0.8188948631286621,
+      "pcmValidation": {
+        "finite": true,
+        "peak": 0.8188948631286621,
+        "rms": 0.06610773697418482,
+        "samplesAtOrAboveFullScale": 0
+      },
+      "decodedValidation": {
+        "finite": true,
+        "peak": 0.7798898816108704,
+        "rms": 0.06280282455769108,
+        "samplesAtOrAboveFullScale": 0
+      },
+      "humanListeningReviewed": false
+    },
+    {
+      "lessonId": "lesson-shahzad2015-q005-v1",
+      "audioFile": "lesson-shahzad2015-q005-v1.mp3",
+      "timingFile": "lesson-shahzad2015-q005-v1.timing.json",
+      "sha256": "bdbfadc526a7ea4cfb91ee1d77379248feb8b76e1cb88a1c0f758d18c453385b",
+      "bytes": 923719,
+      "duration": 76.88195833333333,
+      "containerDuration": 76.944,
+      "narrationDuration": 67.88195833333333,
+      "outroDuration": 9.0,
+      "sampleRate": 24000,
+      "normalizationGain": 1.0,
+      "sourcePeakBeforeGain": 0.7771039009094238,
+      "pcmValidation": {
+        "finite": true,
+        "peak": 0.7771039009094238,
+        "rms": 0.06667944103348529,
+        "samplesAtOrAboveFullScale": 0
+      },
+      "decodedValidation": {
+        "finite": true,
+        "peak": 0.7227246761322021,
+        "rms": 0.06334300397384136,
+        "samplesAtOrAboveFullScale": 0
+      },
+      "humanListeningReviewed": false
+    },
+    {
+      "lessonId": "lesson-shahzad2015-q182-v1",
+      "audioFile": "lesson-shahzad2015-q182-v1.mp3",
+      "timingFile": "lesson-shahzad2015-q182-v1.timing.json",
+      "sha256": "f03e330c6c3d59732c9dbb319af5b5f059e0a1669006ad83bddc7ae01773ac8c",
+      "bytes": 889155,
+      "duration": 73.99329166666666,
+      "containerDuration": 74.064,
+      "narrationDuration": 64.99329166666666,
+      "outroDuration": 9.0,
+      "sampleRate": 24000,
+      "normalizationGain": 1.0,
+      "sourcePeakBeforeGain": 0.7487930059432983,
+      "pcmValidation": {
+        "finite": true,
+        "peak": 0.7487930059432983,
+        "rms": 0.06598681132229282,
+        "samplesAtOrAboveFullScale": 0
+      },
+      "decodedValidation": {
+        "finite": true,
+        "peak": 0.7224286794662476,
+        "rms": 0.06268327358252936,
+        "samplesAtOrAboveFullScale": 0
+      },
+      "humanListeningReviewed": false
+    }
+  ],
+  "codec": "MP3 / libmp3lame 96 kbps"
+}

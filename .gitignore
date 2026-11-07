@@ -1,0 +1,21 @@
+/node_modules/
+/private-content/
+/build/
+/dist/
+/runtime/
+/.android-sdk/
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+*.password
+.env
+.env.*
+__pycache__/
+*.pyc
+/test-results/
+/public/media/
+# Private source exports remain in private delivery, outside the public repo.
+/source-vault/*.iaenc
+/source-vault/*.metadata.json

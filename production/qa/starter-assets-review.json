@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "bookId": "shahzad-raja-2015-200-practice-questions",
+  "reviewedAt": "2026-11-07T15:14:01.164355Z",
+  "sourceChecked": true,
+  "visualInspected": true,
+  "audioDecoded": true,
+  "timelineBrowserTested": true,
+  "physicalAndroidTested": false,
+  "humanListeningReviewed": false,
+  "lessons": [
+    {
+      "questionNumber": 54,
+      "lessonId": "shahzad2015-q054",
+      "lessonSha256": "0aa1a3d39c3c62d77d01d5321e12c92415eead662e2cd4a119c53c5451cf95e4",
+      "browserFrames": {
+        "mnemonic": {
+          "file": "test-results/shahzad2015-q054-mnemonic.png",
+          "sha256": "17b1b57191730b5e2dfcdf72f94778542ba66f9036df82981c8ec748067ba305"
+        },
+        "real": {
+          "file": "test-results/shahzad2015-q054-real.png",
+          "sha256": "baa517679a0452e29845f4e83fce5ba6911fe68b8db224ba395e9265e8511f9a"
+        }
+      }
+    },
+    {
+      "questionNumber": 5,
+      "lessonId": "shahzad2015-q005",
+      "lessonSha256": "a32d202e609b2d6cf105cd156708e46cda3647f969c45730ec5e50e8ea1ebef0",
+      "browserFrames": {
+        "mnemonic": {
+          "file": "test-results/shahzad2015-q005-mnemonic.png",
+          "sha256": "3c1b21d096ee786b94d0d19fa555bf77d33d500da3c5105c5f7f773ec96ee2a5"
+        },
+        "real": {
+          "file": "test-results/shahzad2015-q005-real.png",
+          "sha256": "c570eeb1922ee4adc7e63747b880c630d60c4fe4643991ab22c1bc7c42ba6aef"
+        }
+      }
+    },
+    {
+      "questionNumber": 182,
+      "lessonId": "shahzad2015-q182",
+      "lessonSha256": "cf770b0ccd0bb9e0fcf6836876042a0adde27c665c0e2214e0a2144f77ecbe61",
+      "browserFrames": {
+        "mnemonic": {
+          "file": "test-results/shahzad2015-q182-mnemonic.png",
+          "sha256": "86e76dc834dd8342626c183384cfad355ce0576f606b9f7e441f0ccc23c727eb"
+        },
+        "real": {
+          "file": "test-results/shahzad2015-q182-real.png",
+          "sha256": "13460adf2ae98570df4080256cba51dba04d32ac76b36536e36ed2b3904015e0"
+        }
+      }
+    }
+  ],
+  "notes": [
+    "Three original English teaching objectives and keyed MCQs were compared with the corresponding privately retained structured source records: Q5, Q54 and Q182.",
+    "Q182 formula layout was visually verified against preserved source question and answer page renders. Its source review resolution is recorded in the production ledger.",
+    "All three final 2D mnemonic images and the three real source figures were visually inspected. The clinical captions distinguish the specific relevant panels and do not present symbolic drawings as anatomy.",
+    "All three MP3 files decoded completely with ffmpeg without errors. Scene/transcript/timing companions and 60-90 second runtime passed the production validator.",
+    "Browser smoke tests passed for loading all three lessons, playback enrollment, seeking, speed persistence, timed real-image outro and quiz, local learning state, due review, backup, catalog and mobile widths.",
+    "Each lesson playing mnemonic frame and timed clinical outro was inspected during the final browser review. Four lock symbols are visible in the vascular lesson and labels do not cover its focal cues.",
+    "Human listening and installation/playback on a physical Android device remain pending; these are explicitly recorded and are not implied by the production count."
+  ]
+}

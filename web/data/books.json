@@ -1,0 +1,1024 @@
+[
+  {
+    "id": "shahzad-raja-2015-200-practice-questions",
+    "title": "200 Practice Questions in Cardiothoracic Surgery",
+    "author": "Shahzad G. Raja",
+    "year": 2015,
+    "coverUrl": "private-content/book-cover.jpeg",
+    "totalQuestions": 200,
+    "extractedQuestions": 200,
+    "completedVideos": 3,
+    "progress": 1.5,
+    "completedQuestionNumbers": [
+      5,
+      54,
+      182
+    ],
+    "nextQuestionNumber": 1,
+    "questions": [
+      {
+        "number": 1,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 2,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 3,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 4,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 5,
+        "status": "produced",
+        "lessonId": "shahzad2015-q005"
+      },
+      {
+        "number": 6,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 7,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 8,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 9,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 10,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 11,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 12,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 13,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 14,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 15,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 16,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 17,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 18,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 19,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 20,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 21,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 22,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 23,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 24,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 25,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 26,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 27,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 28,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 29,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 30,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 31,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 32,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 33,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 34,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 35,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 36,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 37,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 38,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 39,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 40,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 41,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 42,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 43,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 44,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 45,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 46,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 47,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 48,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 49,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 50,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 51,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 52,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 53,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 54,
+        "status": "produced",
+        "lessonId": "shahzad2015-q054"
+      },
+      {
+        "number": 55,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 56,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 57,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 58,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 59,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 60,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 61,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 62,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 63,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 64,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 65,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 66,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 67,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 68,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 69,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 70,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 71,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 72,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 73,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 74,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 75,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 76,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 77,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 78,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 79,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 80,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 81,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 82,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 83,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 84,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 85,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 86,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 87,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 88,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 89,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 90,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 91,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 92,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 93,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 94,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 95,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 96,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 97,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 98,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 99,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 100,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 101,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 102,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 103,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 104,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 105,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 106,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 107,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 108,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 109,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 110,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 111,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 112,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 113,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 114,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 115,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 116,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 117,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 118,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 119,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 120,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 121,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 122,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 123,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 124,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 125,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 126,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 127,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 128,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 129,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 130,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 131,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 132,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 133,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 134,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 135,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 136,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 137,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 138,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 139,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 140,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 141,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 142,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 143,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 144,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 145,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 146,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 147,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 148,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 149,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 150,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 151,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 152,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 153,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 154,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 155,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 156,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 157,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 158,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 159,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 160,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 161,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 162,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 163,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 164,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 165,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 166,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 167,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 168,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 169,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 170,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 171,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 172,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 173,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 174,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 175,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 176,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 177,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 178,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 179,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 180,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 181,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 182,
+        "status": "produced",
+        "lessonId": "shahzad2015-q182"
+      },
+      {
+        "number": 183,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 184,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 185,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 186,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 187,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 188,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 189,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 190,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 191,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 192,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 193,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 194,
+        "status": "needs_review",
+        "lessonId": null
+      },
+      {
+        "number": 195,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 196,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 197,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 198,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 199,
+        "status": "ready",
+        "lessonId": null
+      },
+      {
+        "number": 200,
+        "status": "ready",
+        "lessonId": null
+      }
+    ],
+    "sourceStatus": "Source text extracted; each lesson checked before production",
+    "needsNewBook": false,
+    "productionUpdatedAt": "2026-11-07T15:14:01.520773Z"
+  }
+]

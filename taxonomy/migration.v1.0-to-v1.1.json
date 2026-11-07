@@ -1,0 +1,36 @@
+{
+  "taxonomy_id": "instaanki-surgical-taxonomy",
+  "from_version": "1.0.0",
+  "to_version": "1.1.0",
+  "release_date": "2026-11-07",
+  "kind": "additive",
+  "added_facets": [
+    "concept"
+  ],
+  "added_ids": [
+    "domain.vascular_physiology",
+    "concept.coronary_dominance",
+    "concept.vascular_resistance",
+    "concept.poiseuille_law",
+    "condition.pulmonary_sequestration",
+    "condition.extralobar_pulmonary_sequestration"
+  ],
+  "changed_existing_ids": [],
+  "deprecated_ids": [],
+  "replacement_mappings": {},
+  "annotation_migration": "Keep existing 1.0.0 annotations valid against their original registry. When explicitly revalidating against 1.1.0, update taxonomy_version and annotation_revision; concept_ids is optional and defaults to empty. Do not add new concepts automatically from text matching.",
+  "learning_history_migration": "None. Preserve question IDs, lesson IDs, source-question numbers, reviews, comments and due dates.",
+  "snapshots": {
+    "1.0.0": {
+      "registry": "registry.v1.json",
+      "schema": "annotation.v1.schema.json"
+    },
+    "1.1.0": {
+      "registry": "registry.v1.1.json",
+      "schema": "annotation.v1.1.schema.json"
+    }
+  },
+  "latest_registry": "registry.latest.json",
+  "latest_schema": "annotation.schema.json",
+  "base_registry_sha256": "d09627ce21d2210c21f2942d33f83ba848ddcb69ca7c2189a2b0787b369ebb42"
+}

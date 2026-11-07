@@ -1,0 +1,828 @@
+[
+  {
+    "id": "shahzad2015-q054",
+    "version": 1,
+    "title": "Coronary Dominance: Follow the PDA",
+    "specialty": "Cardiac Surgery",
+    "primarySpecialtyId": "specialty.cardiac",
+    "taxonomyVersion": "1.1.0",
+    "tags": [
+      {
+        "id": "specialty.cardiac",
+        "label": "Cardiac Surgery"
+      },
+      {
+        "id": "domain.coronary",
+        "label": "Coronary Surgery"
+      },
+      {
+        "id": "focus.anatomy",
+        "label": "Anatomy"
+      },
+      {
+        "id": "concept.coronary_dominance",
+        "label": "Coronary Dominance"
+      },
+      {
+        "id": "anatomy.coronary_arteries",
+        "label": "Coronary Arteries"
+      }
+    ],
+    "durationSeconds": 71.70666666666666,
+    "audioUrl": "media/audio/lesson-shahzad2015-q054-v1.mp3",
+    "poster": "media/mnemonic/coronary-palace.png",
+    "locus": {
+      "id": "surgical-palace.cardiac.rear-door",
+      "palace": "Surgical Learning Gallery",
+      "room": "Cardiac Gallery",
+      "anchor": "Rear Door",
+      "description": "A fixed rear doorway in the cardiac gallery. A curved circumflex-shaped key connects the lateral room with the posterior septal room. This remains the same location on every review."
+    },
+    "mnemonicSymbols": [
+      {
+        "symbol": "Curved key",
+        "meaning": "Circumflex artery",
+        "x": 0.41,
+        "y": 0.61
+      },
+      {
+        "symbol": "Side wall",
+        "meaning": "Lateral left ventricular wall",
+        "x": 0.62,
+        "y": 0.55
+      },
+      {
+        "symbol": "Rear bridge",
+        "meaning": "Posterior septal territory through the PDA",
+        "x": 0.91,
+        "y": 0.55
+      }
+    ],
+    "scenes": [
+      {
+        "id": "scene-01",
+        "start": 0.0,
+        "end": 10.552666666666667,
+        "image": "media/mnemonic/coronary-palace.png",
+        "kind": "mnemonic",
+        "caption": "The back-door key",
+        "transcript": "At the rear door of the cardiac gallery, picture a curved circumflex key. Keep that same doorway as your memory location whenever coronary dominance returns.",
+        "camera": {
+          "from": {
+            "x": 0.41,
+            "y": 0.61,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.41,
+            "y": 0.61,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.41,
+          "y": 0.61,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-02",
+        "start": 10.552666666666667,
+        "end": 20.605333333333334,
+        "image": "media/real/coronary-dominance-angiograms.png",
+        "kind": "clinical",
+        "caption": "Dominance follows PDA origin",
+        "transcript": "Coronary dominance follows the artery that gives rise to the posterior descending artery. On the angiogram, trace that vessel back to its parent artery.",
+        "camera": {
+          "from": {
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
+          },
+          "to": {
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
+          }
+        },
+        "spotlight": {
+          "x": 0.74,
+          "y": 0.5,
+          "r": 0.26
+        }
+      },
+      {
+        "id": "scene-03",
+        "start": 20.605333333333334,
+        "end": 31.521333333333335,
+        "image": "media/mnemonic/coronary-palace.png",
+        "kind": "mnemonic",
+        "caption": "Left dominance: circumflex to PDA",
+        "transcript": "In a left-dominant circulation, the posterior descending artery comes from the circumflex. Its septal branches supply the posterior part of the interventricular septum.",
+        "camera": {
+          "from": {
+            "x": 0.91,
+            "y": 0.55,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.91,
+            "y": 0.55,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.91,
+          "y": 0.55,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-04",
+        "start": 31.521333333333335,
+        "end": 41.626666666666665,
+        "image": "media/mnemonic/coronary-palace.png",
+        "kind": "mnemonic",
+        "caption": "Lateral wall plus posterior septum",
+        "transcript": "The circumflex also supplies the lateral left ventricular wall through its branches. A clot at its origin can therefore threaten both territories downstream.",
+        "camera": {
+          "from": {
+            "x": 0.62,
+            "y": 0.55,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.62,
+            "y": 0.55,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.62,
+          "y": 0.55,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-05",
+        "start": 41.626666666666665,
+        "end": 51.851333333333336,
+        "image": "media/mnemonic/coronary-palace.png",
+        "kind": "mnemonic",
+        "caption": "Combine the two territories",
+        "transcript": "For the book's example, combine the lateral left ventricular wall with the posterior septum. Identifying only one of those regions would leave out part of the pattern.",
+        "camera": {
+          "from": {
+            "x": 0.73,
+            "y": 0.55,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.73,
+            "y": 0.55,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.73,
+          "y": 0.55,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-06",
+        "start": 51.851333333333336,
+        "end": 62.70666666666666,
+        "image": "media/mnemonic/coronary-palace.png",
+        "kind": "mnemonic",
+        "caption": "Retrieve the territory",
+        "transcript": "Return to the rear door: the circumflex key opens the lateral room and the back septal room. The recall cue is simple: left dominance, circumflex supplies the back.",
+        "camera": {
+          "from": {
+            "x": 0.41,
+            "y": 0.61,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.41,
+            "y": 0.61,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.41,
+          "y": 0.61,
+          "r": 0.28
+        }
+      }
+    ],
+    "realImageOutro": {
+      "start": 62.70666666666666,
+      "end": 71.70666666666666
+    },
+    "realImages": [
+      {
+        "url": "media/real/coronary-dominance-angiograms.png",
+        "title": "Coronary angiograms showing right and left dominance",
+        "caption": "Real coronary angiograms: panel (a) shows a right-sided origin of the posterior descending artery; panel (b) illustrates left coronary dominance. Red arrows identify the posterior descending artery in the published figure.",
+        "displayNotes": "For the left-dominance lesson, direct attention to panel (b), the right half of the figure. Keep source panel labels and attribution visible or accessible. This figure illustrates dominance, not the particular occlusion described in the source MCQ.",
+        "sourceUrl": "https://link.springer.com/article/10.1134/S1064562424602026",
+        "author": "I. Kruzhilov; E. Ikryannikov; A. Shadrin; R. Utegenov; G. Zubkova; I. Bessonov",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": "Kruzhilov et al., Figure 1, Doklady Mathematics 110 (Suppl 1), S212-S222 (2024; online 2025), doi:10.1134/S1064562424602026. CC BY 4.0. Unmodified.",
+        "focusRegion": {
+          "coordinates": "normalized-original-image",
+          "x": 0.5,
+          "y": 0.0,
+          "width": 0.5,
+          "height": 1.0,
+          "label": "Panel (b): left-dominant coronary circulation"
+        }
+      }
+    ],
+    "quiz": {
+      "prompt": "In left-dominant coronary circulation, an occlusion at the origin of the circumflex artery most directly threatens which combined territory?",
+      "options": [
+        "Anterior left ventricular wall and anterior septum",
+        "Lateral left ventricular wall and posterior septum",
+        "Right ventricular free wall alone",
+        "Lateral left ventricular wall alone",
+        "Posterior septum alone"
+      ],
+      "correctIndex": 1,
+      "explanation": "In left dominance, the circumflex gives rise to the posterior descending artery. A proximal circumflex occlusion therefore threatens its lateral-wall branches and the PDA territory, including the posterior septum."
+    },
+    "source": {
+      "bookId": "shahzad-raja-2015-200-practice-questions",
+      "questionNumber": 54,
+      "page": 20,
+      "answerPages": [
+        104,
+        105
+      ],
+      "bookTitle": "200 Practice Questions in Cardiothoracic Surgery",
+      "verificationNote": "Source-aligned original teaching content. Core anatomy or physiology checked against the cited references; historical treatment claims are excluded.",
+      "corroboratingSources": [
+        {
+          "title": "Neural Network-Based Coronary Dominance Classification of RCA Angiograms",
+          "url": "https://link.springer.com/article/10.1134/S1064562424602026",
+          "doi": "10.1134/S1064562424602026",
+          "supports": "PDA-origin definition of coronary dominance; left dominance has PDA originating from the left circumflex; Figure 1 angiographic anatomy.",
+          "checked_on": "2026-11-07"
+        }
+      ]
+    }
+  },
+  {
+    "id": "shahzad2015-q005",
+    "version": 1,
+    "title": "Extralobar Sequestration: Its Own Pleural Coat",
+    "specialty": "Thoracic Surgery",
+    "primarySpecialtyId": "specialty.thoracic",
+    "taxonomyVersion": "1.1.0",
+    "tags": [
+      {
+        "id": "specialty.thoracic",
+        "label": "Thoracic Surgery"
+      },
+      {
+        "id": "domain.lung",
+        "label": "Lung Disease"
+      },
+      {
+        "id": "focus.anatomy",
+        "label": "Anatomy"
+      },
+      {
+        "id": "condition.extralobar_pulmonary_sequestration",
+        "label": "Extralobar Pulmonary Sequestration"
+      },
+      {
+        "id": "anatomy.lung",
+        "label": "Lung"
+      },
+      {
+        "id": "anatomy.pleura",
+        "label": "Pleura"
+      }
+    ],
+    "durationSeconds": 76.88195833333333,
+    "audioUrl": "media/audio/lesson-shahzad2015-q005-v1.mp3",
+    "poster": "media/mnemonic/sequestration-palace.png",
+    "locus": {
+      "id": "surgical-palace.thoracic.coat-hook",
+      "palace": "Surgical Learning Gallery",
+      "room": "Thoracic Gallery",
+      "anchor": "Coat Hook",
+      "description": "A fixed coat hook beside the entrance to the thoracic gallery holds a small lung parcel in its own coat. Keep the hook and coat in this same location on every review."
+    },
+    "mnemonicSymbols": [
+      {
+        "symbol": "Separate coat",
+        "meaning": "Its own visceral pleural covering",
+        "x": 0.48,
+        "y": 0.73
+      },
+      {
+        "symbol": "Separate glass dome",
+        "meaning": "Extralobar tissue outside the main lung covering",
+        "x": 0.82,
+        "y": 0.47
+      },
+      {
+        "symbol": "External red pipe",
+        "meaning": "Systemic arterial supply",
+        "x": 0.65,
+        "y": 0.36
+      }
+    ],
+    "scenes": [
+      {
+        "id": "scene-01",
+        "start": 0.0,
+        "end": 11.426,
+        "image": "media/mnemonic/sequestration-palace.png",
+        "kind": "mnemonic",
+        "caption": "Extra means an extra coat",
+        "transcript": "At the coat hook in the thoracic gallery, imagine an extra lung parcel wearing its own coat. Keep this same hook as the permanent location for extralobar sequestration.",
+        "camera": {
+          "from": {
+            "x": 0.48,
+            "y": 0.73,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.48,
+            "y": 0.73,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.48,
+          "y": 0.73,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-02",
+        "start": 11.426,
+        "end": 24.61466666666667,
+        "image": "media/mnemonic/sequestration-palace.png",
+        "kind": "mnemonic",
+        "caption": "Systemic arterial supply",
+        "transcript": "Pulmonary sequestration is abnormal lung tissue without the usual connection to the tracheobronchial tree. It receives arterial blood from the systemic circulation, commonly through an aortic branch.",
+        "camera": {
+          "from": {
+            "x": 0.65,
+            "y": 0.36,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.65,
+            "y": 0.36,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.65,
+          "y": 0.36,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-03",
+        "start": 24.61466666666667,
+        "end": 35.275958333333335,
+        "image": "media/real/extralobar-sequestration-thoracoscopy.jpg",
+        "kind": "clinical",
+        "caption": "Its own visceral pleura",
+        "transcript": "Extralobar means the sequestered tissue has a separate visceral pleural covering. In the operative photograph, focus on the distinct pleural envelope around the lesion.",
+        "camera": {
+          "from": {
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
+          },
+          "to": {
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 1
+          }
+        },
+        "spotlight": {
+          "x": 0.25,
+          "y": 0.25,
+          "r": 0.26
+        }
+      },
+      {
+        "id": "scene-04",
+        "start": 35.275958333333335,
+        "end": 45.820625,
+        "image": "media/mnemonic/sequestration-palace.png",
+        "kind": "mnemonic",
+        "caption": "The pleural relationship",
+        "transcript": "An intralobar sequestration instead lies within the surrounding lung and shares its pleural covering. The difference tested here is the relationship to visceral pleura.",
+        "camera": {
+          "from": {
+            "x": 0.28,
+            "y": 0.4,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.28,
+            "y": 0.4,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.28,
+          "y": 0.4,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-05",
+        "start": 45.820625,
+        "end": 57.197291666666665,
+        "image": "media/mnemonic/sequestration-palace.png",
+        "kind": "mnemonic",
+        "caption": "Read the covering",
+        "transcript": "Use the relationship to pleura to identify the extralobar form, and keep the feeding vessel as a separate anatomical feature. This distinction makes the question much easier.",
+        "camera": {
+          "from": {
+            "x": 0.82,
+            "y": 0.47,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.82,
+            "y": 0.47,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.82,
+          "y": 0.47,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-06",
+        "start": 57.197291666666665,
+        "end": 67.88195833333333,
+        "image": "media/mnemonic/sequestration-palace.png",
+        "kind": "mnemonic",
+        "caption": "Retrieve the extra coat",
+        "transcript": "Return to the coat hook and say: extra means an extra coat. In this lesson, that coat represents its own visceral pleura. Retrieve the feature before choosing an answer.",
+        "camera": {
+          "from": {
+            "x": 0.48,
+            "y": 0.73,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.48,
+            "y": 0.73,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.48,
+          "y": 0.73,
+          "r": 0.28
+        }
+      }
+    ],
+    "realImageOutro": {
+      "start": 67.88195833333333,
+      "end": 76.88195833333333
+    },
+    "realImages": [
+      {
+        "url": "media/real/extralobar-sequestration-thoracoscopy.jpg",
+        "title": "Extralobar pulmonary sequestration at thoracoscopy",
+        "caption": "Real thoracoscopic views of an extralobar pulmonary sequestration. Panel A shows the separate lesion covered by its own pleura. Panel D depicts an associated bronchogenic cyst, not the sequestration.",
+        "displayNotes": "Focus the lesson on panel A. Panels B and C show the stalk; panel D shows a different associated lesion. Do not highlight all four panels as if each represents the tested pleural feature.",
+        "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7884597/",
+        "author": "Carolyn Hanna; Priya G. Sharma; Moiz M. Mustafa; Jennifer Reppucci; Archana Shenoy; Dhanashree Rajderkar",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": "Hanna et al., Figure 4, Egyptian Journal of Radiology and Nuclear Medicine 52:54 (2021), doi:10.1186/s43055-021-00440-1. CC BY 4.0. Unmodified.",
+        "focusRegion": {
+          "coordinates": "normalized-original-image",
+          "x": 0.0,
+          "y": 0.0,
+          "width": 0.5,
+          "height": 0.5,
+          "label": "Panel A: sequestration with its own pleural covering"
+        }
+      }
+    ],
+    "quiz": {
+      "prompt": "A sequestered lung segment receives systemic arterial blood. Which finding identifies the extralobar form?",
+      "options": [
+        "Normal pulmonary arterial branching through the hilum",
+        "A normal connection to a segmental bronchus",
+        "A shared visceral pleural covering with adjacent lung",
+        "Systemic arterial supply alone",
+        "Its own separate visceral pleural covering"
+      ],
+      "correctIndex": 4,
+      "explanation": "Extralobar sequestration has its own visceral pleural envelope, separate from the adjacent lung. Systemic arterial supply is a feature of sequestration and alone does not distinguish extralobar from intralobar disease."
+    },
+    "source": {
+      "bookId": "shahzad-raja-2015-200-practice-questions",
+      "questionNumber": 5,
+      "page": 2,
+      "answerPages": [
+        71
+      ],
+      "bookTitle": "200 Practice Questions in Cardiothoracic Surgery",
+      "verificationNote": "Source-aligned original teaching content. Core anatomy or physiology checked against the cited references; historical treatment claims are excluded.",
+      "corroboratingSources": [
+        {
+          "title": "Concurrent bronchopulmonary foregut malformations: a rare case of right-sided extralobar pulmonary sequestration and bronchogenic cyst",
+          "url": "https://link.springer.com/article/10.1186/s43055-021-00440-1",
+          "doi": "10.1186/s43055-021-00440-1",
+          "supports": "The separate visceral pleural covering, systemic arterial supply, and actual operative Figure 4a showing an extralobar lesion invested in its own pleura.",
+          "checked_on": "2026-11-07"
+        }
+      ]
+    }
+  },
+  {
+    "id": "shahzad2015-q182",
+    "version": 1,
+    "title": "Vascular Resistance: The Fourth-Power Rule",
+    "specialty": "Vascular Surgery",
+    "primarySpecialtyId": "specialty.vascular",
+    "taxonomyVersion": "1.1.0",
+    "tags": [
+      {
+        "id": "specialty.vascular",
+        "label": "Vascular Surgery"
+      },
+      {
+        "id": "domain.vascular_physiology",
+        "label": "Vascular Physiology"
+      },
+      {
+        "id": "focus.physiology",
+        "label": "Physiology"
+      },
+      {
+        "id": "concept.vascular_resistance",
+        "label": "Vascular Resistance"
+      },
+      {
+        "id": "concept.poiseuille_law",
+        "label": "Poiseuille's Law"
+      }
+    ],
+    "durationSeconds": 73.99329166666666,
+    "audioUrl": "media/audio/lesson-shahzad2015-q182-v1.mp3",
+    "poster": "media/mnemonic/resistance-palace.png",
+    "locus": {
+      "id": "surgical-palace.vascular.double-doors",
+      "palace": "Surgical Learning Gallery",
+      "room": "Vascular Gallery",
+      "anchor": "Double Doors with Four Locks",
+      "description": "A fixed pair of double doors at the vascular gallery has four number locks above the frame. The widening door cues diameter; four locks cue the fourth power. Keep this position stable in future reviews."
+    },
+    "mnemonicSymbols": [
+      {
+        "symbol": "Four locks",
+        "meaning": "Radius to the fourth power",
+        "x": 0.5,
+        "y": 0.22
+      },
+      {
+        "symbol": "Wide doorway",
+        "meaning": "Larger vessel radius",
+        "x": 0.67,
+        "y": 0.58
+      },
+      {
+        "symbol": "Relieved gatekeeper",
+        "meaning": "Lower resistance",
+        "x": 0.65,
+        "y": 0.62
+      }
+    ],
+    "scenes": [
+      {
+        "id": "scene-01",
+        "start": 0.0,
+        "end": 10.349333333333334,
+        "image": "media/mnemonic/resistance-palace.png",
+        "kind": "mnemonic",
+        "caption": "Four locks: fourth power",
+        "transcript": "At the double doors of the vascular gallery, imagine four number locks above the frame. Widening the doorway changes resistance through a fourth-power relationship.",
+        "camera": {
+          "from": {
+            "x": 0.5,
+            "y": 0.2,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.5,
+            "y": 0.2,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.5,
+          "y": 0.2,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-02",
+        "start": 10.349333333333334,
+        "end": 20.658,
+        "image": "media/mnemonic/resistance-palace.png",
+        "kind": "mnemonic",
+        "caption": "Resistance follows one over radius to the fourth",
+        "transcript": "For steady laminar flow in the ideal tube model, resistance is proportional to viscosity and length, and inversely proportional to the fourth power of radius.",
+        "camera": {
+          "from": {
+            "x": 0.27,
+            "y": 0.59,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.27,
+            "y": 0.59,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.27,
+          "y": 0.59,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-03",
+        "start": 20.658,
+        "end": 29.804625,
+        "image": "media/mnemonic/resistance-palace.png",
+        "kind": "mnemonic",
+        "caption": "Two to the fourth is sixteen",
+        "transcript": "If diameter doubles, radius doubles too. Raise that factor of two to the fourth power: two times two times two times two equals sixteen.",
+        "camera": {
+          "from": {
+            "x": 0.66,
+            "y": 0.58,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.66,
+            "y": 0.58,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.66,
+          "y": 0.58,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-04",
+        "start": 29.804625,
+        "end": 41.30929166666667,
+        "image": "media/mnemonic/resistance-palace.png",
+        "kind": "mnemonic",
+        "caption": "Sixteen divided by sixteen equals one",
+        "transcript": "Resistance therefore becomes one sixteenth of its original value when length and viscosity stay unchanged. Starting from sixteen resistance units, the new value is one unit.",
+        "camera": {
+          "from": {
+            "x": 0.66,
+            "y": 0.58,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.66,
+            "y": 0.58,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.66,
+          "y": 0.58,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-05",
+        "start": 41.30929166666667,
+        "end": 53.96595833333333,
+        "image": "media/mnemonic/resistance-palace.png",
+        "kind": "mnemonic",
+        "caption": "Use the model assumptions",
+        "transcript": "This is an idealized laminar-flow relationship. In real circulation, pulsation, branching, and vessel compliance affect how pressure and flow behave. Keep the model assumptions in mind.",
+        "camera": {
+          "from": {
+            "x": 0.5,
+            "y": 0.55,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.5,
+            "y": 0.55,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.5,
+          "y": 0.55,
+          "r": 0.28
+        }
+      },
+      {
+        "id": "scene-06",
+        "start": 53.96595833333333,
+        "end": 64.99329166666666,
+        "image": "media/mnemonic/resistance-palace.png",
+        "kind": "mnemonic",
+        "caption": "Retrieve the fourth-power rule",
+        "transcript": "Return to the double doors and the four locks. Remember: double diameter, divide resistance by sixteen. The answer to this example is one peripheral resistance unit.",
+        "camera": {
+          "from": {
+            "x": 0.5,
+            "y": 0.2,
+            "scale": 1.015
+          },
+          "to": {
+            "x": 0.5,
+            "y": 0.2,
+            "scale": 1.075
+          }
+        },
+        "spotlight": {
+          "x": 0.5,
+          "y": 0.2,
+          "r": 0.28
+        }
+      }
+    ],
+    "realImageOutro": {
+      "start": 64.99329166666666,
+      "end": 73.99329166666666
+    },
+    "realImages": [
+      {
+        "url": "media/real/artery-cross-section.png",
+        "title": "Human artery in cross section",
+        "caption": "A real bright-field micrograph of a human artery. The central lumen provides anatomical context for the lesson on vessel radius and resistance.",
+        "displayNotes": "This is a real anatomical example, not a measurement of the numerical scenario. Do not claim that the image demonstrates a doubled diameter or a measured sixteenfold resistance change. The calculation applies to the lesson's stated idealized assumptions.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Artery.png",
+        "author": "Lord of Konrad; Commons color adjustment by Tilifa Ocaufa",
+        "license": "CC0 1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": "Human artery photomicrograph by Lord of Konrad; Commons color adjustment by Tilifa Ocaufa. Wikimedia Commons, Artery.png. CC0 1.0.",
+        "focusRegion": {
+          "coordinates": "normalized-original-image",
+          "x": 0.22,
+          "y": 0.22,
+          "width": 0.62,
+          "height": 0.6,
+          "label": "Arterial lumen"
+        }
+      }
+    ],
+    "quiz": {
+      "prompt": "Under Poiseuille's model, vessel length and viscosity remain unchanged. Resistance is initially 16 PRU. If diameter doubles, what is the new resistance?",
+      "options": [
+        "1 PRU",
+        "2 PRU",
+        "4 PRU",
+        "8 PRU",
+        "32 PRU"
+      ],
+      "correctIndex": 0,
+      "explanation": "Doubling diameter also doubles radius. Resistance changes by 1 / 2^4 = 1/16 when the other model variables stay fixed. Therefore 16 PRU becomes 1 PRU."
+    },
+    "source": {
+      "bookId": "shahzad-raja-2015-200-practice-questions",
+      "questionNumber": 182,
+      "page": 60,
+      "answerPages": [
+        163
+      ],
+      "bookTitle": "200 Practice Questions in Cardiothoracic Surgery",
+      "verificationNote": "Source-aligned original teaching content. Core anatomy or physiology checked against the cited references; historical treatment claims are excluded.",
+      "corroboratingSources": [
+        {
+          "title": "University Physics Volume 1, 14.7 Viscosity and Turbulence",
+          "url": "https://openstax.org/books/university-physics-volume-1/pages/14-7-viscosity-and-turbulence",
+          "supports": "Poiseuille resistance equation, laminar-flow assumptions, and the sixteenfold reduction when radius doubles.",
+          "checked_on": "2026-11-07"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,491 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InstaAnki Question Tag Annotation v1.1",
+  "description": "Controlled English vocabulary annotation for one source question. The optional concept_ids facet describes tested anatomical or physiological principles without inferring a diagnosis.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "question_id",
+    "question_version",
+    "taxonomy_version",
+    "annotation_revision",
+    "status",
+    "tested_objective",
+    "primary_specialty_id",
+    "secondary_specialty_ids",
+    "primary_domain_id",
+    "secondary_domain_ids",
+    "condition_ids",
+    "procedure_ids",
+    "anatomy_ids",
+    "focus_id",
+    "phase_id",
+    "population_id",
+    "evidence",
+    "review_reason",
+    "missing_concept_proposals"
+  ],
+  "properties": {
+    "question_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "question_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "taxonomy_version": {
+      "const": "1.1.0"
+    },
+    "annotation_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "validated",
+        "needs_review"
+      ]
+    },
+    "tested_objective": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "primary_specialty_id": {
+      "enum": [
+        "specialty.cardiac",
+        "specialty.thoracic",
+        "specialty.vascular",
+        null
+      ]
+    },
+    "secondary_specialty_ids": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "specialty.cardiac",
+          "specialty.thoracic",
+          "specialty.vascular"
+        ]
+      },
+      "uniqueItems": true,
+      "maxItems": 2
+    },
+    "primary_domain_id": {
+      "enum": [
+        "domain.coronary",
+        "domain.valvular",
+        "domain.congenital",
+        "domain.rhythm",
+        "domain.heart_failure",
+        "domain.heart_transplantation",
+        "domain.pericardial",
+        "domain.cardiac_tumors",
+        "domain.perfusion",
+        "domain.lung",
+        "domain.airway",
+        "domain.pleura",
+        "domain.mediastinum",
+        "domain.esophagus",
+        "domain.chest_wall",
+        "domain.diaphragm",
+        "domain.lung_transplantation",
+        "domain.peripheral_arterial",
+        "domain.extracranial_cerebrovascular",
+        "domain.visceral_renal",
+        "domain.venous",
+        "domain.lymphatic",
+        "domain.dialysis_access",
+        "domain.graft_complications",
+        "domain.aortic",
+        "domain.trauma",
+        "domain.perioperative",
+        "domain.vascular_compression",
+        "domain.vascular_physiology",
+        null
+      ]
+    },
+    "secondary_domain_ids": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "domain.coronary",
+          "domain.valvular",
+          "domain.congenital",
+          "domain.rhythm",
+          "domain.heart_failure",
+          "domain.heart_transplantation",
+          "domain.pericardial",
+          "domain.cardiac_tumors",
+          "domain.perfusion",
+          "domain.lung",
+          "domain.airway",
+          "domain.pleura",
+          "domain.mediastinum",
+          "domain.esophagus",
+          "domain.chest_wall",
+          "domain.diaphragm",
+          "domain.lung_transplantation",
+          "domain.peripheral_arterial",
+          "domain.extracranial_cerebrovascular",
+          "domain.visceral_renal",
+          "domain.venous",
+          "domain.lymphatic",
+          "domain.dialysis_access",
+          "domain.graft_complications",
+          "domain.aortic",
+          "domain.trauma",
+          "domain.perioperative",
+          "domain.vascular_compression",
+          "domain.vascular_physiology"
+        ]
+      },
+      "uniqueItems": true,
+      "maxItems": 2
+    },
+    "condition_ids": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "condition.coronary_artery_disease",
+          "condition.aortic_stenosis",
+          "condition.aortic_regurgitation",
+          "condition.mitral_stenosis",
+          "condition.mitral_regurgitation",
+          "condition.infective_endocarditis",
+          "condition.atrial_septal_defect",
+          "condition.ventricular_septal_defect",
+          "condition.tetralogy_of_fallot",
+          "condition.atrial_fibrillation",
+          "condition.cardiac_tamponade",
+          "condition.nsclc",
+          "condition.sclc",
+          "condition.pneumothorax",
+          "condition.pleural_empyema",
+          "condition.pleural_effusion",
+          "condition.thymoma",
+          "condition.esophageal_cancer",
+          "condition.achalasia",
+          "condition.peripheral_arterial_disease",
+          "condition.chronic_limb_threatening_ischemia",
+          "condition.acute_limb_ischemia",
+          "condition.carotid_stenosis",
+          "condition.deep_vein_thrombosis",
+          "condition.chronic_venous_insufficiency",
+          "condition.lymphedema",
+          "condition.aortic_aneurysm",
+          "condition.aortic_dissection",
+          "condition.endoleak",
+          "condition.thoracic_outlet_syndrome",
+          "condition.abdominal_aortic_aneurysm",
+          "condition.thoracic_aortic_aneurysm",
+          "condition.stanford_type_a_dissection",
+          "condition.stanford_type_b_dissection",
+          "condition.pulmonary_sequestration",
+          "condition.extralobar_pulmonary_sequestration"
+        ]
+      },
+      "uniqueItems": true,
+      "maxItems": 3
+    },
+    "procedure_ids": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "procedure.cabg",
+          "procedure.aortic_valve_replacement",
+          "procedure.mitral_valve_repair",
+          "procedure.mitral_valve_replacement",
+          "procedure.tavr",
+          "procedure.aortic_root_replacement",
+          "procedure.cardiopulmonary_bypass",
+          "procedure.ecmo",
+          "procedure.lobectomy",
+          "procedure.pneumonectomy",
+          "procedure.esophagectomy",
+          "procedure.pleural_decortication",
+          "procedure.chest_drainage",
+          "procedure.evar",
+          "procedure.tevar",
+          "procedure.carotid_endarterectomy",
+          "procedure.peripheral_arterial_bypass",
+          "procedure.dialysis_av_fistula"
+        ]
+      },
+      "uniqueItems": true,
+      "maxItems": 3
+    },
+    "anatomy_ids": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "anatomy.aortic_valve",
+          "anatomy.mitral_valve",
+          "anatomy.coronary_arteries",
+          "anatomy.aortic_root",
+          "anatomy.ascending_aorta",
+          "anatomy.aortic_arch",
+          "anatomy.descending_thoracic_aorta",
+          "anatomy.abdominal_aorta",
+          "anatomy.lung",
+          "anatomy.pleura",
+          "anatomy.esophagus",
+          "anatomy.carotid_artery",
+          "anatomy.lower_limb_arteries",
+          "anatomy.deep_veins"
+        ]
+      },
+      "uniqueItems": true,
+      "maxItems": 3
+    },
+    "focus_id": {
+      "enum": [
+        "focus.anatomy",
+        "focus.physiology",
+        "focus.pathophysiology",
+        "focus.diagnosis",
+        "focus.investigation_selection",
+        "focus.investigation_interpretation",
+        "focus.classification_staging",
+        "focus.indications",
+        "focus.contraindications",
+        "focus.treatment_selection",
+        "focus.operative_technique",
+        "focus.complications",
+        "focus.perioperative_management",
+        "focus.outcomes",
+        "focus.surveillance",
+        null
+      ]
+    },
+    "phase_id": {
+      "enum": [
+        "phase.preoperative",
+        "phase.intraoperative",
+        "phase.postoperative",
+        null
+      ]
+    },
+    "population_id": {
+      "enum": [
+        "population.adult",
+        "population.pediatric",
+        "population.neonatal",
+        null
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tag_id",
+          "source_field",
+          "reason"
+        ],
+        "properties": {
+          "tag_id": {
+            "enum": [
+              "specialty.cardiac",
+              "specialty.thoracic",
+              "specialty.vascular",
+              "domain.coronary",
+              "domain.valvular",
+              "domain.congenital",
+              "domain.rhythm",
+              "domain.heart_failure",
+              "domain.heart_transplantation",
+              "domain.pericardial",
+              "domain.cardiac_tumors",
+              "domain.perfusion",
+              "domain.lung",
+              "domain.airway",
+              "domain.pleura",
+              "domain.mediastinum",
+              "domain.esophagus",
+              "domain.chest_wall",
+              "domain.diaphragm",
+              "domain.lung_transplantation",
+              "domain.peripheral_arterial",
+              "domain.extracranial_cerebrovascular",
+              "domain.visceral_renal",
+              "domain.venous",
+              "domain.lymphatic",
+              "domain.dialysis_access",
+              "domain.graft_complications",
+              "domain.aortic",
+              "domain.trauma",
+              "domain.perioperative",
+              "domain.vascular_compression",
+              "condition.coronary_artery_disease",
+              "condition.aortic_stenosis",
+              "condition.aortic_regurgitation",
+              "condition.mitral_stenosis",
+              "condition.mitral_regurgitation",
+              "condition.infective_endocarditis",
+              "condition.atrial_septal_defect",
+              "condition.ventricular_septal_defect",
+              "condition.tetralogy_of_fallot",
+              "condition.atrial_fibrillation",
+              "condition.cardiac_tamponade",
+              "condition.nsclc",
+              "condition.sclc",
+              "condition.pneumothorax",
+              "condition.pleural_empyema",
+              "condition.pleural_effusion",
+              "condition.thymoma",
+              "condition.esophageal_cancer",
+              "condition.achalasia",
+              "condition.peripheral_arterial_disease",
+              "condition.chronic_limb_threatening_ischemia",
+              "condition.acute_limb_ischemia",
+              "condition.carotid_stenosis",
+              "condition.deep_vein_thrombosis",
+              "condition.chronic_venous_insufficiency",
+              "condition.lymphedema",
+              "condition.aortic_aneurysm",
+              "condition.aortic_dissection",
+              "condition.endoleak",
+              "condition.thoracic_outlet_syndrome",
+              "condition.abdominal_aortic_aneurysm",
+              "condition.thoracic_aortic_aneurysm",
+              "condition.stanford_type_a_dissection",
+              "condition.stanford_type_b_dissection",
+              "procedure.cabg",
+              "procedure.aortic_valve_replacement",
+              "procedure.mitral_valve_repair",
+              "procedure.mitral_valve_replacement",
+              "procedure.tavr",
+              "procedure.aortic_root_replacement",
+              "procedure.cardiopulmonary_bypass",
+              "procedure.ecmo",
+              "procedure.lobectomy",
+              "procedure.pneumonectomy",
+              "procedure.esophagectomy",
+              "procedure.pleural_decortication",
+              "procedure.chest_drainage",
+              "procedure.evar",
+              "procedure.tevar",
+              "procedure.carotid_endarterectomy",
+              "procedure.peripheral_arterial_bypass",
+              "procedure.dialysis_av_fistula",
+              "focus.anatomy",
+              "focus.physiology",
+              "focus.pathophysiology",
+              "focus.diagnosis",
+              "focus.investigation_selection",
+              "focus.investigation_interpretation",
+              "focus.classification_staging",
+              "focus.indications",
+              "focus.contraindications",
+              "focus.treatment_selection",
+              "focus.operative_technique",
+              "focus.complications",
+              "focus.perioperative_management",
+              "focus.outcomes",
+              "focus.surveillance",
+              "anatomy.aortic_valve",
+              "anatomy.mitral_valve",
+              "anatomy.coronary_arteries",
+              "anatomy.aortic_root",
+              "anatomy.ascending_aorta",
+              "anatomy.aortic_arch",
+              "anatomy.descending_thoracic_aorta",
+              "anatomy.abdominal_aorta",
+              "anatomy.lung",
+              "anatomy.pleura",
+              "anatomy.esophagus",
+              "anatomy.carotid_artery",
+              "anatomy.lower_limb_arteries",
+              "anatomy.deep_veins",
+              "phase.preoperative",
+              "phase.intraoperative",
+              "phase.postoperative",
+              "population.adult",
+              "population.pediatric",
+              "population.neonatal",
+              "domain.vascular_physiology",
+              "concept.coronary_dominance",
+              "concept.vascular_resistance",
+              "concept.poiseuille_law",
+              "condition.pulmonary_sequestration",
+              "condition.extralobar_pulmonary_sequestration"
+            ]
+          },
+          "source_field": {
+            "enum": [
+              "stem",
+              "correct_answer",
+              "explanation"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "review_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "missing_concept_proposals": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "concept_ids": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "concept.coronary_dominance",
+          "concept.vascular_resistance",
+          "concept.poiseuille_law"
+        ]
+      },
+      "uniqueItems": true,
+      "maxItems": 3,
+      "default": [],
+      "description": "Optional tested non-disease concepts; absent is interpreted as an empty list."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "validated"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "primary_specialty_id": {
+            "type": "string"
+          },
+          "primary_domain_id": {
+            "type": "string"
+          },
+          "focus_id": {
+            "type": "string"
+          },
+          "review_reason": {
+            "type": "null"
+          },
+          "missing_concept_proposals": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

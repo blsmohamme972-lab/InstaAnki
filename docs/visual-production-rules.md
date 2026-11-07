@@ -1,6 +1,6 @@
 # Visual production rules
 
-Status: production specification, version 1.0.0. Applies to every InstaAnki lesson. All narration, on-screen labels and questions are English. A full teaching lesson normally lasts 60–90 seconds.
+Status: production specification, version 1.1.0. Applies to every InstaAnki lesson. All narration, on-screen labels and questions are English. A full teaching lesson normally lasts 60–90 seconds.
 
 ## Core rules
 
@@ -37,4 +37,13 @@ Use scene coordinates for anchors, then transform them with the camera so highli
 
 Source objective → medical check → mnemonic concept and stable locus → storyboard → images/3D assets → final voice-over → timing alignment → deterministic animation → MCQ and feedback → visual/audio review → content package.
 
-The local voice-generation engine remains undecided, as requested. This specification does not claim that images, audio, videos or the Android renderer have already been produced.
+## Illustration style and real-image ending
+
+The initial reference direction is the visual-learning approach of Pixorize, Picmonic and Sketchy: original two-dimensional cartoon scenes, strong outlines, simple colors, expressive characters and a small set of deliberately mapped mnemonic objects. Reference the general learning approach; do not reuse another product's scenes, characters, logos or lesson artwork. Cinematic three-dimensional styling is optional when a specific lesson benefits from it, rather than the default.
+
+Every lesson ends with one or more authentic images obtained from the web, such as a clinical photograph, angiogram or photomicrograph. Store each image locally with its source URL, author, license, attribution, image hash and an explanation of what it demonstrates. Choose a clear licensed source; personal use alone does not establish redistribution rights. Show the correct panel and preserve the original clinical meaning. Never label a generated mnemonic as a clinical photograph. Avoid implying that an illustrative clinical image is the exact patient or numerical scenario from the MCQ.
+
+## Current pilot implementation
+
+The three starter lessons have original two-dimensional mnemonic illustrations, locally generated English audio, timed image-space camera anchors, an MCQ and a nine-second real-image ending. The implementation currently uses Kokoro ONNX for production-time audio; neither the voice model nor a cloud voice service is needed on the phone. Runtime audio is MP3 and is the master animation clock. Alignment is measured at narration-segment level; it is not claimed to be forced word-level alignment. Human listening and physical Android validation remain separately recorded QA steps.
+

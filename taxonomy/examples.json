@@ -5,8 +5,8 @@
     {
       "question_id": "example-valve-001",
       "question_version": 1,
-      "taxonomy_version": "1.0.0",
-      "annotation_revision": 1,
+      "taxonomy_version": "1.1.0",
+      "annotation_revision": 2,
       "status": "validated",
       "tested_objective": "Identify when aortic valve replacement is indicated in the stated aortic stenosis scenario.",
       "primary_specialty_id": "specialty.cardiac",
@@ -58,13 +58,14 @@
         }
       ],
       "review_reason": null,
-      "missing_concept_proposals": []
+      "missing_concept_proposals": [],
+      "concept_ids": []
     },
     {
       "question_id": "example-thoracic-001",
       "question_version": 1,
-      "taxonomy_version": "1.0.0",
-      "annotation_revision": 1,
+      "taxonomy_version": "1.1.0",
+      "annotation_revision": 2,
       "status": "validated",
       "tested_objective": "Recognize the complication described after esophagectomy.",
       "primary_specialty_id": "specialty.thoracic",
@@ -107,13 +108,14 @@
         }
       ],
       "review_reason": null,
-      "missing_concept_proposals": []
+      "missing_concept_proposals": [],
+      "concept_ids": []
     },
     {
       "question_id": "example-vascular-001",
       "question_version": 1,
-      "taxonomy_version": "1.0.0",
-      "annotation_revision": 1,
+      "taxonomy_version": "1.1.0",
+      "annotation_revision": 2,
       "status": "validated",
       "tested_objective": "Identify the endoleak described after endovascular aneurysm repair.",
       "primary_specialty_id": "specialty.vascular",
@@ -160,6 +162,162 @@
           "tag_id": "phase.postoperative",
           "source_field": "stem",
           "reason": "Synthetic example: the stem and answer explicitly concern a postoperative endoleak after EVAR; no endoleak type is inferred."
+        }
+      ],
+      "review_reason": null,
+      "missing_concept_proposals": [],
+      "concept_ids": []
+    },
+    {
+      "question_id": "example-coronary-dominance-001",
+      "question_version": 1,
+      "taxonomy_version": "1.1.0",
+      "annotation_revision": 1,
+      "status": "validated",
+      "tested_objective": "Relate the origin of the posterior descending artery to coronary dominance.",
+      "primary_specialty_id": "specialty.cardiac",
+      "secondary_specialty_ids": [],
+      "primary_domain_id": "domain.coronary",
+      "secondary_domain_ids": [],
+      "condition_ids": [],
+      "procedure_ids": [],
+      "concept_ids": [
+        "concept.coronary_dominance"
+      ],
+      "anatomy_ids": [
+        "anatomy.coronary_arteries"
+      ],
+      "focus_id": "focus.anatomy",
+      "phase_id": null,
+      "population_id": null,
+      "evidence": [
+        {
+          "tag_id": "specialty.cardiac",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests a coronary anatomical supply pattern, not a disease diagnosis."
+        },
+        {
+          "tag_id": "domain.coronary",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests a coronary anatomical supply pattern, not a disease diagnosis."
+        },
+        {
+          "tag_id": "focus.anatomy",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests a coronary anatomical supply pattern, not a disease diagnosis."
+        },
+        {
+          "tag_id": "concept.coronary_dominance",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests a coronary anatomical supply pattern, not a disease diagnosis."
+        },
+        {
+          "tag_id": "anatomy.coronary_arteries",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests a coronary anatomical supply pattern, not a disease diagnosis."
+        }
+      ],
+      "review_reason": null,
+      "missing_concept_proposals": []
+    },
+    {
+      "question_id": "example-sequestration-001",
+      "question_version": 1,
+      "taxonomy_version": "1.1.0",
+      "annotation_revision": 1,
+      "status": "validated",
+      "tested_objective": "Identify the pleural relationship that defines the extralobar form of pulmonary sequestration.",
+      "primary_specialty_id": "specialty.thoracic",
+      "secondary_specialty_ids": [],
+      "primary_domain_id": "domain.lung",
+      "secondary_domain_ids": [],
+      "condition_ids": [
+        "condition.extralobar_pulmonary_sequestration"
+      ],
+      "procedure_ids": [],
+      "concept_ids": [],
+      "anatomy_ids": [
+        "anatomy.lung",
+        "anatomy.pleura"
+      ],
+      "focus_id": "focus.anatomy",
+      "phase_id": null,
+      "population_id": null,
+      "evidence": [
+        {
+          "tag_id": "specialty.thoracic",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests the separate pleural covering of the extralobar condition. The parent condition is derived rather than redundantly stored."
+        },
+        {
+          "tag_id": "domain.lung",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests the separate pleural covering of the extralobar condition. The parent condition is derived rather than redundantly stored."
+        },
+        {
+          "tag_id": "focus.anatomy",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests the separate pleural covering of the extralobar condition. The parent condition is derived rather than redundantly stored."
+        },
+        {
+          "tag_id": "condition.extralobar_pulmonary_sequestration",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests the separate pleural covering of the extralobar condition. The parent condition is derived rather than redundantly stored."
+        },
+        {
+          "tag_id": "anatomy.lung",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests the separate pleural covering of the extralobar condition. The parent condition is derived rather than redundantly stored."
+        },
+        {
+          "tag_id": "anatomy.pleura",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task explicitly tests the separate pleural covering of the extralobar condition. The parent condition is derived rather than redundantly stored."
+        }
+      ],
+      "review_reason": null,
+      "missing_concept_proposals": []
+    },
+    {
+      "question_id": "example-vascular-physiology-001",
+      "question_version": 1,
+      "taxonomy_version": "1.1.0",
+      "annotation_revision": 1,
+      "status": "validated",
+      "tested_objective": "Predict the direction of resistance change when tube radius changes under stated laminar-flow assumptions.",
+      "primary_specialty_id": "specialty.vascular",
+      "secondary_specialty_ids": [],
+      "primary_domain_id": "domain.vascular_physiology",
+      "secondary_domain_ids": [],
+      "condition_ids": [],
+      "procedure_ids": [],
+      "concept_ids": [
+        "concept.poiseuille_law"
+      ],
+      "anatomy_ids": [],
+      "focus_id": "focus.physiology",
+      "phase_id": null,
+      "population_id": null,
+      "evidence": [
+        {
+          "tag_id": "specialty.vascular",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task tests a vessel-flow model. No arterial disease, anatomical territory or patient population is inferred."
+        },
+        {
+          "tag_id": "domain.vascular_physiology",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task tests a vessel-flow model. No arterial disease, anatomical territory or patient population is inferred."
+        },
+        {
+          "tag_id": "focus.physiology",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task tests a vessel-flow model. No arterial disease, anatomical territory or patient population is inferred."
+        },
+        {
+          "tag_id": "concept.poiseuille_law",
+          "source_field": "stem",
+          "reason": "Synthetic example: the task tests a vessel-flow model. No arterial disease, anatomical territory or patient population is inferred."
         }
       ],
       "review_reason": null,

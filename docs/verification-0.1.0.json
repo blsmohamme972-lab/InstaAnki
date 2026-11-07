@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "product": "InstaAnki",
+  "releaseType": "personal-preview",
+  "verifiedAt": "2026-11-07T15:14:17.902817+00:00",
+  "apk": {
+    "file": "InstaAnki-0.1.0.apk",
+    "packageName": "com.instaanki.app",
+    "version": "0.1.0",
+    "versionCode": 1,
+    "minSdk": 26,
+    "targetSdk": 35,
+    "bytes": 14592455,
+    "sha256": "6c21cfe3d8418fab2493c247c29936e465d07ac58770f0e227c01410a41340b4",
+    "includesPrivateContent": true
+  },
+  "signatureVerification": {
+    "v2": true,
+    "v3": true,
+    "alignmentPassed": true,
+    "certificateSha256": "545768dcedb118ffa17b73cdf9edca14f4576d59376839489abb861492622ea7"
+  },
+  "assetInspection": {
+    "bundledLessons": 3,
+    "bundledMp3Files": 3,
+    "privateAssets": [
+      "book-cover.jpeg"
+    ],
+    "bookProgress": {
+      "completed": 3,
+      "total": 200,
+      "percent": 1.5,
+      "questionNumbers": [
+        5,
+        54,
+        182
+      ]
+    },
+    "pdfBundled": false,
+    "signingSecretsBundled": false,
+    "zipIntegrityPassed": true,
+    "allPackagedWebAssetsMatchFinalSources": true
+  },
+  "tests": {
+    "browser": {
+      "passed": 15,
+      "failed": 0,
+      "testNames": [
+        "all three lessons load; real MP3 metadata decodes",
+        "actual playback automatically enrolls without grading",
+        "seek shows an uncropped clinical figure and its license",
+        "speed change persists and scene state follows seeking",
+        "real image outro precedes MCQ, correct answer schedules Good once",
+        "like and private note persist without changing recall",
+        "publications show the real cover and200source questions",
+        "due entry gates playback with question; unknown answer gives Again",
+        "early practice never moves the due date",
+        "failed answer save stays editable; retry records exactly once",
+        "backup round-trip and invalid backup preserve local data",
+        "settings check catalog and retention changes without reset",
+        "all three lessons play local audio and show timed mnemonic and real-image scenes without external network",
+        "mobile layouts have no horizontal overflow at360/390/430",
+        "no uncaught JavaScript errors under native-equivalent CSP"
+      ],
+      "externalRequestsBlockedForAllLessonPlayback": true
+    },
+    "learningUnit": {
+      "passed": 8,
+      "failed": 0,
+      "command": "node --test tests/learning.test.cjs"
+    },
+    "jvm": {
+      "totalAssertions": 44,
+      "allPassed": true,
+      "contentImporterAssertions": 24,
+      "downloadUrlGateAssertions": 13,
+      "backupParserAssertions": 7
+    },
+    "lessonChecks": {
+      "sourceChecked": true,
+      "visualInspected": true,
+      "audioDecoded": true,
+      "timelineBrowserTested": true
+    }
+  },
+  "pendingVerification": {
+    "physicalAndroidTested": false,
+    "emulatorTested": false,
+    "humanListeningReviewed": false,
+    "independentHumanMedicalReviewCompleted": false,
+    "liveReleaseDownloadInstallTested": false,
+    "nativePickerAndInstallationFlowTested": false
+  },
+  "distribution": {
+    "catalogPath": "content/catalog.json",
+    "publishedDownloadablePackEntries": 0,
+    "githubReleasePublicationConfirmed": false,
+    "uiOtaImplemented": false,
+    "automaticApkInstallationImplemented": false,
+    "interfaceAndNativeUpdateMethod": "New APK signed with the same key and installed through Android."
+  },
+  "sourceContinuity": {
+    "productionLedger": "production/books/shahzad-raja-2015-200-practice-questions.json",
+    "secretKeysInPublicRepository": false,
+    "originalPdfInProjectArchiveOrApk": false,
+    "productionProgressIsLearnerProgress": false,
+    "privateSourceArchive": "InstaAnki-Source-Archive.zip",
+    "rawExtractedSourcesInPublicRepository": false,
+    "encryptedSourceVaultInPublicRepository": false,
+    "vaultMetadataInPublicRepository": false,
+    "restoreRequirement": "Restore the privately delivered source ZIP into the project before producing further lessons; read the current public production ledger for progress."
+  },
+  "limitations": [
+    "Browser and JVM checks do not constitute Android device or emulator testing.",
+    "Technical MP3 decoding is not a human listening review.",
+    "Source linkage checks are not independent clinical accuracy certification.",
+    "The current APK checksum identifies the personal build with its cover, not every possible rebuild.",
+    "Catalog handling used a controlled test response; no live published Release download is claimed."
+  ]
+}

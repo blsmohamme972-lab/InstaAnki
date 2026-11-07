@@ -1,0 +1,152 @@
+# Lesson production workflow
+
+This workflow records which source questions have verified teaching assets and a reviewed browser timeline. It never reads or changes a learner's answers, comments, likes, due dates or FSRS state. Production completion does not certify playback on a physical Android device or a human listening review; those checks are recorded separately and can remain pending.
+
+## Files and identities
+
+- `production/books/<bookId>.json` contains the public-safe production checkpoint: book metadata, stable source IDs, statuses and completed lesson references.
+- `private-content/` contains the private source transcription, original question text, source figures and extraction audit. It is excluded from Git. The original uploaded PDF is not required inside the application or repository.
+- `web/data/lessons.json` contains the original teaching lessons assembled for the app. Each lesson links to `source.bookId` and `source.questionNumber`; an optional `source.questionId` must match the manifest's stable ID.
+- `web/media/audio/<audio-basename>.timing.json` records the final measured voice segments. Its scene IDs, boundaries and transcripts must match the lesson.
+- `web/media/real/attributions.json` records the original real-image bytes, source, license and SHA-256. Each lesson also carries readable attribution in `realImages`.
+
+Use stable IDs when a batch is interrupted or a book is processed out of order. A completed lesson for question 182 does not imply that questions 1-181 are complete.
+
+## Production states
+
+| State | Meaning | Selected by `next`? |
+|---|---|---|
+| `ready` | Source record is available for production | Yes |
+| `needs_review` | A source, extraction or content issue still needs resolution | No |
+| `claimed` | A named batch owns the unfinished work | No |
+| `produced` | The lesson assets passed technical checks and the explicitly recorded source, visual, audio-decode and browser-timeline checks | No |
+
+The manifest owner resolves a `needs_review` reason and changes that source record to `ready` after checking it. A source figure or formula may require a layout check without being a medical error; record the actual resolution rather than silently discarding the flag.
+
+`completedVideos` and `completedQuestionNumbers` are derived from records marked `produced`. They describe production, not what the user has learned.
+
+## Inspect and reserve work
+
+The CLI needs Python 3.10 or later. `complete` additionally needs `ffprobe` on `PATH`. Mutating commands use POSIX file locks and run on Linux or macOS; they have no third-party Python package dependencies.
+
+When there is one manifest in `production/books/`, it is selected automatically:
+
+```bash
+python tools/production.py status
+python tools/production.py next --count 10
+python tools/production.py claim --count 10 --batch-id batch-2026-11-07-01
+```
+
+For multiple books, put the target before the subcommand:
+
+```bash
+python tools/production.py --book shahzad-raja-2015-200-practice-questions status
+python tools/production.py --manifest production/books/example-book.json next --count 10
+```
+
+`status` and `next` are read-only. `next` selects ready records in source-question order, inspecting every record's status rather than using the maximum completed number. It skips both outstanding claims and unresolved review items.
+
+`claim` saves the selected stable IDs immediately. Repeating the same batch ID resumes its original selection; it does not silently append another ten questions. A resumed batch reports any already-produced records and remaining review blockers. The requested count sets the size of a new batch only.
+
+To release unfinished claims for retry:
+
+```bash
+python tools/production.py release --batch-id batch-2026-11-07-01
+```
+
+Release returns that batch's unfinished claimed records to `ready`. It leaves produced records intact. The same batch ID can reclaim its original outstanding selection if another batch has not taken those questions. A conflicting claim causes an error rather than taking another batch's work.
+
+## Produce and review a lesson
+
+For each claimed source ID:
+
+1. Check the original question, keyed answer, explanation and any linked source figures or cross-references. Review historical management statements against suitable current sources before using them in a new lesson.
+2. Write one tested objective and validate its canonical English annotation against the declared taxonomy version.
+3. Prepare the mnemonic, fixed locus, scene images and original English narration. Keep source text in the private archive.
+4. Generate the final voice segments and derive their timing from the actual audio samples. Regenerating the voice invalidates the previous timing until it is checked again.
+5. Assemble the lesson, quiz, measured timeline and attributed real-image outro.
+6. Inspect the images and labels, decode the actual audio, and test the browser timeline: camera/spotlight positions, pauses, seeking, playback speed and the transition to the MCQ.
+7. Record exactly which checks were performed. Device playback and human listening are separate checks; when unavailable, retain them as false and pending.
+
+The detailed visual criteria are in [visual-production-rules.md](visual-production-rules.md). Writing a script, downloading an image or creating an audio file alone does not mark a source question produced.
+
+## Complete after the recorded asset and browser review
+
+After the source, visual, audio-decode and browser-timeline checks, write a QA report. A single report can identify several reviewed lessons:
+
+```json
+{
+  "schemaVersion": 1,
+  "bookId": "shahzad-raja-2015-200-practice-questions",
+  "reviewedAt": "2026-11-07T12:00:00Z",
+  "sourceChecked": true,
+  "visualInspected": true,
+  "audioDecoded": true,
+  "timelineBrowserTested": true,
+  "physicalAndroidTested": false,
+  "humanListeningReviewed": false,
+  "lessons": [
+    {"questionNumber": 54, "lessonId": "shahzad2015-q054"}
+  ],
+  "notes": [
+    "Replace this example with the actual checks, evidence and limitations."
+  ]
+}
+```
+
+Use the real review timestamp. Set each boolean according to what occurred. An optional `lessonSha256` on each lesson entry binds the report to the canonical JSON hash produced by the validator. The report may instead identify one lesson with top-level `questionNumber` and `lessonId`.
+
+```bash
+python tools/production.py complete \
+  --question 54 \
+  --lesson web/data/lessons.json \
+  --root web \
+  --batch-id batch-2026-11-07-01 \
+  --qa-report production/qa/starter-review.json
+```
+
+The lesson input may be a single lesson object, the app's lesson array or an object containing a `lessons` array. Exactly one lesson must match the selected book and source question number. An unclaimed ready record, such as a deliberately selected starter lesson, can be completed without `--batch-id`. A claimed record requires its owning batch ID.
+
+`--qa-report` records the checks actually performed. The four asset/browser checks must be true; the Android-device and human-listening booleans must be explicitly present and may be false. The tool verifies the report's book, question and lesson identity, then saves its checks, notes and hash in the source record. False device/listening checks persist as `pendingDeviceQA: true` and `pendingHumanListeningQA: true`. The tool does not perform a visual review, listen to narration, or establish medical correctness on its own. It refuses completion without a matching report or for records still marked `needs_review`.
+
+The technical gate checks:
+
+- Source book/question identity, stable source ID when present, lesson identity and positive revision.
+- A 60-90 second full lesson, a continuous scene sequence starting at zero, and an adjacent real-image outro ending at the declared duration.
+- The final measured audio companion: matching scene IDs, timestamps and transcripts. The companion defaults to the audio filename with `.timing.json`; use `--timing PATH` for another location.
+- Actual audio duration and an audio stream using `ffprobe`. Timeline comparisons allow 20 ms; container duration allows 250 ms for encoding/padding differences.
+- A usable MCQ structure with unique answer options, a valid key and an explanation.
+- Canonical active tag IDs and exact English labels, the declared taxonomy version, one learning focus and compatible specialty/domain scope.
+- A stable locus and all referenced local audio, poster, scene and real-image files. Media paths must remain within the supplied web root.
+- Real-image source and license URLs, attribution and explicit real-image provenance. The local image bytes must match the recorded SHA-256. Merely calling an asset a real image is insufficient.
+
+For a reviewed record, the manifest may additionally contain `expectedTagIds`, `expectedCorrectIndex` or `expectedQuizSha256`. When present, these are exact checks against the final lesson. Without them, the tool validates quiz structure and registry membership; the operator remains responsible for the source-aligned answer and teaching content.
+
+On success, the record becomes `produced` and stores the lesson/quiz hashes, media hashes, measured duration, taxonomy version and QA report. The produced count means verified lesson assets, not device certification or learner mastery. Repeating completion with identical lesson metadata, media, timing and QA report is idempotent. An already-produced record with changed content or a different QA report is not silently overwritten; it requires an explicit reviewed revision workflow. Pending device and listening checks are never erased by an idempotent completion call.
+
+## Atomic checkpoints
+
+Claims, releases and completions hold a per-manifest process lock. Updates are written to a temporary file in the same directory, flushed to disk and atomically replaced. Locks are kept outside the repository and are released if the process exits. The CLI rereads the manifest under the lock before changing a completion record, so another batch's claim is respected.
+
+The tool preserves other manifest fields and never opens a learner database. Keep final lesson assets unchanged between review and completion; a changed asset needs another review and fresh validation.
+
+## Build a data-only content pack
+
+Once the lessons and referenced media are ready:
+
+```bash
+python tools/build_pack.py \
+  --input web/data/lessons.json \
+  --web-root web \
+  --output dist/InstaAnki-Starter-Pack-v1.zip \
+  --pack-id instaanki-starter-v1 \
+  --version 1
+
+python tools/build_pack.py --verify dist/InstaAnki-Starter-Pack-v1.zip
+```
+
+Use repeated `--lesson LESSON_ID` arguments to select specific lessons. The builder includes the lesson data and referenced local media, writes a schema-version-1 manifest with a SHA-256 for every payload file, and produces a checksum for the complete ZIP.
+
+Packs contain no HTML, JavaScript, SVG, PDF, native code or raw source-book archive. Source identifiers, original paraphrased teaching content and required attribution remain in the lesson data. Checksums detect changes; they do not establish who published a pack.
+
+The ZIP builder does not mark a source question produced and does not update learner state. It also does not upload a pack or publish a release. Keep any deliverable containing a private source archive in the user's private delivery channel.

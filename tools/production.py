@@ -19,6 +19,7 @@ import sys
 import tempfile
 from urllib.parse import unquote, urlsplit
 from guidance import verify_guidance
+from presentation import validate_presentation
 from source_policy import SourcePolicy, validate_content_review
 
 
@@ -215,17 +216,25 @@ def claim(path, count, batch_id):
     policy = SourcePolicy(REPO)
     with locked_manifest(path) as document:
         policy.check_ledger(document)
-        policy.require_new_production()
+        policy.require_new_production(batch_id=batch_id)
+        trial = policy.production_trial(document)
+        if trial is not None and count != trial["maxNewLessons"]:
+            fail(f"The limited trial must claim its exact {trial['maxNewLessons']}-question selection; use --count {trial['maxNewLessons']}")
         batches = document.setdefault("batches", {})
         by_number = {q["number"]: q for q in document["questions"]}
         batch = batches.get(batch_id)
         resumed = batch is not None
         changed = False
         if batch is None:
-            legacy = [q for q in document["questions"] if q.get("batchId") == batch_id and q["status"] in {"claimed", "produced"}]
-            chosen = sorted(legacy or [q for q in document["questions"] if q["status"] == "ready"], key=lambda q: q["number"])
-            if not legacy:
-                chosen = chosen[:count]
+            if trial is not None:
+                # Claim the reviewed identities exactly. A held question must
+                # fail source review, not be replaced by another ready one.
+                chosen = [by_number[n] for n in sorted(trial["questionNumbers"])]
+            else:
+                legacy = [q for q in document["questions"] if q.get("batchId") == batch_id and q["status"] in {"claimed", "produced"}]
+                chosen = sorted(legacy or [q for q in document["questions"] if q["status"] == "ready"], key=lambda q: q["number"])
+                if not legacy:
+                    chosen = chosen[:count]
             if not chosen:
                 return {"bookId": document["bookId"], "batchId": batch_id, "resumed": False, "questions": [], "message": "No ready questions are available"}
             batch = {"batchId": batch_id, "createdAt": now(), "questionNumbers": [q["number"] for q in chosen], "requestedCount": count, "status": "active"}
@@ -236,6 +245,12 @@ def claim(path, count, batch_id):
                 chosen = [by_number[n] for n in batch["questionNumbers"]]
             except (KeyError, TypeError):
                 fail("Batch checkpoint contains unknown source question numbers")
+        if trial is not None and (len(chosen) != trial["maxNewLessons"]
+                                  or {q["number"] for q in chosen} != set(trial["questionNumbers"])):
+            fail("The batch checkpoint differs from the exact limited-trial selection")
+        for question in chosen:
+            if question["status"] != "produced":
+                policy.require_new_production(question["number"], batch_id=batch_id)
         conflicts = [q["number"] for q in chosen if q["status"] == "claimed" and q.get("batchId") != batch_id]
         if conflicts:
             fail(f"Cannot resume batch; questions are claimed by another batch: {conflicts}")
@@ -458,8 +473,9 @@ def verify_lesson(lesson, document, question, web_root, registry_path=None, timi
 
     try:
         guidance_validation = verify_guidance(lesson, timing, web_root)
+        validate_presentation(lesson)
     except (ValueError, KeyError, TypeError, OSError) as exc:
-        fail(f"Visual/audio guidance validation failed: {exc}")
+        fail(f"Visual/audio guidance or presentation validation failed: {exc}")
 
     ffprobe = shutil.which("ffprobe")
     if not ffprobe:
@@ -590,6 +606,8 @@ def complete(path, args):
             source_evidence = policy.validate_lesson_source(lesson, initial, record)
     else:
         source_evidence = policy.validate_lesson_source(lesson, initial, record)
+        if policy.production_trial(initial) is not None and lesson.get("presentation") is None:
+            fail("New trial lessons require the three-image gallery and measured narrated recap presentation")
     validation = verify_lesson(lesson, initial, record, args.root, args.registry, args.timing)
     if source_evidence is not None:
         validation["sourceEvidenceSha256"] = canonical_hash(source_evidence)
@@ -689,7 +707,11 @@ def main():
             result = status(load_manifest(path))
         elif args.command == "next":
             document = load_manifest(path)
-            ready = sorted((q for q in document["questions"] if q["status"] == "ready"), key=lambda q: q["number"])[:args.count]
+            trial = SourcePolicy(REPO).production_trial(document)
+            ready = sorted((q for q in document["questions"] if q["status"] == "ready"
+                            and (trial is None or (trial["status"] == "active"
+                                                  and q["number"] in trial["questionNumbers"]))),
+                           key=lambda q: q["number"])[:args.count]
             result = {"bookId": document["bookId"], "readOnly": True, "questions": summaries(ready)}
         elif args.command == "claim":
             result = claim(path, args.count, args.batch_id)
@@ -701,10 +723,17 @@ def main():
             policy = SourcePolicy(REPO)
             try:
                 policy.source_records(load_manifest(path))
-                enabled = policy.policy.get("newProductionEnabled") is True
+                trial = policy.production_trial()
+                enabled = trial["status"] == "active" if trial else policy.policy.get("newProductionEnabled") is True
                 result["sourcePolicy"] = {"activeBookId": policy.book_id, "sourceAvailable": True,
                                           "newProductionBlocked": not enabled}
-                if not enabled:
+                if trial is not None:
+                    result["sourcePolicy"].update(
+                        scope="limited-trial", trialStatus=trial["status"], batchId=trial["batchId"],
+                        authorizedQuestionNumbers=sorted(trial["questionNumbers"]), maxNewLessons=trial["maxNewLessons"],
+                        generalNewProductionEnabled=False,
+                        reason="Only the recorded trial questions are authorized while the trial is active; all other new production remains paused.")
+                elif not enabled:
                     result["sourcePolicy"]["reason"] = "New lesson production is paused by the current explicit user instruction; existing app repairs remain allowed."
             except ValueError as exc:
                 result["sourcePolicy"] = {"activeBookId": policy.book_id, "sourceAvailable": False,

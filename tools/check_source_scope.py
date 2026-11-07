@@ -90,12 +90,60 @@ def check_catalog(repo=ROOT, web_root=None, *, profile="standard"):
             "totalQuestions": ledger["totalQuestions"], "distributionProfile": profile}
 
 
+def _check_replaceable_fresh_stage(web_root, ledger, expected_marker):
+    """Recognize a prior generated stage, not a currently valid deliverable.
+
+    Cached progress may predate today's ledger. Check its identity, shape and
+    internal consistency without using it to approve new source or output.
+    """
+    check_fresh_file_set(web_root)
+    books = json.loads((web_root / "data/books.json").read_text(encoding="utf-8"))
+    if not isinstance(books, list) or len(books) != 1 or not isinstance(books[0], dict):
+        raise SourcePolicyError("Existing Fresh stage must contain exactly the original book")
+    book = books[0]
+    expected = {"id": ledger["bookId"], **{key: ledger[key] for key in ("title", "author", "year", "totalQuestions")}}
+    if any(isinstance(book.get(key), bool) or book.get(key) != value for key, value in expected.items()):
+        raise SourcePolicyError("Existing Fresh stage publication identity differs from the original book")
+    known = [question["number"] for question in ledger["questions"]]
+    completed = book.get("completedQuestionNumbers")
+    if (not isinstance(completed, list)
+            or any(type(number) is not int or number not in known for number in completed)
+            or completed != sorted(set(completed))
+            or type(book.get("completedVideos")) is not int or book["completedVideos"] != len(completed)):
+        raise SourcePolicyError("Existing Fresh stage has malformed cached publication counts")
+    if "progress" in book and (isinstance(book["progress"], bool)
+                               or book["progress"] != round(len(completed) / ledger["totalQuestions"] * 100, 1)):
+        raise SourcePolicyError("Existing Fresh stage has inconsistent cached progress")
+    if "questions" in book:
+        questions = book["questions"]
+        if (not isinstance(questions, list) or len(questions) != len(known)
+                or any(not isinstance(question, dict) or type(question.get("number")) is not int
+                       or question["number"] != number
+                       or question.get("status") not in {"ready", "claimed", "needs_review", "produced"}
+                       or (question.get("lessonId") is not None
+                           and (not isinstance(question["lessonId"], str) or not question["lessonId"]))
+                       for question, number in zip(questions, known))
+                or sorted(question["number"] for question in questions if question["status"] == "produced") != completed):
+            raise SourcePolicyError("Existing Fresh stage has malformed cached question statuses")
+    marker = json.loads((web_root / "data/distribution.json").read_text(encoding="utf-8"))
+    if marker != expected_marker:
+        raise SourcePolicyError("Existing Fresh stage must carry the exact reviewed distribution marker")
+    if '<meta name="instaanki-distribution" content="fresh">' not in (web_root / "index.html").read_text(encoding="utf-8"):
+        raise SourcePolicyError("Existing Fresh stage must keep its Fresh runtime identity")
+    if json.loads((web_root / "data/lessons.json").read_text(encoding="utf-8")) != []:
+        raise SourcePolicyError("Existing Fresh stage must contain zero bundled lessons")
+    if book.get("productionPaused") is not True or book.get("coverUrl"):
+        raise SourcePolicyError("Existing Fresh stage must keep production paused and omit cover media")
+
+
 def prepare_fresh_web(repo, source_web, destination):
     """Prepare only the explicitly authorized empty app, without reading media.
 
     Canonical lessons and their production ledger stay unchanged. This helper is
     not a content-pack validator and cannot approve an empty normal lesson ZIP.
     """
+    if Path(destination).is_symlink():
+        raise SourcePolicyError("Fresh staging destination must not be a symlink")
     repo, source_web, destination = map(lambda path: Path(path).resolve(), (repo, source_web, destination))
     if (destination == repo or repo.is_relative_to(destination)
             or destination == source_web or source_web.is_relative_to(destination)
@@ -104,13 +152,14 @@ def prepare_fresh_web(repo, source_web, destination):
     policy = SourcePolicy(repo)
     marker = fresh_distribution(repo, policy)
     books = json.loads((source_web / "data/books.json").read_text(encoding="utf-8"))
-    validate_publications(books, policy.ledger())
+    ledger = policy.ledger()
+    validate_publications(books, ledger)
     for book in books:
         book.pop("coverUrl", None)
         book["productionPaused"] = True
     if destination.exists() and any(destination.iterdir()):
         # Never erase an unrelated directory or a user's additions to a stage.
-        check_catalog(repo, destination, profile="fresh")
+        _check_replaceable_fresh_stage(destination, ledger, marker)
     destination.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=".fresh-web-", dir=destination.parent) as temporary:
         stage = Path(temporary) / "web"

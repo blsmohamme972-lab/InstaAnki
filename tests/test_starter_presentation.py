@@ -31,8 +31,17 @@ class StarterPresentationTests(unittest.TestCase):
         for p in self.proposal['lessons']:
             with self.subTest(lesson=p['lessonId']):
                 live = self.lessons[p['lessonId']]
-                self.assertEqual(content_fingerprints(live), {
-                    k: p['baseline'][k] for k in ('authoredContentSha256', 'quizSha256')})
+                fingerprints = content_fingerprints(live)
+                baseline_keys = ('authoredContentSha256', 'quizSha256')
+                self.assertEqual({key: fingerprints[key] for key in baseline_keys}, {
+                    key: p['baseline'][key] for key in baseline_keys})
+                recap = p['presentation']['recap']
+                self.assertEqual(fingerprints['visualSupplementSha256'], canonical_hash({
+                    'realImages': p['realImages'],
+                    'recap': {'nodes': recap['nodes'], 'edges': recap['edges'],
+                              'cueBindings': [{key: binding[key] for key in ('phraseId', 'nodeId')}
+                                              for binding in recap['cueBindings']]},
+                }))
                 self.assertEqual(canonical_hash(live['source']), p['baseline']['sourceSha256'])
                 self.assertEqual(live['audioUrl'], p['baseline']['audioUrl'])
                 if live['version'] == p['baseVersion']:

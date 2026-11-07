@@ -174,6 +174,96 @@ class FreshDistributionTests(unittest.TestCase):
         self.assertEqual(self.prepare()["activeLessons"], 0)
         self.assertEqual((self.stage / "app.js").read_text(), "/* refreshed runtime */")
 
+    def update_synthetic_progress(self, *, produce=False, update_source=True):
+        path = self.root / "production/books/shahzad-raja-2015-200-practice-questions.json"
+        ledger = json.loads(path.read_text())
+        for question in ledger["questions"]:
+            if question["number"] in ((1, 2, 4) if produce else (1,)):
+                question["status"] = "produced" if produce else "needs_review"
+                question["lessonId"] = f"synthetic-q{question['number']:03d}" if produce else None
+        completed = sorted(question["number"] for question in ledger["questions"] if question["status"] == "produced")
+        ledger.update(completedVideos=len(completed), completedQuestionNumbers=completed)
+        path.write_text(json.dumps(ledger))
+        if update_source:
+            path = self.web / "data/books.json"
+            books = json.loads(path.read_text())
+            books[0].update(completedVideos=len(completed), completedQuestionNumbers=completed,
+                            progress=round(len(completed) / ledger["totalQuestions"] * 100, 1),
+                            questions=[{key: question.get(key) for key in ("number", "status", "lessonId")}
+                                       for question in ledger["questions"]])
+            path.write_text(json.dumps(books))
+
+    def test_previous_stage_can_refresh_after_legitimate_progress_or_status_changes(self):
+        for produce in (False, True):
+            with self.subTest(produce=produce):
+                self.prepare()
+                self.update_synthetic_progress(produce=produce)
+                with self.assertRaises(SourcePolicyError):
+                    check_catalog(self.root, self.stage, profile="fresh")
+                result = self.prepare()
+                self.assertEqual(result["producedQuestions"], 6 if produce else 3)
+                self.assertEqual(result["activeLessons"], 0)
+                self.assertEqual(check_catalog(self.root, self.stage, profile="fresh"), result)
+
+    def test_stale_current_source_cannot_replace_an_existing_stage(self):
+        self.prepare()
+        previous = (self.stage / "data/books.json").read_bytes()
+        self.update_synthetic_progress(produce=True, update_source=False)
+        with self.assertRaisesRegex(SourcePolicyError, "completed counts"):
+            self.prepare()
+        self.assertEqual((self.stage / "data/books.json").read_bytes(), previous)
+
+    def test_refresh_preserves_unowned_modified_or_symlinked_stages(self):
+        for problem in ("extra-file", "symlink", "marker", "runtime", "book", "lessons", "cached-count"):
+            with self.subTest(problem=problem):
+                self.prepare()
+                if problem == "extra-file":
+                    (self.stage / "keep-this.txt").write_text("Synthetic user file")
+                elif problem == "symlink":
+                    outside = Path(self.temp.name) / "outside.js"
+                    outside.write_text("Synthetic external runtime")
+                    (self.stage / "app.js").unlink()
+                    (self.stage / "app.js").symlink_to(outside)
+                elif problem == "marker":
+                    self.edit_json("data/distribution.json", lambda marker: marker.update(profile="standard"))
+                elif problem == "runtime":
+                    (self.stage / "index.html").write_text('<meta name="instaanki-distribution" content="standard">')
+                elif problem == "book":
+                    self.edit_json("data/books.json", lambda books: books[0].update(id="unrelated-book"))
+                elif problem == "lessons":
+                    (self.stage / "data/lessons.json").write_text('[{"id":"synthetic-unrelated-lesson"}]')
+                else:
+                    self.edit_json("data/books.json", lambda books: books[0].update(completedVideos=99))
+                def snapshot():
+                    return {path.relative_to(self.stage).as_posix():
+                            ("symlink", str(path.readlink())) if path.is_symlink() else ("file", path.read_bytes())
+                            for path in self.stage.rglob("*") if path.is_symlink() or path.is_file()}
+                before = snapshot()
+                with self.assertRaises(SourcePolicyError):
+                    self.prepare()
+                self.assertEqual(snapshot(), before)
+                shutil.rmtree(self.stage)
+
+    def test_refresh_rejects_symlinked_source_runtime_and_destination(self):
+        self.prepare()
+        previous = (self.stage / "app.js").read_bytes()
+        source = self.web / "app.js"
+        outside = Path(self.temp.name) / "outside-runtime.js"
+        source.rename(outside)
+        source.symlink_to(outside)
+        with self.assertRaisesRegex(SourcePolicyError, "runtime input is missing or unsafe"):
+            self.prepare()
+        self.assertEqual((self.stage / "app.js").read_bytes(), previous)
+        source.unlink()
+        outside.rename(source)
+        old_stage = Path(self.temp.name) / "retained-stage"
+        self.stage.rename(old_stage)
+        self.stage.symlink_to(old_stage, target_is_directory=True)
+        with self.assertRaisesRegex(SourcePolicyError, "destination must not be a symlink"):
+            self.prepare()
+        self.assertTrue(self.stage.is_symlink())
+        self.assertEqual((old_stage / "app.js").read_bytes(), previous)
+
 
 if __name__ == "__main__":
     unittest.main()

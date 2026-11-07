@@ -82,8 +82,13 @@ For a new question, its production-ledger record must contain a `sourceReview` w
 - `sourceQuestionChecked`, `keyedAnswerChecked` and `explanationChecked`, each set to true only after that comparison occurred.
 - `sourceRecordSha256` from the claim and `evidenceSha256`, the canonical hash of its complete `sourceEvidence` object.
 - `authoredContentSha256` and `quizSha256`, computed from the reviewed draft by `source_policy.content_fingerprints(draft_lesson, authoring=True)`.
+- For a lesson with a gallery/recap presentation, `visualSupplementSha256` from that same helper. It binds the complete `realImages` records (including captions and provenance) and the recap's nodes, edges and ordered phrase-to-node bindings. Actually review those visual teaching details before recording their hash.
 
 The fingerprint helper calculates hashes only; it does not create a review or approve content. The authored fingerprint covers the title, locus, ordered scene identities, captions and narration, plus the quiz. The gate recomputes the equivalent public-lesson representation at completion. Changed teaching content invalidates the review. Copying `sourceEvidence` from a legitimate claim onto an unrelated draft does not satisfy this gate.
+
+The separate visual fingerprint has the same value in an authored `presentationPlan` and its assembled `presentation`: measured recap timestamps are excluded, while image records, node labels, edges and `phraseId`/`nodeId` bindings remain exact. Deleting the gallery or recap cannot remove an existing review requirement. A display gallery must also exactly match the registered `realImages`. Timing remains subject to its independent measured-media checks.
+
+`assemble_book_batch.py --prepare-audio` carries `realImages` and `presentationPlan` into the audio-authoring input so the same approval is enforced before narration. Adding those metadata fields to an already reviewed input does not alter spoken text or a guidance plan; existing measured audio need not be regenerated when those remain identical. Keep old audio provenance as the truthful record of the input used for its synthesis, and revalidate the prepared input against the current review. Do not rewrite old provenance to suggest that audio was synthesized again.
 
 These records make source comparison explicit and detect later changes. They do not decide clinical correctness or establish that a reviewer performed an honest comparison. Record the actual work and preserve the source evidence for audit. The exact frozen starter lessons use their separately pinned historical reviews.
 

@@ -198,7 +198,7 @@
       },
       {
         "number": 37,
-        "status": "needs_review",
+        "status": "ready",
         "lessonId": null
       },
       {
@@ -1019,6 +1019,6 @@
     ],
     "sourceStatus": "Source text extracted; each lesson checked before production",
     "needsNewBook": false,
-    "productionUpdatedAt": "2026-11-07T15:14:01.520773Z"
+    "productionUpdatedAt": "2026-11-07T17:05:30.342087Z"
   }
 ]

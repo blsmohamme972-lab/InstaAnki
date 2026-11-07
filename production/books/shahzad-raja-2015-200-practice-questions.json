@@ -11,7 +11,7 @@
     54,
     182
   ],
-  "updatedAt": "2026-11-07T15:14:01.520773Z",
+  "updatedAt": "2026-11-07T17:05:30.342087Z",
   "source": {
     "extracted": true,
     "originalPdfRetained": false,
@@ -398,12 +398,22 @@
     {
       "number": 37,
       "id": "shahzad-raja-2015-200-practice-questions-q037",
-      "status": "needs_review",
+      "status": "ready",
       "batchId": null,
       "lessonId": null,
-      "sourceReviewFlags": [
-        "layout_sensitive_source"
-      ]
+      "sourceReviewFlags": [],
+      "sourceReview": {
+        "reviewedAt": "2026-11-07T17:05:30.342087Z",
+        "scope": "Source layout and arithmetic review only; no lesson assets produced and no general clinical certification.",
+        "sourceAnswerLetter": "D",
+        "reviewedSourceFlags": [
+          "layout_sensitive_source"
+        ],
+        "remainingSourceFlags": [],
+        "normalizedFormula": "PASP = 4 × Vmax² + RAP = 4 × 3² + 7 = 43 mmHg",
+        "sourcePdfSha256": "d9d1eb749fbf4c691b2a849cb105b86e198e044f081ef6485f3a0bcf28a9d969",
+        "qaReport": "production/qa/q037-source-review.json"
+      }
     },
     {
       "number": 38,

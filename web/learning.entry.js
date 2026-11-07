@@ -5,8 +5,11 @@ import { createEmptyCard, fsrs, Rating, TypeConvert } from 'ts-fsrs';
 const KEY = 'instaanki.state.v1';
 const defaults = {speed:1, retention:0.9, newPerDay:10, dailyTopicIds:[], autoPlay:true, autoCheckUpdates:true, reduceMotion:false};
 const rates = [0.75,1,1.25,1.5,1.75,2];
+const feedbackReasons = ['bad_sound','bad_images','bad_timing','bad_mcq','wrong_source','other'];
+const feedbackAliases = {audio_issue:'bad_sound',image_issue:'bad_images',sync_issue:'bad_timing',factual_error:'bad_mcq',unclear_explanation:'other'};
+const maxFeedback = 5000;
 const safeId = id => typeof id === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,119}$/.test(id) && !['__proto__','constructor','prototype'].includes(id);
-const fresh = () => ({schemaVersion:1, settings:{...defaults,dailyTopicIds:[]}, lessons:{}, reviews:[]});
+const fresh = () => ({schemaVersion:1, settings:{...defaults,dailyTopicIds:[]}, lessons:{}, reviews:[],feedback:[]});
 const dateKey = value => {const d=new Date(value);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const validDate = value => typeof value === 'string' && Number.isFinite(Date.parse(value));
 let state=fresh(), loadError=null, committed=JSON.stringify(state);
@@ -48,13 +51,77 @@ function assertState(value){
       TypeConvert.card(record.card);
     }
     if(!Number.isFinite(record.watchedSeconds??0)||(record.watchedSeconds??0)<0)throw new Error('Invalid watch time.');
-    result.lessons[id]={liked:record.liked===true,note:record.note||'',watchedSeconds:record.watchedSeconds||0,enrolledAt:record.enrolledAt||null,card:record.card||null};
+    for(const key of ['hidden','disliked'])if(record[key]!==undefined&&typeof record[key]!=='boolean')throw new Error('Invalid lesson preference.');
+    result.lessons[id]={liked:record.liked===true,hidden:record.hidden===true,disliked:record.disliked===true,note:record.note||'',watchedSeconds:record.watchedSeconds||0,enrolledAt:record.enrolledAt||null,card:record.card||null};
   }
   for(const review of value.reviews){
     if(!review||!safeId(review.lessonId)||typeof review.attemptId!=='string'||review.attemptId.length>180||!validDate(review.at)||typeof review.correct!=='boolean'||!['Good','Again'].includes(review.rating))throw new Error('Invalid review history.');
     result.reviews.push(review);
   }
+  if(value.feedback!==undefined){
+    if(!Array.isArray(value.feedback)||value.feedback.length>maxFeedback)throw new Error('Invalid feedback reports.');
+    const ids=new Set();
+    for(const report of value.feedback){
+      const checked=checkedFeedback(report);
+      if(ids.has(checked.id))throw new Error('Duplicate feedback report ID.');
+      ids.add(checked.id);result.feedback.push(checked);
+    }
+  }
   return result;
+}
+function checkedFeedback(value){
+  if(!value||typeof value!=='object'||Array.isArray(value)||!safeId(value.id)||!safeId(value.lessonId)||!validDate(value.createdAt))throw new Error('Invalid feedback report.');
+  const reason=feedbackAliases[value.reason]||value.reason;
+  if(!feedbackReasons.includes(reason))throw new Error('Choose a valid feedback reason.');
+  if(typeof value.comment!=='string'||value.comment.length>4000)throw new Error('Keep feedback comments under 4,000 characters.');
+  const version=value.lessonVersion??null;
+  if(version!==null&&!(Number.isInteger(version)&&version>=0&&version<=1e9)&&!(typeof version==='string'&&/^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$/.test(version)))throw new Error('Invalid feedback lesson version.');
+  const source={};
+  if(value.source!==undefined){
+    if(!value.source||typeof value.source!=='object'||Array.isArray(value.source))throw new Error('Invalid feedback source.');
+    if(value.source.bookId!==undefined){if(!safeId(value.source.bookId))throw new Error('Invalid feedback book ID.');source.bookId=value.source.bookId;}
+    if(value.source.questionNumber!==undefined){if(!Number.isInteger(value.source.questionNumber)||value.source.questionNumber<1||value.source.questionNumber>1e7)throw new Error('Invalid feedback source question.');source.questionNumber=value.source.questionNumber;}
+    for(const key of ['sourceRecordSha256','extractionSha256'])if(value.source[key]!==undefined){if(typeof value.source[key]!=='string'||!/^[a-f0-9]{64}$/i.test(value.source[key]))throw new Error('Invalid feedback source checksum.');source[key]=value.source[key].toLowerCase();}
+  }
+  const assetHashes={};
+  if(value.assetHashes!==undefined){
+    if(!value.assetHashes||typeof value.assetHashes!=='object'||Array.isArray(value.assetHashes)||Object.keys(value.assetHashes).length>200)throw new Error('Invalid feedback asset checksums.');
+    for(const [path,hash] of Object.entries(value.assetHashes)){
+      if(!/^[A-Za-z0-9][A-Za-z0-9._/-]{0,319}$/.test(path)||path.split('/').some(x=>!x||x==='.'||x==='..'||['__proto__','constructor','prototype'].includes(x))||typeof hash!=='string'||!/^[a-f0-9]{64}$/i.test(hash))throw new Error('Invalid feedback asset checksum.');
+      assetHashes[path]=hash.toLowerCase();
+    }
+  }
+  const app={};
+  if(value.app!==undefined){
+    if(!value.app||typeof value.app!=='object'||Array.isArray(value.app))throw new Error('Invalid feedback app version.');
+    for(const key of ['version','packageName','platform'])if(value.app[key]!==undefined){if(typeof value.app[key]!=='string'||value.app[key].length>120)throw new Error('Invalid feedback app version.');app[key]=value.app[key];}
+    if(value.app.versionCode!==undefined){if(!Number.isInteger(value.app.versionCode)||value.app.versionCode<0)throw new Error('Invalid feedback app version.');app.versionCode=value.app.versionCode;}
+  }
+  // Deliberate allowlist: notes, grades, profile fields and arbitrary payload keys
+  // never enter the shareable report, even if a caller supplies them accidentally.
+  return {id:value.id,lessonId:value.lessonId,lessonVersion:version,reason,comment:value.comment,createdAt:value.createdAt,source,assetHashes,app};
+}
+function reportFeedback(id,details={},now=new Date()){
+  if(!safeId(id))throw new Error('Invalid lesson ID.');
+  if(!details||typeof details!=='object'||Array.isArray(details))throw new Error('Invalid feedback report.');
+  if(state.feedback.length>=maxFeedback)throw new Error('The local feedback limit has been reached. Export your reports before adding more.');
+  let app={};
+  try{if(typeof globalThis.AndroidNative?.getAppInfo==='function')app=JSON.parse(globalThis.AndroidNative.getAppInfo());}catch(_){/* Version can remain unknown. */}
+  const suffix=typeof globalThis.crypto?.randomUUID==='function'?globalThis.crypto.randomUUID():`${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${state.feedback.length}`;
+  const report=checkedFeedback({id:`feedback-${suffix}`,lessonId:id,lessonVersion:details.lessonVersion??null,reason:details.reason,comment:details.comment??'',createdAt:new Date(now).toISOString(),source:details.source,assetHashes:details.assetHashes,app});
+  state.feedback.push(report);save('feedback',id);
+  return JSON.parse(JSON.stringify(report));
+}
+function getFeedback(id){
+  if(id!==undefined&&!safeId(id))throw new Error('Invalid lesson ID.');
+  return JSON.parse(JSON.stringify(state.feedback.filter(report=>id===undefined||report.lessonId===id)));
+}
+function exportFeedback(){
+  return JSON.stringify({format:'instaanki-feedback-v1',schemaVersion:1,createdAt:new Date().toISOString(),reports:getFeedback()},null,2);
+}
+function shareFeedback(){
+  if(typeof globalThis.AndroidNative?.shareFeedback!=='function')return false;
+  return globalThis.AndroidNative.shareFeedback(exportFeedback())===true;
 }
 function checkedSetting(key,value){
   if(key==='speed'&&rates.includes(Number(value)))return Number(value);
@@ -66,9 +133,9 @@ function checkedSetting(key,value){
 }
 function get(id){
   if(!safeId(id))throw new Error('Invalid lesson ID.');
-  return state.lessons[id]||{liked:false,note:'',watchedSeconds:0,enrolledAt:null,card:null};
+  return state.lessons[id]||{liked:false,hidden:false,disliked:false,note:'',watchedSeconds:0,enrolledAt:null,card:null};
 }
-function edit(id){return state.lessons[id]||(state.lessons[id]={...get(id)});}
+function edit(id){const record=get(id);return state.lessons[id]||(state.lessons[id]={...record});}
 function enrolledToday(now=new Date()){
   const today=dateKey(now);return Object.values(state.lessons).filter(x=>x.enrolledAt&&dateKey(x.enrolledAt)===today).length;
 }
@@ -106,9 +173,10 @@ function grade(id,correct,attemptId,mode='review',now=new Date()){
   return {...review,scheduled:!practice,duplicate:false};
 }
 function due(lessons,now=new Date()){
-  return lessons.filter(l=>{const c=get(l.id).card;return c&&new Date(c.due).getTime()<=new Date(now).getTime();}).sort((a,b)=>new Date(get(a.id).card.due)-new Date(get(b.id).card.due));
+  return lessons.filter(l=>{const r=get(l.id);return !r.hidden&&r.card&&new Date(r.card.due).getTime()<=new Date(now).getTime();}).sort((a,b)=>new Date(get(a.id).card.due)-new Date(get(b.id).card.due));
 }
 function getFeed(lessons,now=new Date()){
+  lessons=lessons.filter(l=>!get(l.id).hidden);
   const dueLessons=due(lessons,now),dueIds=new Set(dueLessons.map(x=>x.id));
   const available=Math.max(0,state.settings.newPerDay-enrolledToday(now));
   const newLessons=lessons.filter(l=>!get(l.id).card).slice(0,available);
@@ -121,7 +189,7 @@ function stats(now=new Date()){
   const cursor=new Date(now);let streak=0;
   if(!days.has(dateKey(cursor)))cursor.setDate(cursor.getDate()-1);
   while(days.has(dateKey(cursor))){streak++;cursor.setDate(cursor.getDate()-1);}
-  return {reviewCount:reviews.length,correctCount:correct,accuracy:reviews.length?Math.round(100*correct/reviews.length):0,learnedCount:records.filter(x=>x.card?.reps>0).length,enrolledCount:records.filter(x=>x.card).length,dueCount:records.filter(x=>x.card&&new Date(x.card.due)<=new Date(now)).length,watchedSeconds:Math.round(records.reduce((a,x)=>a+x.watchedSeconds,0)),streak};
+  return {reviewCount:reviews.length,correctCount:correct,accuracy:reviews.length?Math.round(100*correct/reviews.length):0,learnedCount:records.filter(x=>x.card?.reps>0).length,enrolledCount:records.filter(x=>x.card).length,dueCount:records.filter(x=>!x.hidden&&x.card&&new Date(x.card.due)<=new Date(now)).length,watchedSeconds:Math.round(records.reduce((a,x)=>a+x.watchedSeconds,0)),streak};
 }
 function backup(){return {format:'instaanki-backup-v1',createdAt:new Date().toISOString(),state:{[KEY]:JSON.stringify(state)}};}
 function restore(document){
@@ -132,11 +200,13 @@ function restore(document){
   storage().setItem(KEY,snapshot);state=restored;committed=snapshot;loadError=null;notify('restore');return state;
 }
 export const Learning={
-  load,get,expose,grade,due,getFeed,stats,backup,restore,
+  load,get,expose,grade,due,getFeed,stats,backup,restore,reportFeedback,getFeedback,exportFeedback,shareFeedback,
   get state(){return state;},get loadError(){return loadError;},
   like(id){const r=edit(id);r.liked=!r.liked;save('like',id);return r.liked;},
+  setHidden(id,value){if(typeof value!=='boolean')throw new Error('Invalid hidden preference.');const r=edit(id);r.hidden=value;save('hidden',id);return value;},
+  setDisliked(id,value){if(typeof value!=='boolean')throw new Error('Invalid dislike preference.');const r=edit(id);r.disliked=value;save('disliked',id);return value;},
   note(id,text){if(typeof text!=='string'||text.length>16000)throw new Error('Keep notes under 16,000 characters.');edit(id).note=text;save('note',id);},
   setSetting(key,value){state.settings[key]=checkedSetting(key,value);save('settings');return state.settings[key];},
-  algorithm:'FSRS 6',version:'ts-fsrs 6.0.0',storageKey:KEY
+  feedbackReasons:[...feedbackReasons],algorithm:'FSRS 6',version:'ts-fsrs 6.0.0',storageKey:KEY
 };
 globalThis.Learning=Learning;

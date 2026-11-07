@@ -30,8 +30,14 @@
     {
       "path": "docs/verification-0.1.1.json",
       "sha256": "9ad6d3f00faf77c676df47c616b3b16450ea1ae450c8256176c42f3a55e53807"
+    },
+    {
+      "path": "docs/verification-0.2.0-presentation.json",
+      "sha256": "39a7a060bdf079327ae0106e26002fbe2d6204613be1bcf02f6afe361f4ba2a2"
     }
   ],
   "missingSourceAction": "Stop new production. Restore the verified private archive or review a new original-book extraction before explicitly changing its fingerprint. Never substitute another book or original collection.",
-  "sourceChangeRequires": "An explicit user decision and reviewed repository policy change; no runtime override."
+  "sourceChangeRequires": "An explicit user decision and reviewed repository policy change; no runtime override.",
+  "newProductionEnabled": false,
+  "currentScope": "App repairs, existing-lesson presentation fixes, and update delivery only. New source-question production is paused by explicit user instruction."
 }

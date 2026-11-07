@@ -16,6 +16,20 @@ jobs:
         with:
           persist-credentials: false
       - name: Reject an unexpected publication or unverified bundled lesson
-        run: python3 tools/check_source_scope.py
-      - name: Exercise source-policy and direct-builder regression cases
-        run: python3 -m unittest discover -s tests -p 'test_source_*.py' -v
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python3 -m pip install Pillow==13.0.0
+          python3 tools/prepare_existing_media.py --download-sources
+          python3 tools/check_source_scope.py
+      - name: Verify source, presentation, lossless media, packaging and signing safeguards
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Build the offline learning bundle and verify progress/feedback behavior
+        run: |
+          npm ci
+          npm run build:web
+          npm test
+      - name: Check the actual mobile player and collection updates
+        run: |
+          npx playwright install --with-deps chromium --only-shell
+          node tests/reels-browser.cjs

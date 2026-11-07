@@ -7,11 +7,13 @@ const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const { loadRajaStarterFixture, routeRajaStarterFixture } = require('./helpers/raja-starter-fixture.cjs');
 
 const root = path.resolve(__dirname, '..');
 const web = path.join(root, 'web');
 const resultsDir = path.join(root, 'test-results');
-const lessons = JSON.parse(fs.readFileSync(path.join(web, 'data/lessons.json')));
+const fixture = loadRajaStarterFixture(web);
+const lessons = fixture.lessons;
 const mime = { '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.css': 'text/css', '.mp3': 'audio/mpeg', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg' };
 const server = http.createServer((request, response) => {
   const relative = decodeURIComponent(new URL(request.url, 'http://local').pathname).replace(/^\//, '') || 'index.html';
@@ -37,7 +39,7 @@ const server = http.createServer((request, response) => {
 let browser, origin;
 const passed = [], errors = [];
 async function check(name, callback) {
-  await callback(); passed.push(name); console.log(`PASS ${name}`);
+  await callback(); const scoped = fixture.label + ': ' + name; passed.push(scoped); console.log(`PASS ${scoped}`);
 }
 async function until(page, predicate, timeout = 10000) {
   const deadline = Date.now() + timeout;
@@ -50,6 +52,7 @@ async function until(page, predicate, timeout = 10000) {
 async function fresh() {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, deviceScaleFactor: 1 });
   await context.route('https://**/*', route => route.abort());
+  await routeRajaStarterFixture(context, fixture);
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => {
@@ -65,7 +68,9 @@ async function fresh() {
 }
 async function finishVideo(page) {
   await until(page, () => document.querySelector('audio').readyState >= 1);
-  await page.locator('audio').evaluate(audio => { audio.currentTime = Math.max(0, audio.duration - .14); });
+  const documentTitle = await page.locator('#lesson-title').textContent();
+  const lesson = lessons.find(item => item.title === documentTitle);
+  await page.locator('audio').evaluate((audio, end) => { audio.pause(); audio.currentTime = Math.max(0, (end || audio.duration) - .14); }, lesson?.presentation?.effectiveEndSeconds);
   if (await page.locator('audio').evaluate(audio => audio.paused)) await page.locator('#play-button').click();
   await page.waitForSelector('#modal-backdrop:not([hidden]) .quiz-prompt');
 }

@@ -201,6 +201,13 @@ class SourcePolicy:
         self.check_ledger(document)
         return document
 
+    def require_new_production(self):
+        if self.policy.get("newProductionEnabled") is not True:
+            raise SourcePolicyError(
+                "New lesson production is paused by the current task scope. "
+                "Only app repairs and reviewed updates to existing lessons are authorized. "
+                "A new explicit user request and reviewed policy change are required to resume.")
+
     def check_ledger(self, document):
         self.require_book(document.get("bookId"))
         if document.get("source", {}).get("extractionSha256") != self.policy["source"]["questionsSha256"]:
@@ -325,6 +332,8 @@ class SourcePolicy:
             if isinstance(n, bool) or not isinstance(n, int) or n not in by_number:
                 raise SourcePolicyError("Authoring lesson has no stable original source question number")
             question = by_number[n]
+            if question.get("status") != "produced":
+                self.require_new_production()
             evidence = self.evidence_for(ledger, question)
             self.check_claim_binding(question, evidence)
             if supplied != evidence:
@@ -337,6 +346,8 @@ class SourcePolicy:
 
     def validate_lesson_source(self, lesson, document, question):
         self.check_ledger(document)
+        if question.get("status") != "produced":
+            self.require_new_production()
         source = lesson.get("source", {})
         self.require_book(source.get("bookId"))
         if source.get("questionNumber") != question["number"]:

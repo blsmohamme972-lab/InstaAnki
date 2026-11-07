@@ -2,6 +2,7 @@ package com.instaanki.app;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.ClipData;
 import android.content.pm.PackageInfo;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.view.View;
 import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,12 +49,15 @@ public final class MainActivity extends Activity {
     private static final int EXPORT_BACKUP = 102;
     private static final int WEB_FILE_PICKER = 103;
     private static final int IMPORT_BACKUP = 104;
+    private static final int EXPORT_FEEDBACK = 105;
     private final ExecutorService io = Executors.newSingleThreadExecutor();
     private WebView web;
     private LocalStore state;
     private ContentPacks packs;
     private ValueCallback<Uri[]> fileCallback;
     private final AtomicBoolean importing = new AtomicBoolean(false);
+    private volatile String pendingFeedbackExport;
+    private boolean immersiveRequested;
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,18 +117,42 @@ public final class MainActivity extends Activity {
         web.loadUrl(START_URL);
     }
 
+    private void applyImmersiveMode() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            WindowInsetsController controller = getWindow().getInsetsController();
+            if (controller != null) {
+                controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+                if (immersiveRequested) controller.hide(WindowInsets.Type.systemBars());
+                else controller.show(WindowInsets.Type.systemBars());
+            }
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(immersiveRequested
+                ? View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                : View.SYSTEM_UI_FLAG_VISIBLE);
+        }
+    }
+
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) applyImmersiveMode();
+    }
+
     private final class NativeBridge {
         @JavascriptInterface public String getItem(String key) { return state.get(key); }
         @JavascriptInterface public void setItem(String key, String value) { state.put(key, value); }
         @JavascriptInterface public void removeItem(String key) { state.remove(key); }
         @JavascriptInterface public String listPacks() { return packs.list().toString(); }
+        @JavascriptInterface public void setImmersive(boolean enabled) {
+            runOnUiThread(() -> { immersiveRequested = enabled; applyImmersiveMode(); });
+        }
 
         @JavascriptInterface public String getAppInfo() {
             try {
                 PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
                 return new JSONObject().put("name", "InstaAnki").put("packageName", getPackageName())
-                    .put("version", info.versionName).put("versionCode", info.versionCode).put("nativeApi", 1)
+                    .put("version", info.versionName).put("versionCode", info.versionCode).put("nativeApi", 3)
                     .put("storage", "SQLite").put("offline", true).put("zipImport", true)
+                    .put("feedbackExport", true).put("downloadSizeVerification", true).put("immersiveFeed", true)
                     .put("platform", "Android").put("androidVersion", Build.VERSION.RELEASE).toString();
             } catch (Exception e) { return "{}"; }
         }
@@ -155,13 +185,64 @@ public final class MainActivity extends Activity {
             });
         }
 
+        @JavascriptInterface public boolean shareFeedback(String document) {
+            final String checked;
+            try { checked = FeedbackData.exportDocument(document).toString(2); }
+            catch (Exception invalid) { failure("The feedback report could not be prepared. Your saved reports are still on this device."); return false; }
+            io.execute(() -> {
+                try {
+                    File directory = new File(getCacheDir(), "feedback-exports");
+                    if (!directory.isDirectory() && !directory.mkdirs()) throw new IOException("Unable to prepare feedback sharing.");
+                    // Old shared copies may be removed; the durable local reports remain in SQLite.
+                    File[] old = directory.listFiles();
+                    if (old != null) for (File item : old) if (item.isFile() && item.lastModified() < System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000) item.delete();
+                    File file = new File(directory, "InstaAnki-feedback-" + java.util.UUID.randomUUID() + ".json");
+                    try (FileOutputStream output = new FileOutputStream(file)) { output.write(checked.getBytes(StandardCharsets.UTF_8)); output.getFD().sync(); }
+                    Uri uri = new Uri.Builder().scheme("content").authority(getPackageName() + ".feedback").appendPath("reports").appendPath(file.getName()).build();
+                    runOnUiThread(() -> {
+                        Intent send = new Intent(Intent.ACTION_SEND).setType("application/json")
+                            .putExtra(Intent.EXTRA_STREAM, uri)
+                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        send.setClipData(ClipData.newRawUri("InstaAnki feedback", uri));
+                        try { startActivity(Intent.createChooser(send, "Share feedback report")); }
+                        catch (Exception unavailable) { failure("No app is available to share this file. Use Save feedback file instead."); }
+                    });
+                } catch (Exception error) { failure(error.getMessage()); }
+            });
+            // This means the chooser was requested, never that a report was sent.
+            return true;
+        }
+
+        @JavascriptInterface public boolean exportFeedback(String document) {
+            try {
+                if (pendingFeedbackExport != null) { failure("Finish saving the current feedback file first."); return false; }
+                pendingFeedbackExport = FeedbackData.exportDocument(document).toString(2);
+            } catch (Exception invalid) { failure("The feedback report could not be prepared."); return false; }
+            runOnUiThread(() -> {
+                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
+                    .setType("application/json").putExtra(Intent.EXTRA_TITLE, "InstaAnki-feedback-" + System.currentTimeMillis() + ".json");
+                try { startActivityForResult(intent, EXPORT_FEEDBACK); }
+                catch (Exception unavailable) { pendingFeedbackExport = null; failure("No document saver is available on this device."); }
+            });
+            return true;
+        }
+
         @JavascriptInterface public void downloadPack(String url, String expectedSha256) {
+            startDownload(url, expectedSha256, -1);
+        }
+
+        @JavascriptInterface public void downloadPackVerified(String url, String expectedSha256, long expectedBytes) {
+            if (expectedBytes <= 0) { failure("The update catalog does not provide a valid package size. Nothing was installed."); return; }
+            startDownload(url, expectedSha256, expectedBytes);
+        }
+
+        private void startDownload(String url, String expectedSha256, long expectedBytes) {
             if (!importing.compareAndSet(false, true)) { failure("A content package is already being installed."); return; }
             emit("instaanki:import-started", new JSONObject());
             io.execute(() -> {
                 File downloaded = null;
                 try {
-                    downloaded = PackDownloader.download(url, expectedSha256, new File(getCacheDir(), "pack-downloads"), (received, total) -> {
+                    downloaded = PackDownloader.download(url, expectedSha256, expectedBytes, new File(getCacheDir(), "pack-downloads"), (received, total) -> {
                         try {
                             emit("instaanki:download-progress", new JSONObject().put("receivedBytes", received)
                                 .put("totalBytes", total > 0 ? total : JSONObject.NULL)
@@ -192,7 +273,7 @@ public final class MainActivity extends Activity {
             if (fileCallback != null) { fileCallback.onReceiveValue(resultCode == RESULT_OK && uri != null ? new Uri[]{uri} : null); fileCallback = null; }
             return;
         }
-        if (resultCode != RESULT_OK || uri == null) return;
+        if (resultCode != RESULT_OK || uri == null) { if (requestCode == EXPORT_FEEDBACK) pendingFeedbackExport = null; return; }
         if (requestCode == PICK_PACK) {
             if (!importing.compareAndSet(false, true)) { failure("A content package is already being installed."); return; }
             emit("instaanki:import-started", new JSONObject());
@@ -212,6 +293,17 @@ public final class MainActivity extends Activity {
                     output.write(state.exportData().toString(2).getBytes(StandardCharsets.UTF_8));
                     emit("instaanki:backup-exported", new JSONObject().put("ok", true));
                     toast("Learning backup saved.");
+                } catch (Exception e) { failure(e.getMessage()); }
+            });
+        } else if (requestCode == EXPORT_FEEDBACK) {
+            final String feedback = pendingFeedbackExport; pendingFeedbackExport = null;
+            if (feedback == null) { failure("The feedback export was interrupted. Your reports are saved; choose Save feedback file again."); return; }
+            io.execute(() -> {
+                try (OutputStream output = getContentResolver().openOutputStream(uri, "wt")) {
+                    if (output == null) throw new IOException("Unable to create the feedback file.");
+                    output.write(feedback.getBytes(StandardCharsets.UTF_8));
+                    emit("instaanki:feedback-exported", new JSONObject().put("ok", true));
+                    toast("Feedback file saved. It contains reports only, not your private notes or review history.");
                 } catch (Exception e) { failure(e.getMessage()); }
             });
         } else if (requestCode == IMPORT_BACKUP) {

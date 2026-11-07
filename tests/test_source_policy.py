@@ -38,6 +38,7 @@ class SourceEvidenceTests(unittest.TestCase):
         } for n in [1, 2]]
         self.manifest_path = self.root / "production/books" / f"{ORIGINAL_BOOK}.json"
         self.policy_doc = json.loads((ROOT / "production/source-policy.json").read_text())
+        self.policy_doc["newProductionEnabled"] = True  # Explicit synthetic authorization for these isolated fixtures.
         self.policy_doc["publishedSourceRecords"] = {}
         self.policy_doc["publishedRevisionReports"] = []
         self.document = {
@@ -102,6 +103,15 @@ class SourceEvidenceTests(unittest.TestCase):
         with patch.object(production, "REPO", self.root):
             with self.assertRaisesRegex(SourcePolicyError, "Restore private-content/"):
                 production.claim(self.manifest_path, 2, "new-batch")
+        self.assertEqual(self.manifest_path.read_bytes(), before)
+
+    def test_paused_production_blocks_new_claim_even_with_verified_source(self):
+        self.policy_doc["newProductionEnabled"] = False
+        write_json(self.root / "production/source-policy.json", self.policy_doc)
+        before = self.manifest_path.read_bytes()
+        with patch.object(production, "REPO", self.root):
+            with self.assertRaisesRegex(SourcePolicyError, "New lesson production is paused"):
+                production.claim(self.manifest_path, 1, "must-not-start")
         self.assertEqual(self.manifest_path.read_bytes(), before)
 
     def test_wrong_book_claim_is_rejected_before_mutation(self):

@@ -10,11 +10,13 @@ const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const { loadRajaStarterFixture, routeRajaStarterFixture } = require('./helpers/raja-starter-fixture.cjs');
 
 const root = path.resolve(__dirname, '..');
 const web = path.join(root, 'web');
 const output = path.join(root, 'test-results', 'guidance');
-const lessons = JSON.parse(fs.readFileSync(path.join(web, 'data', 'lessons.json'), 'utf8'));
+const fixture = loadRajaStarterFixture(web);
+const lessons = fixture.lessons;
 const sizes = [{ width: 360, height: 640 }, { width: 390, height: 844 }, { width: 430, height: 932 }];
 const mime = {
   '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json',
@@ -55,7 +57,7 @@ let browser;
 let origin;
 
 async function check(name, fn) {
-  await fn(); results.push(name); console.log('PASS ' + name);
+  await fn(); const scoped = fixture.label + ': ' + name; results.push(scoped); console.log('PASS ' + scoped);
 }
 
 // Playwright's waitForFunction uses evaluation inside the page and is blocked
@@ -75,6 +77,7 @@ async function newPage(options = {}) {
     ...options,
   });
   await context.route('https://**/*', route => route.abort());
+  await routeRajaStarterFixture(context, fixture);
   await context.addInitScript(() => {
     localStorage.setItem('instaanki.state.v1', JSON.stringify({
       schemaVersion: 1,
@@ -101,6 +104,7 @@ async function firstLesson(page) {
 }
 
 function cueAt(lesson, time) {
+  time = Math.min(time, lesson.presentation?.effectiveEndSeconds || Infinity);
   const narrated = lesson.visualGuidance.cues.find(cue => time >= cue.start && time < cue.end);
   if (narrated) return narrated;
   const outro = lesson.realImageOutro;
@@ -112,11 +116,14 @@ function cueAt(lesson, time) {
 }
 
 function imageAt(lesson, time) {
-  if (lesson.realImageOutro && time >= lesson.realImageOutro.start && lesson.realImages?.length) return lesson.realImages[0].url;
+  time = Math.min(time, lesson.presentation?.effectiveEndSeconds || Infinity);
+  if (!lesson.presentation?.clinicalGallery && lesson.realImageOutro && time >= lesson.realImageOutro.start && lesson.realImages?.length) return lesson.realImages[0].url;
   return (lesson.scenes.find(scene => time >= scene.start && time < scene.end) || lesson.scenes.at(-1))?.image || lesson.poster;
 }
 
 function targetAt(lesson, time) {
+  const gallery = lesson.presentation?.clinicalGallery;
+  if (gallery && time >= gallery.startSeconds) return null;
   const cue = cueAt(lesson, time);
   const target = cue && lesson.visualGuidance.targets[cue.targetId];
   return target && target.image === imageAt(lesson, time) ? target : null;
@@ -155,7 +162,10 @@ async function assertCurrent(page, lesson, time, label) {
     return picture.complete && picture.naturalWidth > 0 &&
       new URL(picture.currentSrc || picture.src).pathname.endsWith('/' + image) &&
       (stage.dataset.cueId || '') === cueId && (stage.dataset.targetId || '') === targetId;
-  }, { cueId: cue?.id || '', targetId: target ? cue.targetId : '', image: wantedImage });
+  }, { cueId: cue?.id || '', targetId: target ? cue.targetId : '', image: wantedImage }).catch(async error => {
+    const observed = await page.evaluate(() => ({time: document.querySelector('audio').currentTime, image: document.querySelector('#lesson-image').currentSrc, cueId: document.querySelector('#visual-stage').dataset.cueId, targetId: document.querySelector('#visual-stage').dataset.targetId}));
+    throw new Error(`${label}: ${lesson.id} at ${time}; expected ${cue?.id || 'no cue'} / ${target ? cue.targetId : 'no target'}; observed ${JSON.stringify(observed)}. ${error.message}`);
+  });
   await frames(page);
 
   const measured = await page.evaluate(target => {
@@ -280,9 +290,14 @@ async function main() {
           }
         }
         assert.ok(saved.has('mnemonic'), lesson.id + ' has no tested mnemonic guidance');
-        await assertAt(page, lesson, lesson.realImageOutro.start + Math.min(2, (lesson.realImageOutro.end - lesson.realImageOutro.start) / 2), 'real-image outro');
+        if (lesson.presentation?.clinicalGallery) {
+          await assertAt(page, lesson, lesson.presentation.clinicalGallery.startSeconds + 1, 'narrated clinical gallery');
+          assert.equal(await page.locator('#lesson-ending').isVisible(), true);
+          assert.equal(await page.locator('#teaching-pointer').isVisible(), false, 'Gallery inherited a pointer from another image');
+        } else await assertAt(page, lesson, lesson.realImageOutro.start + Math.min(2, (lesson.realImageOutro.end - lesson.realImageOutro.start) / 2), 'real-image outro');
         if (!saved.has('clinical')) {
-          assert.ok(lesson.visualGuidance.outroTargetId, lesson.id + ' has no calibrated clinical outro target');
+          if (lesson.presentation?.clinicalGallery) assert.ok(lesson.presentation.clinicalGallery.images.length >= 3, lesson.id + ' has no clinical ending gallery');
+          else assert.ok(lesson.visualGuidance.outroTargetId, lesson.id + ' has no calibrated clinical outro target');
           await page.screenshot({ path: path.join(output, `${lesson.id}-${size.width}-clinical.png`) });
         }
         if (lessonIndex < lessons.length - 1) await page.locator('[data-action="next"]').click();
@@ -295,7 +310,7 @@ async function main() {
   await firstLesson(page);
   await check('forward and backward seeking select exact half-open cue intervals', async () => {
     const boundaries = [...new Set(lesson.visualGuidance.cues.flatMap(cue => [cue.start, cue.end]))]
-      .filter(time => time > 0.03 && time < lesson.durationSeconds - 0.03);
+      .filter(time => time > 0.03 && time < (lesson.presentation?.effectiveEndSeconds || lesson.durationSeconds) - 0.03);
     for (const boundary of boundaries) {
       await assertAt(page, lesson, boundary + 0.02, 'after boundary');
       await assertAt(page, lesson, boundary - 0.02, 'before boundary after backward seek');

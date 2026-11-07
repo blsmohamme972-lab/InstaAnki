@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-07T18:15:58.509778+00:00",
+  "scope": "App repairs and display-only updates to existing Raja Q5/Q54/Q182. No new lessons, narration or rendered videos.",
+  "activeCollection": {
+    "books": 1,
+    "produced": 3,
+    "total": 200,
+    "newProductionEnabled": false
+  },
+  "tests": {
+    "publicSnapshotPythonTests": 108,
+    "javascriptLearningFeedbackTopicTests": 29,
+    "browserScenarios": 53,
+    "independentGuidanceGeometrySamples": 132,
+    "nativeJvmAssertions": {
+      "feedback": 12,
+      "contentImporter": 34,
+      "downloadIntegrity": 13,
+      "backups": 7,
+      "urlAllowlist": 13,
+      "collectionCorrection": 17
+    }
+  },
+  "androidBuild": {
+    "file": "InstaAnki-0.2.0-unsigned.apk",
+    "packageName": "com.instaanki.app",
+    "version": "0.2.0",
+    "versionCode": 3,
+    "minSdk": 26,
+    "targetSdk": 35,
+    "bytes": 12727202,
+    "sha256": "c9ad00873440be814b5598e8c9e6e1337efcfbfba4c1d2a756545877764022d7",
+    "includesPrivateContent": false,
+    "signed": false,
+    "installableUpdate": false,
+    "bundle": {
+      "activeLessons": 3,
+      "mediaFiles": 15,
+      "mediaBytes": 12598645
+    },
+    "privateAssets": [],
+    "verification": "Unsigned compilation and alignment checked; NOT installable. Device/emulator testing must be reported separately."
+  },
+  "repairPack": {
+    "file": "InstaAnki-Raja-Existing-Lessons-Update.zip",
+    "bytes": 12167118,
+    "sha256": "2ad35dabeced0bdf320df0a34a315f3d53aa0032ecc4890e257ceabd7a28d801",
+    "lessonCount": 3,
+    "newLessonCount": 0,
+    "oldAppSupportsNewPlayerFeatures": false
+  },
+  "media": {
+    "originalBytes": 13337179,
+    "optimizedBytes": 9983024,
+    "savedPercent": 25.149,
+    "pixelIdentical": true,
+    "freshRestorationPassed": true
+  },
+  "deployment": {
+    "signedApkBuilt": false,
+    "originalSigningKeyAvailable": false,
+    "temporaryReleaseUploaded": false,
+    "catalogUpdated": false,
+    "pullRequestMerged": false
+  },
+  "physicalAndroidTested": false,
+  "humanListeningPerformed": false,
+  "evidence": [
+    "verification-0.2.0-presentation.json",
+    "../production/qa/starter-media-reproduction-review.json",
+    "../tests/reels-browser.cjs",
+    "../tests/test_update_release.py",
+    "../android/tests/FeedbackDataTest.java"
+  ]
+}

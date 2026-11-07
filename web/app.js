@@ -1,7 +1,8 @@
 /* InstaAnki: the interface runs entirely on this device. */
 (() => {
   'use strict';
-  const $ = (selector, root = document) => root.querySelector(selector);
+  const playerNodes = new Map();
+  const $ = (selector, root = document) => (root === document && playerNodes.get(selector)) || root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const L = window.Learning;
   const G = window.VisualGuidance;
@@ -15,10 +16,15 @@
     topicModel: null, topicDraft: [],
     modal: null, previousFocus: null, resumeOnClose: false, captions: true, endHandled: false,
     frame: 0, lastClock: 0, exposure: 0, lastScene: '', currentImage: '', imageReady: false, catalog: null,
-    catalogCheckedAt: null, downloading: false, info: { version: '0.1.1', versionCode: 2 }, toastTimer: 0,
+    catalogCheckedAt: null, downloading: false, info: { version: '0.2.0', versionCode: 3 }, toastTimer: 0,
     bypassNextRecall: null, bypassEntryRecall: false, entryWasDue: false,
     pendingQuestion: null, explanationContext: null, lastQuestionResult: null,
+    bundledLessons: [], bundledBooks: [], collectionGeneration: 0, collectionWarnings: [],
+    sourceUrl: '', lastPaint: 0, flowKey: '', endingId: '', endingNode: '', preloads: [],
   };
+  for (const id of ['lesson-image', 'image-viewport', 'camera-layer', 'visual-stage', 'lesson-caption', 'scene-heading', 'lesson-title', 'spotlight', 'teaching-pointer', 'focus-label', 'pointer-tip', 'pointer-shaft', 'pointer-outline', 'pointer-head', 'pointer-hand', 'target-region', 'seek', 'current-time', 'duration-time', 'lesson-ending', 'clinical-gallery', 'recap-map', 'feed-status', 'lesson-question-button']) {
+    playerNodes.set(`#${id}`, document.getElementById(id));
+  }
   const icons = {
     arrow: '<svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>',
     check: '<svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>',
@@ -36,6 +42,17 @@
   const time = seconds => { const n = Math.max(0, Math.floor(Number(seconds) || 0)); return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}`; };
   const amount = bytes => bytes >= 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.ceil((bytes || 0) / 1024)} KB`;
   const dateLabel = value => { const date = new Date(value); return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(date) : 'Scheduled automatically'; };
+  const setText = (node, value) => { const text = String(value ?? ''); if (node.textContent !== text) node.textContent = text; };
+  function playbackDuration(lesson = current()) {
+    const actual = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : Number(lesson?.durationSeconds) || 1;
+    const end = Number(lesson?.presentation?.effectiveEndSeconds);
+    return Number.isFinite(end) && end > 0 ? Math.min(end, actual) : actual;
+  }
+  function stopFrames() { if (app.frame) cancelAnimationFrame(app.frame); app.frame = 0; app.lastClock = 0; }
+  function syncImmersive() { native?.setImmersive?.(app.tab === 'feed' && !app.modal); }
+  function startFrames() {
+    if (!app.frame && !audio.paused && !audio.ended && document.visibilityState === 'visible' && app.tab === 'feed' && !app.modal) app.frame = requestAnimationFrame(tick);
+  }
   function asset(path, base) {
     if (!path) return '';
     try {
@@ -82,7 +99,8 @@
     pauseAudio();
     const dailyIds = settings().dailyTopicIds || [];
     const focusedLessons = app.topicModel ? app.topicModel.filterLessons(app.lessons, dailyIds) : app.lessons;
-    let lessons = app.feedMode === 'due' ? L.due(app.lessons) : app.feedMode === 'saved' ? app.lessons.filter(x => L.get(x.id).liked) : L.getFeed(focusedLessons);
+    const visibleFocused = focusedLessons.filter(lesson => !L.get(lesson.id).hidden);
+    let lessons = app.feedMode === 'due' ? L.due(app.lessons) : app.feedMode === 'saved' ? app.lessons.filter(x => L.get(x.id).liked && !L.get(x.id).hidden) : L.getFeed(focusedLessons);
     if (app.specialty) lessons = lessons.filter(x => x.specialty === app.specialty || x.primarySpecialtyId === app.specialty);
     if (app.tag) lessons = lessons.filter(x => x.tags?.some(t => t.id === app.tag));
     if (preferredId && app.bypassNextRecall === preferredId && !lessons.some(x => x.id === preferredId)) {
@@ -93,16 +111,21 @@
     $('#filter-indicator').hidden = !app.specialty && !app.tag;
     $$('[data-feed]').forEach(button => button.classList.toggle('selected', button.dataset.feed === app.feedMode));
     if (!lessons.length) {
-      pauseAudio(); $('#lesson-card').hidden = true; $('#feed-empty').hidden = false;
+      pauseAudio(); app.sourceUrl = ''; app.preloads.length = 0; audio.removeAttribute('src'); audio.load();
+      $('#lesson-card').hidden = true; $('#feed-empty').hidden = false;
       const heading = app.feedMode === 'saved' ? 'Your saved collection' : app.feedMode === 'due' ? 'A little breathing room' : app.specialty || app.tag ? 'No lessons in this view' : 'Your gallery is ready to grow';
       const copy = app.feedMode === 'saved' ? 'Tap the heart on a lesson to keep it here. Your saved lessons stay on this device.' : app.feedMode === 'due' ? 'Nothing is due right now. Watch a new lesson, or practise a familiar one whenever you like.' : app.specialty || app.tag ? 'Try another specialty or clear the current filters.' : 'Import a lesson package from Settings to begin your learning collection.';
       $('#feed-empty').innerHTML = `<div class="empty-emblem">${app.feedMode === 'saved' ? icons.book : icons.recall}</div><h1>${esc(heading)}</h1><p>${esc(copy)}</p><button class="secondary-button empty-button" data-action="${app.specialty || app.tag ? 'clear-filters' : 'all-feed'}" type="button">${app.specialty || app.tag ? 'Clear filters' : 'Explore the feed'}</button>`;
       if (app.feedMode === 'all' && dailyIds.length && !app.specialty && !app.tag) {
         $('#feed-empty').innerHTML = `<div class="empty-emblem">${icons.book}</div><h1>No lessons in your daily topics yet.</h1><p>${esc(app.topicModel?.summary(dailyIds) || 'Your selected topics')}<br>Choose more tags or All to explore the available lessons.</p><button class="secondary-button empty-button" type="button" data-action="daily-topics">Choose daily topics</button>`;
       }
-      if (app.feedMode === 'all' && focusedLessons.length && !app.specialty && !app.tag) {
+      if (app.feedMode === 'all' && visibleFocused.length && !app.specialty && !app.tag) {
         $('#feed-empty').innerHTML = `<div class="empty-emblem">${icons.recall}</div><h1>Today’s new-lesson limit is reached.</h1><p>Your topics still have lessons available. Continue with your due reviews, or adjust the daily limit.</p><button class="secondary-button empty-button" type="button" data-action="review-home">Open due reviews</button><button class="quiet-button" type="button" data-action="new-limit">Adjust daily limit</button>`;
       }
+      if (app.feedMode === 'all' && focusedLessons.length && !visibleFocused.length && !app.specialty && !app.tag) {
+        $('#feed-empty').innerHTML = `<div class="empty-emblem">${icons.book}</div><h1>Your lessons are hidden.</h1><p>Restore a lesson to see it here again. Its existing review schedule and notes are kept.</p><button class="secondary-button empty-button" data-action="feedback-history" type="button">Manage hidden lessons</button>`;
+      }
+      $('#feed-status').textContent = 'No lessons in this view';
       $('#lesson-question-button').disabled = true;
       return;
     }
@@ -114,7 +137,17 @@
     if (lesson && app.exposure > 0 && L && !L.loadError) { const elapsed = app.exposure; app.exposure = 0; L.expose(lesson.id, elapsed); }
     app.lastClock = 0;
   }
-  function pauseAudio() { audio.pause(); flushExposure(); }
+  function pauseAudio() { audio.pause(); stopFrames(); flushExposure(); }
+  function preloadNext() {
+    // Keep only the current media and the next poster warm; no hidden players or
+    // whole-library image/audio fetches on mobile.
+    app.preloads.length = 0;
+    const next = app.feed[app.index + 1];
+    if (next?.poster) { const image = new Image(); image.decoding = 'async'; image.src = asset(next.poster, next._baseUrl); app.preloads.push(image); }
+    for (const item of current()?.presentation?.clinicalGallery?.images || []) {
+      const image = new Image(); image.decoding = 'async'; image.src = asset(item.url, current()._baseUrl); app.preloads.push(image);
+    }
+  }
   function setLesson(index, shouldPlay = settings().autoPlay) {
     pauseAudio();
     app.index = clamp(index, 0, app.feed.length - 1);
@@ -124,6 +157,9 @@
     const entryCard = L.get(lesson.id).card;
     app.entryWasDue = !!entryCard && entryCard.reps > 0 && new Date(entryCard.due).getTime() <= Date.now();
     app.endHandled = false; app.lastScene = ''; app.currentImage = ''; app.exposure = 0; app.lastClock = 0;
+    app.flowKey = ''; app.endingId = ''; app.endingNode = ''; app.lastPaint = 0;
+    $('#lesson-ending').hidden = true; $('#clinical-gallery').replaceChildren(); $('#recap-map').replaceChildren();
+    $('#visual-stage').classList.remove('has-ending');
     $('#lesson-title').textContent = lesson.title;
     $('#lesson-specialty').textContent = lesson.specialty || 'Medical learning';
     $('#lesson-position').textContent = `${String(app.index + 1).padStart(2, '0')} / ${String(app.feed.length).padStart(2, '0')}`;
@@ -131,13 +167,13 @@
     $('#lesson-tags').innerHTML = (lesson.tags || []).slice(0, 3).map(tag => `<span>${esc(tag.label)}</span>`).join('');
     $('#lesson-image').alt = `${lesson.title} — illustrated memory scene`;
     $('#lesson-caption').textContent = lesson.scenes?.[0]?.caption || 'Press play to enter the lesson.';
-    audio.src = asset(lesson.audioUrl, lesson._baseUrl);
+    app.sourceUrl = asset(lesson.audioUrl, lesson._baseUrl); audio.src = app.sourceUrl;
     audio.playbackRate = clamp(settings().speed || 1, .5, 2);
     audio.load();
     $('#seek').value = '0'; $('#seek').style.setProperty('--progress', '0%');
-    $('#duration-time').textContent = time(lesson.durationSeconds);
+    $('#duration-time').textContent = time(lesson.presentation?.effectiveEndSeconds || lesson.durationSeconds);
     $('#current-time').textContent = '0:00'; $('#speed-button').textContent = `${audio.playbackRate}×`;
-    paintFrame(); syncIndicators(); updatePlayButtons();
+    paintFrame(); syncIndicators(); updatePlayButtons(); preloadNext();
     if (maybeGateRecall(lesson)) return;
     if (shouldPlay && app.tab === 'feed' && !app.modal) playAudio(false);
   }
@@ -148,14 +184,16 @@
     return false;
   }
   async function playAudio(reportError = true) {
-    if (!current() || app.modal) return;
+    if (!current() || app.modal || app.tab !== 'feed' || document.visibilityState !== 'visible') return;
     const explaining = app.explanationContext?.lessonId === current().id;
     if (app.pendingQuestion?.lessonId === current().id && !explaining) { resumePendingQuestion(); return; }
     if (app.lastQuestionResult?.lessonId === current().id && !explaining) { watchLesson(current().id); return; }
     if (maybeGateRecall(current())) return;
-    if (audio.ended || (Number.isFinite(audio.duration) && audio.currentTime >= audio.duration - .1)) { audio.currentTime = 0; app.endHandled = false; }
+    if (audio.ended || audio.currentTime >= playbackDuration()) {
+      handlePlaybackEnd(true); return;
+    }
     try { await audio.play(); }
-    catch (error) { updatePlayButtons(); if (reportError && error.name !== 'NotAllowedError') toast('The audio could not start. Try again or check this lesson package.'); }
+    catch (error) { updatePlayButtons(); if (reportError && !['NotAllowedError', 'AbortError'].includes(error.name)) toast('The audio could not start. Try again or check this lesson package.'); }
   }
   function updatePlayButtons() {
     const playing = !audio.paused && !audio.ended;
@@ -167,7 +205,7 @@
     $('#play-button').setAttribute('aria-label', playing ? 'Pause lesson' : waiting ? 'Answer question' : replay ? 'Replay video' : 'Play lesson');
     $('#center-play').innerHTML = waiting ? icons.recall : icons.play;
     $('#center-play').setAttribute('aria-label', waiting ? 'Answer question' : replay ? 'Replay video' : 'Play lesson');
-    $('#center-play').hidden = playing || !!app.modal;
+    $('#center-play').hidden = playing || !!app.modal || audio.currentTime > .25;
     syncLessonFlow();
   }
   function syncLessonFlow() {
@@ -177,15 +215,20 @@
     const explaining = app.explanationContext?.question?.lessonId === lesson.id;
     const result = app.lastQuestionResult?.lessonId === lesson.id;
     const step = question ? (question.answered ? 'result' : 'answer') : explaining ? 'watch' : pending ? 'answer' : result ? 'result' : 'watch';
+    const outro = lesson.presentation?.clinicalGallery || lesson.realImageOutro;
+    const outroStart = Number(outro?.startSeconds ?? outro?.start);
+    const outroEnd = Math.min(Number(outro?.endSeconds ?? outro?.end) || playbackDuration(), playbackDuration());
+    const inOutro = outro && audio.currentTime >= outroStart && audio.currentTime < outroEnd;
+    const flowKey = [lesson.id, step, !!explaining, !!app.explanationContext?.question?.answered, !!pending, !!inOutro, inOutro ? Math.ceil(outroEnd - audio.currentTime) : '', app.index, app.feed.length].join(':');
+    if (flowKey === app.flowKey) return;
+    app.flowKey = flowKey;
     const names = ['watch', 'answer', 'result'];
     $$('[data-lesson-step]').forEach(item => {
       item.classList.toggle('is-current', item.dataset.lessonStep === step);
       item.classList.toggle('is-complete', names.indexOf(item.dataset.lessonStep) < names.indexOf(step));
       if (item.dataset.lessonStep === step) item.setAttribute('aria-current', 'step'); else item.removeAttribute('aria-current');
     });
-    const outro = lesson.realImageOutro;
-    const inOutro = outro && audio.currentTime >= outro.start && audio.currentTime < outro.end;
-    $('#feed-status').textContent = explaining ? (app.explanationContext.question.answered ? 'Replay · your answer is saved' : 'Explanation · your question is saved') : pending ? 'Your question is ready' : inOutro ? `Clinical image · question in ${Math.ceil(outro.end - audio.currentTime)}s` : step === 'result' ? 'Answer saved · continue when ready' : 'Watch the lesson, then answer.';
+    $('#feed-status').textContent = explaining ? (app.explanationContext.question.answered ? 'Replay · your answer is saved' : 'Explanation · your question is saved') : pending ? 'Your question is ready' : inOutro ? `Recap · question in ${Math.ceil(outroEnd - audio.currentTime)}s` : step === 'result' ? 'Answer saved · continue when ready' : 'Swipe up for the next lesson';
     const button = $('#lesson-question-button');
     button.textContent = explaining ? (app.explanationContext.question.answered ? 'Return to result' : 'Return to question') : pending ? 'Answer question' : step === 'result' ? 'View answer' : 'Go to question';
     button.classList.toggle('is-ready', !!pending);
@@ -211,18 +254,53 @@
     if (direction < 0 && app.index === 0) { toast('This is the first lesson in this selection.'); return; }
     setLesson(app.index + direction);
   }
-  function paintFrame() {
+  function renderEnding(lesson, now) {
+    const gallery = lesson.presentation?.clinicalGallery;
+    const recap = lesson.presentation?.recap;
+    const start = Number(gallery?.startSeconds);
+    const end = Number(gallery?.endSeconds) || playbackDuration(lesson);
+    const visible = gallery?.images?.length >= 3 && gallery.images.length <= 6 && Number.isFinite(start) && now >= start && now <= end + .05;
+    $('#lesson-ending').hidden = !visible;
+    $('#visual-stage').classList.toggle('has-ending', !!visible);
+    if (!visible) return false;
+    if (app.endingId !== lesson.id) {
+      app.endingId = lesson.id;
+      $('#clinical-gallery').dataset.count = String(gallery.images.length);
+      $('#clinical-gallery').style.setProperty('--gallery-rows', String(Math.ceil(gallery.images.length / 2)));
+      $('#clinical-gallery').innerHTML = gallery.images.map((item, index) => `<button type="button" class="clinical-tile" data-clinical-image="${index}" aria-label="Inspect ${esc(item.title || `clinical image ${index + 1}`)} and source"><img src="${esc(asset(item.url, lesson._baseUrl))}" alt="${esc(item.alt || item.title || 'Clinical image')}" decoding="async"><span class="clinical-label">${esc(item.shortLabel || item.title || `Clinical view ${index + 1}`)}</span></button>`).join('');
+      const nodes = recap?.nodes || [];
+      $('#recap-map').innerHTML = nodes.map((node, index) => `${index && (recap.edges || []).some(edge => edge.from === nodes[index - 1].id && edge.to === node.id) ? '<span class="recap-arrow" aria-hidden="true">→</span>' : ''}<span class="recap-node" data-recap-node="${esc(node.id)}">${esc(node.label)}</span>`).join('');
+    }
+    const active = (recap?.cueBindings || []).find(cue => now >= Number(cue.startSeconds) && now < Number(cue.endSeconds));
+    const activeId = active?.nodeId || '';
+    if (app.endingNode !== activeId) {
+      app.endingNode = activeId;
+      $$('[data-recap-node]').forEach(node => {
+        const selected = node.dataset.recapNode === activeId;
+        node.classList.toggle('is-active', selected);
+        if (selected) node.setAttribute('aria-current', 'step'); else node.removeAttribute('aria-current');
+      });
+    }
+    const focus = settings().reduceMotion || motionPreference.matches ? -1 : Math.min(gallery.images.length - 1, Math.floor((now - start) / Math.max(1, (end - start) / gallery.images.length)));
+    $$('.clinical-tile').forEach((tile, index) => tile.classList.toggle('is-emphasized', focus === index));
+    return true;
+  }
+  function paintFrame(force = true) {
     const lesson = current(); if (!lesson) return;
-    const now = audio.currentTime || 0;
-    const duration = Number.isFinite(audio.duration) ? audio.duration : Number(lesson.durationSeconds) || 1;
-    $('#current-time').textContent = time(now); $('#duration-time').textContent = time(duration);
+    const clock = performance.now();
+    if (force === false && clock - app.lastPaint < 32) return;
+    app.lastPaint = clock;
+    const duration = playbackDuration(lesson);
+    const now = Math.min(audio.currentTime || 0, duration);
+    $('#center-play').hidden = !audio.paused || !!app.modal || now > .25;
+    setText($('#current-time'), time(now)); setText($('#duration-time'), time(duration));
     if (document.activeElement !== $('#seek')) $('#seek').value = String(now / duration * 100);
     $('#seek').style.setProperty('--progress', `${clamp(now / duration * 100, 0, 100)}%`);
     $('#seek').setAttribute('aria-valuetext', `${time(now)} of ${time(duration)}`);
     syncLessonFlow();
     const scene = lesson.scenes?.find(item => now >= item.start && now < item.end) || lesson.scenes?.[lesson.scenes.length - 1] || {};
     const outroStart = Number(lesson.realImageOutro?.start);
-    const isOutro = Number.isFinite(outroStart) && now >= outroStart && !!lesson.realImages?.length;
+    const isOutro = !lesson.presentation?.clinicalGallery && Number.isFinite(outroStart) && now >= outroStart && !!lesson.realImages?.length;
     const isReal = !!lesson.realImages?.length && (isOutro || scene.kind === 'clinical');
     const clinicalImage = lesson.realImages?.find(item => item.url === scene.image) || lesson.realImages?.[0];
     const image = isOutro ? lesson.realImages[0].url : scene.image || lesson.poster;
@@ -233,7 +311,7 @@
       $('#spotlight').style.opacity = '0'; $('#lesson-image').src = url;
     }
     $('#visual-stage').classList.toggle('is-real', !!isReal); $('#real-image-badge').hidden = !isReal;
-    $('#lesson-image').alt = isReal ? clinicalImage.title : `${lesson.title} — illustrated memory scene`;
+    $('#lesson-image').alt = isReal ? clinicalImage?.title || 'Clinical image' : `${lesson.title} — illustrated memory scene`;
     if (isReal) $('#real-image-badge > span:nth-child(2)').textContent = `REAL CLINICAL IMAGE · ${clinicalImage.license || 'SOURCE'}`;
     const sceneKey = `${scene.id || ''}:${!!isReal}:${isOutro}`;
     if (sceneKey !== app.lastScene) {
@@ -253,18 +331,36 @@
     $('#scene-heading').classList.toggle('visible', app.captions && !!$('#scene-heading').textContent && (!isReal || !!guidance));
     $('#teaching-pointer').setAttribute('hidden', ''); $('#focus-label').hidden = true;
     $('#spotlight').style.opacity = '0';
+    // The original coordinate map belongs only to its original image. The
+    // three-image recap never reuses an arrow from that image's coordinates.
+    if (renderEnding(lesson, now)) { layer.style.transform = 'none'; return; }
     // Use the actual untransformed image box, including clinical-image insets.
     // All three projections share this geometry; no overlay gets a separate animation.
     const imageViewport = $('#image-viewport');
     const box = { x: imageViewport.offsetLeft + layer.offsetLeft, y: imageViewport.offsetTop + layer.offsetTop, width: layer.clientWidth, height: layer.clientHeight };
     const still = isReal || !!settings().reduceMotion || motionPreference.matches;
     const camera = G?.cameraAt(guidance, active, now, image, still);
-    const geometry = app.imageReady && G?.geometry(box, imageElement.naturalWidth, imageElement.naturalHeight, camera);
+    let geometry = app.imageReady && G?.geometry(box, imageElement.naturalWidth, imageElement.naturalHeight, camera);
     if (!geometry) { layer.style.transform = 'none'; return; }
-    layer.style.transform = `translate(${geometry.panX}px, ${geometry.panY}px) scale(${geometry.scale})`;
     const imageSpec = guidance?.images?.[image];
     // A changed/corrupt image never inherits a coordinate from its predecessor.
     const target = active?.target;
+    if (target && camera && !still) {
+      // A new cue can sit near the opposite edge from the previous camera pose.
+      // Pull that transition back toward the full image until its actual target
+      // remains on screen; never pin an arrow to a different image coordinate.
+      const inside = value => { const point = value.project(target.x, target.y); return point.x >= 2 && point.x <= frame.clientWidth - 2 && point.y >= 2 && point.y <= frame.clientHeight - 2; };
+      if (!inside(geometry)) {
+        geometry = G.geometry(box, imageElement.naturalWidth, imageElement.naturalHeight, { x: .5, y: .5, scale: 1 });
+        let low = 0, high = 1;
+        for (let attempt = 0; attempt < 9; attempt++) {
+          const fraction = (low + high) / 2;
+          const candidate = G.geometry(box, imageElement.naturalWidth, imageElement.naturalHeight, { x: .5 + (camera.x - .5) * fraction, y: .5 + (camera.y - .5) * fraction, scale: 1 + (camera.scale - 1) * fraction });
+          if (inside(candidate)) { low = fraction; geometry = candidate; } else high = fraction;
+        }
+      }
+    }
+    layer.style.transform = `translate(${geometry.panX}px, ${geometry.panY}px) scale(${geometry.scale})`;
     if (!target || !imageSpec || imageSpec.width !== imageElement.naturalWidth || imageSpec.height !== imageElement.naturalHeight) return;
     const tip = geometry.project(target.x, target.y);
     const focus = geometry.project(target.spotX ?? target.x, target.spotY ?? target.y);
@@ -285,19 +381,34 @@
     $('#focus-label').textContent = target.label; $('#focus-label').hidden = false;
   }
   function tick(clock) {
+    app.frame = 0;
     if (!audio.paused && !audio.ended && !audio.seeking && audio.readyState >= 3 && document.visibilityState === 'visible' && app.tab === 'feed' && !app.modal) {
       if (app.lastClock) app.exposure += Math.min(.5, Math.max(0, (clock - app.lastClock) / 1000));
       app.lastClock = clock;
       if (app.exposure >= 1) { const amount = app.exposure; app.exposure = 0; if (!L.loadError) L.expose(current().id, amount); }
-      paintFrame();
+      paintFrame(false);
+      if (handlePlaybackEnd()) return;
     } else app.lastClock = 0;
-    app.frame = requestAnimationFrame(tick);
+    startFrames();
+  }
+  function handlePlaybackEnd(explicit = false) {
+    if (!current() || app.endHandled || app.modal || app.tab !== 'feed' || document.visibilityState !== 'visible' || !app.sourceUrl || audio.currentSrc !== app.sourceUrl) return false;
+    const duration = playbackDuration();
+    if (audio.currentTime < duration - (audio.ended ? .04 : 0) || (!explicit && audio.paused && !audio.ended)) return false;
+    app.endHandled = true;
+    pauseAudio();
+    if (audio.currentTime > duration + .03) audio.currentTime = duration;
+    paintFrame(); updatePlayButtons();
+    finishLessonPlayback();
+    return true;
   }
   function showTab(tab, resume = true) {
     if (!['feed', 'publications', 'review', 'insights', 'settings'].includes(tab)) return;
     const previousTab = app.tab;
     if (tab !== 'feed') pauseAudio();
     app.tab = tab;
+    document.body.classList.toggle('feed-active', tab === 'feed');
+    syncImmersive();
     $$('.screen').forEach(screen => { screen.hidden = screen.id !== `screen-${tab}`; });
     $$('[data-tab]').forEach(button => { button.classList.toggle('active', button.dataset.tab === tab); if (button.dataset.tab === tab) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); });
     if (tab === 'publications') renderPublications();
@@ -310,7 +421,7 @@
         app.entryWasDue = !!card && card.reps > 0 && new Date(card.due).getTime() <= Date.now();
         app.bypassEntryRecall = false;
       }
-      syncIndicators(); if (resume && current() && !maybeGateRecall(current()) && settings().autoPlay && !app.modal) playAudio(false);
+      syncIndicators(); paintFrame(); if (resume && current() && !maybeGateRecall(current()) && settings().autoPlay && !app.modal) playAudio(false);
     }
   }
   function cover(book) {
@@ -370,14 +481,19 @@
     return `<button class="setting-row" type="button" data-action="${action}"><span class="setting-copy"><h3>${esc(title)}</h3>${description ? `<p>${esc(description)}</p>` : ''}</span>${value ? `<span class="setting-value">${esc(value)}</span>` : icons.arrow}</button>`;
   }
   function renderSettings() {
-    $('#screen-settings').innerHTML = `<span class="page-eyebrow">MAKE IT YOURS</span><h1 class="page-heading" id="settings-heading">Your learning rhythm.</h1><p class="page-intro">Tune the pace. Keep control of your collection.</p><section class="setting-section"><h2>Spaced recall</h2><div class="settings-card">${settingsAction('retention', 'Target recall', 'Higher targets generally mean more reviews.', `${Math.round((settings().retention || .9) * 100)}%`)}${settingsAction('new-limit', 'New lessons each day', 'A comfortable limit for the For you feed.', String(settings().newPerDay ?? 10))}${settingsAction('daily-topics', 'Daily lesson topics', 'Choose All, specialties, or several topic tags.', dailyTopicSummary())}</div></section><section class="setting-section"><h2>Playback</h2><div class="settings-card">${settingsAction('speed', 'Playback speed', 'Visuals follow the narration at every speed.', `${settings().speed || 1}×`)}${toggleRow('autoPlay', 'Autoplay lessons', 'Start narration when you enter a lesson.')}${toggleRow('reduceMotion', 'Reduce camera motion', 'Keep the memory scene steady.')}</div></section><section class="setting-section"><h2>Collection & updates</h2><div class="settings-card">${settingsAction('import-pack', 'Import lesson package', 'Add a ZIP from your device.')}${settingsAction('check-updates', 'Check for updates', app.catalogCheckedAt ? `Last checked ${dateLabel(app.catalogCheckedAt)}` : 'Find new content packages and app releases.')}${toggleRow('autoCheckUpdates', 'Check when opening', 'Check the catalog when a connection is available.')}</div></section><section class="setting-section"><h2>Your data</h2><div class="settings-card">${settingsAction('export-backup', 'Export learning backup', 'Save reviews, private notes and preferences.')}${settingsAction('import-backup', 'Restore learning backup', 'Restore a saved snapshot without removing media.')}${settingsAction('local-info', 'Stored on this device', `${app.lessons.length} lessons · No account required`)}</div></section><section class="setting-section"><h2>About</h2><div class="settings-card">${settingsAction('licenses', 'Open-source licenses', 'App credits and licenses, available offline.')}</div></section><p class="app-version">InstaAnki ${esc(app.info.version || '0.1.1')} · Personal learning<br>English · ${native ? 'Android' : 'Browser preview'}</p>`;
+    $('#screen-settings').innerHTML = `<span class="page-eyebrow">MAKE IT YOURS</span><h1 class="page-heading" id="settings-heading">Your learning rhythm.</h1><p class="page-intro">Tune the pace. Keep control of your collection.</p>${app.collectionWarnings.length ? `<div class="collection-warning" role="status"><strong>Package needs attention</strong>${app.collectionWarnings.map(message => `<p>${esc(message)}</p>`).join('')}</div>` : ''}<section class="setting-section"><h2>Spaced recall</h2><div class="settings-card">${settingsAction('retention', 'Target recall', 'Higher targets generally mean more reviews.', `${Math.round((settings().retention || .9) * 100)}%`)}${settingsAction('new-limit', 'New lessons each day', 'A comfortable limit for the For you feed.', String(settings().newPerDay ?? 10))}${settingsAction('daily-topics', 'Daily lesson topics', 'Choose All, specialties, or several topic tags.', dailyTopicSummary())}</div></section><section class="setting-section"><h2>Playback</h2><div class="settings-card">${settingsAction('speed', 'Playback speed', 'Visuals follow the narration at every speed.', `${settings().speed || 1}×`)}${toggleRow('autoPlay', 'Autoplay lessons', 'Start narration when you enter a lesson.')}${toggleRow('reduceMotion', 'Reduce camera motion', 'Keep the memory scene steady.')}</div></section><section class="setting-section"><h2>Collection & updates</h2><div class="settings-card">${settingsAction('import-pack', 'Import lesson package', 'Add a ZIP from your device.')}${settingsAction('check-updates', 'Check for updates', app.catalogCheckedAt ? `Last checked ${dateLabel(app.catalogCheckedAt)}` : 'Find new content packages and app releases.')}${toggleRow('autoCheckUpdates', 'Check when opening', 'Check the catalog when a connection is available.')}</div></section><section class="setting-section"><h2>Your data</h2><div class="settings-card">${settingsAction('export-backup', 'Export learning backup', 'Save reviews, private notes and preferences.')}${settingsAction('import-backup', 'Restore learning backup', 'Restore a saved snapshot without removing media.')}${settingsAction('feedback-history', 'Reports & hidden lessons', 'Export feedback or restore a hidden lesson.')}${settingsAction('local-info', 'Stored on this device', `${app.lessons.length} lessons · No account required`)}</div></section><section class="setting-section"><h2>About</h2><div class="settings-card">${settingsAction('licenses', 'Open-source licenses', 'App credits and licenses, available offline.')}</div></section><p class="app-version">InstaAnki ${esc(app.info.version || '0.2.0')} · Personal learning<br>English · ${native ? 'Android' : 'Browser preview'}</p>`;
   }
   function openModal(kind, title, eyebrow, html, extra = {}) {
     const wasOpen = !!app.modal;
     if (!wasOpen) { app.previousFocus = document.activeElement; app.resumeOnClose = !audio.paused && kind !== 'quiz'; }
     pauseAudio();
     app.modal = { kind, ...extra };
+    syncImmersive();
     $('#modal-sheet').dataset.kind = kind;
+    $('#modal-backdrop').dataset.kind = kind;
+    const quizLesson = kind === 'quiz' ? byId(extra.lessonId) : null;
+    const quizPoster = quizLesson ? asset(quizLesson.poster, quizLesson._baseUrl) : '';
+    $('#modal-backdrop').style.setProperty('--quiz-poster', quizPoster ? `url(${JSON.stringify(quizPoster)})` : 'none');
     $('#modal-actions').replaceChildren(); $('#modal-actions').hidden = true;
     $('#modal-title').textContent = title; $('#modal-eyebrow').textContent = eyebrow || '';
     $('#modal-body').innerHTML = html; $('#modal-backdrop').hidden = false; $('#app-shell').inert = true;
@@ -390,6 +506,7 @@
     if (app.modal.kind === 'quiz') preserveQuizState();
     const shouldResume = resume && app.resumeOnClose;
     app.modal = null; app.resumeOnClose = false;
+    syncImmersive();
     $('#modal-backdrop').hidden = true; $('#app-shell').inert = false; document.body.classList.remove('no-scroll');
     if (app.previousFocus?.isConnected) app.previousFocus.focus({ preventScroll: true });
     updatePlayButtons();
@@ -407,6 +524,46 @@
     const lesson = current(); if (!lesson) return;
     openModal('note', 'A note to your future self.', 'PRIVATE NOTES', `<p class="modal-intro">${esc(lesson.title)}</p><label class="field-label" for="note-input">Your note</label><textarea class="textarea" id="note-input" maxlength="10000" placeholder="What would help you remember this?" autofocus>${esc(L.get(lesson.id).note || '')}</textarea><p class="field-hint">This note stays on this device and is included in your learning backup.</p><button class="primary-button full-width" type="button" data-action="save-note" style="margin-top:18px">Save note</button>`, { lessonId: lesson.id });
   }
+  const feedbackReasons = [
+    ['bad_sound', 'Sound or audio'], ['bad_images', 'Images'],
+    ['bad_timing', 'Timing or sync'], ['bad_mcq', 'Question or answer'],
+    ['wrong_source', 'Wrong source'], ['other', 'Something else'],
+  ];
+  function showReport() {
+    const lesson = current(); if (!lesson) return;
+    const record = L.get(lesson.id);
+    openModal('feedback', 'Help improve this lesson.', 'DISLIKE & REPORT', `<p class="modal-intro">${esc(lesson.title)}<br>Your choices stay on this device. You can export a report when you choose.</p><fieldset class="feedback-reasons"><legend>What needs attention?</legend>${feedbackReasons.map(([value, label]) => `<label class="feedback-choice"><input type="radio" name="feedback-reason" value="${value}"><span>${label}</span></label>`).join('')}</fieldset><label class="field-label" for="feedback-comment">Comment <span class="field-hint">(optional)</span></label><textarea id="feedback-comment" class="textarea" maxlength="4000" placeholder="Tell us what happened, or which moment needs checking."></textarea><label class="feedback-toggle"><input type="checkbox" id="feedback-save-report" checked><span>Save a local report<small>Includes the lesson, version and source reference.</small></span></label><label class="feedback-toggle"><input type="checkbox" id="feedback-dislike" ${record.disliked ? 'checked' : ''}><span>Mark this lesson as disliked</span></label><label class="feedback-toggle"><input type="checkbox" id="feedback-hide" ${record.hidden ? 'checked' : ''}><span>Hide this lesson<small>You can restore it in Settings. Your review history is kept.</small></span></label><div class="feedback-controls"><button class="primary-button full-width" type="button" data-action="save-feedback">Save choices</button><button class="quiet-button full-width" type="button" data-action="feedback-history">View saved reports</button></div>`, { lessonId: lesson.id });
+    $('#modal-actions').append($('.feedback-controls', $('#modal-body'))); $('#modal-actions').hidden = false;
+  }
+  function saveFeedback() {
+    if (app.modal?.kind !== 'feedback') return;
+    const lesson = byId(app.modal.lessonId); if (!lesson) return;
+    const report = $('#feedback-save-report').checked;
+    const reason = $('input[name="feedback-reason"]:checked')?.value;
+    if (report && !reason) { toast('Choose what needs attention, or turn off Save a local report.'); $('.feedback-reasons input')?.focus(); return; }
+    const hidden = $('#feedback-hide').checked;
+    const disliked = $('#feedback-dislike').checked;
+    const hashes = { ...(lesson.assetHashes || {}), ...(lesson._assetHashes || {}) };
+    for (const [path, item] of Object.entries(lesson.visualGuidance?.images || {})) if (/^[a-f0-9]{64}$/i.test(item.sha256 || '')) hashes[path] = item.sha256;
+    for (const image of [...(lesson.realImages || []), ...(lesson.presentation?.clinicalGallery?.images || [])]) if (/^[a-f0-9]{64}$/i.test(image.sha256 || '')) hashes[image.url] = image.sha256;
+    const safeHashes = Object.fromEntries(Object.entries(hashes).filter(([path, hash]) => /^[A-Za-z0-9][A-Za-z0-9._/-]{0,319}$/.test(path) && !path.split('/').some(part => !part || ['.', '..', '__proto__', 'constructor', 'prototype'].includes(part)) && /^[a-f0-9]{64}$/i.test(hash)).slice(0, 200));
+    if (report) L.reportFeedback(lesson.id, { reason, comment: $('#feedback-comment').value.trim(), lessonVersion: lesson.version || 1, source: lesson.source || {}, assetHashes: safeHashes });
+    L.setDisliked(lesson.id, disliked); L.setHidden(lesson.id, hidden);
+    closeModal(false);
+    if (hidden) { rebuildFeed(); if (settings().autoPlay && current()) playAudio(false); }
+    syncIndicators();
+    toast(hidden ? 'Lesson hidden. Your learning history is kept.' : report ? 'Report saved on this device. Export it from Settings when ready.' : 'Your lesson preferences were saved.');
+  }
+  function showFeedbackHistory() {
+    const reports = L.getFeedback();
+    const hidden = app.lessons.filter(lesson => L.get(lesson.id).hidden);
+    openModal('feedback-history', 'Your reports & hidden lessons.', 'YOUR FEEDBACK', `<p class="modal-intro">Reports stay on this device until you export them. Exports contain your reports and lesson references.</p><button class="primary-button full-width" type="button" data-action="export-feedback" ${reports.length ? '' : 'disabled'}>${native?.shareFeedback ? 'Share' : 'Export'} ${reports.length} ${reports.length === 1 ? 'report' : 'reports'}</button>${native?.exportFeedback ? `<button class="secondary-button full-width" type="button" data-action="save-feedback-file" ${reports.length ? '' : 'disabled'} style="margin-top:10px">Save feedback file</button>` : ''}<h3>Hidden lessons · ${hidden.length}</h3>${hidden.length ? hidden.map(lesson => `<div class="hidden-lesson-row"><span>${esc(lesson.title)}</span><button class="secondary-button" type="button" data-unhide-lesson="${esc(lesson.id)}">Restore</button></div>`).join('') : '<p class="empty-copy">No lessons are hidden.</p>'}<h3>Saved reports · ${reports.length}</h3>${reports.length ? reports.slice().reverse().map(report => `<div class="feedback-report"><strong>${esc(feedbackReasons.find(([key]) => key === report.reason)?.[1] || report.reason)} · ${esc(byId(report.lessonId)?.title || report.lessonId)}</strong><p>${esc(dateLabel(report.createdAt))} · Version ${esc(report.lessonVersion || 'unknown')}</p>${report.comment ? `<p>${esc(report.comment)}</p>` : ''}</div>`).join('') : '<p class="empty-copy">Use Report on a lesson to save feedback.</p>'}`);
+  }
+  async function exportFeedback() {
+    if (await L.shareFeedback()) return;
+    downloadJSON(JSON.parse(L.exportFeedback()), `InstaAnki-feedback-${new Date().toISOString().slice(0, 10)}.json`);
+    toast('Your feedback export is ready to save.');
+  }
   function showTranscript() {
     const lesson = current(); if (!lesson) return;
     openModal('transcript', 'Read along.', 'CAPTIONS & TRANSCRIPT', `<div class="setting-row captions-setting"><div class="setting-copy"><h3>Show caption headlines</h3><p>Keep the key idea visible over the scene.</p></div><label class="switch"><input type="checkbox" data-captions aria-label="Show caption headlines" ${app.captions ? 'checked' : ''}><span class="switch-track"></span></label></div><p class="modal-intro">Tap a passage to return to that moment in the lesson.</p>${(lesson.scenes || []).map(scene => `<button type="button" class="transcript-scene" data-seek-scene="${Number(scene.start) || 0}"><small>${time(scene.start)} — ${time(scene.end)}</small><strong>${esc(scene.caption || 'Narration')}</strong><p>${esc(scene.transcript || scene.caption || '')}</p></button>`).join('')}`);
@@ -421,13 +578,18 @@
     const symbols = (lesson.mnemonicSymbols || []).map(item => `<div><dt>${esc(item.symbol)}</dt><dd>${esc(item.meaning)}</dd></div>`).join('');
     const corroboration = (source.corroboratingSources || []).map(reference => `<div class="source-block"><h3>${esc(reference.title)}</h3><p>${esc(reference.supports || '')}</p>${reference.doi ? `<p style="margin-top:7px">DOI: ${esc(reference.doi)}</p>` : ''}${reference.url ? `<a href="${esc(reference.url)}" data-external>Read supporting reference ↗</a>` : ''}</div>`).join('');
     const lessonSources = `<div class="source-block"><h3>${esc(source.bookTitle || 'Source-linked lesson')}</h3><p>${source.questionNumber ? `Question ${esc(source.questionNumber)}` : ''}${source.page ? ` · Page ${esc(source.page)}` : ''}${pages ? `<br>Answer pages ${esc(pages)}` : ''}</p>${source.verificationNote ? `<p style="margin-top:10px">${esc(source.verificationNote)}</p>` : ''}</div><div class="source-block"><h3>The memory scene</h3><p>The illustrated scene is a visual memory cue. The clinical images below are real, published examples with their own source credits.</p>${lesson.locus ? `<p style="margin-top:8px">Memory location: ${esc(lesson.locus.room)} · ${esc(lesson.locus.anchor)}</p>` : ''}${symbols ? `<dl class="symbol-map">${symbols}</dl>` : ''}</div>${corroboration}`;
-    openModal('source', imagesOnly ? 'The real-world view.' : 'Trace it to the source.', imagesOnly ? 'IMAGE CREDITS' : 'LESSON REFERENCES', `${imagesOnly ? '' : lessonSources}${(lesson.realImages || []).map(image => imageCredit(image, lesson._baseUrl)).join('')}`);
+    const images = [...new Map([...(lesson.realImages || []), ...(lesson.presentation?.clinicalGallery?.images || [])].map(image => [image.url, image])).values()];
+    openModal('source', imagesOnly ? 'The real-world view.' : 'Trace it to the source.', imagesOnly ? 'IMAGE CREDITS' : 'LESSON REFERENCES', `${imagesOnly ? '' : lessonSources}${images.map(image => imageCredit(image, lesson._baseUrl)).join('')}`);
+  }
+  function isProductionPaused(book) {
+    return app.bundledBooks.find(item => item.id === book.id)?.productionPaused === true;
   }
   function showBook(id) {
     refreshProductionProgress();
     const book = app.books.find(item => item.id === id); if (!book) return;
     const questions = book.questions || [];
-    openModal('book', book.title, 'PUBLICATION PROGRESS', `<p class="modal-intro">${esc(book.author)} · ${esc(book.year)}<br>${Number(book.completedVideos) || 0} lessons produced from ${Number(book.totalQuestions) || 0} source questions.</p><div class="source-block"><h3>Next question to produce: ${book.nextQuestionNumber ? `Q${esc(book.nextQuestionNumber)}` : 'All source questions covered'}</h3><p>Completed questions are tracked individually. Skipped question numbers remain in the production plan.</p><button class="quiet-button" type="button" data-copy-plan="${esc(book.id)}">Copy the next-batch brief ↗</button></div><div class="question-key"><span><i class="done"></i>Produced</span><span><i></i>Not yet produced</span></div><div class="question-grid">${questions.map(q => `<button class="question-cell ${q.status === 'produced' ? 'produced' : q.status === 'needs_review' ? 'needs-review' : ''}" type="button" data-question="${q.number}" data-question-book="${esc(book.id)}" aria-label="Question ${q.number}, ${q.status === 'produced' ? 'lesson produced' : q.status === 'needs_review' ? 'source needs review' : 'not yet produced'}">${q.number}</button>`).join('')}</div>`, { bookId: id });
+    const paused = isProductionPaused(book);
+    openModal('book', book.title, 'PUBLICATION PROGRESS', `<p class="modal-intro">${esc(book.author)} · ${esc(book.year)}<br>${Number(book.completedVideos) || 0} lessons produced from ${Number(book.totalQuestions) || 0} source questions.</p><div class="source-block"><h3>${paused ? 'New lesson production is paused.' : `Next question to produce: ${book.nextQuestionNumber ? `Q${esc(book.nextQuestionNumber)}` : 'All source questions covered'}`}</h3><p>${paused ? 'Work is limited to app and existing-lesson repairs. Source questions remain listed for reference.' : 'Completed questions are tracked individually. Skipped question numbers remain in the production plan.'}</p><button class="quiet-button" type="button" data-copy-plan="${esc(book.id)}">${paused ? 'Copy collection brief' : 'Copy the next-batch brief'} ↗</button></div><div class="question-key"><span><i class="done"></i>Produced</span><span><i></i>Not yet produced</span></div><div class="question-grid">${questions.map(q => `<button class="question-cell ${q.status === 'produced' ? 'produced' : q.status === 'needs_review' ? 'needs-review' : ''}" type="button" data-question="${q.number}" data-question-book="${esc(book.id)}" aria-label="Question ${q.number}, ${q.status === 'produced' ? 'lesson produced' : q.status === 'needs_review' ? 'source needs review' : 'not yet produced'}">${q.number}</button>`).join('')}</div>`, { bookId: id });
   }
   function quizMode(lesson, requested) {
     if (requested === 'practice') return 'practice';
@@ -680,28 +842,59 @@
       && Number.isInteger(lesson.quiz.correctIndex) && lesson.quiz.correctIndex >= 0 && lesson.quiz.correctIndex < lesson.quiz.options.length;
   }
   async function loadNativePacks() {
-    if (!native?.listPacks) return;
-    const packs = JSON.parse(native.listPacks() || '[]');
+    const generation = ++app.collectionGeneration;
+    const clone = value => JSON.parse(JSON.stringify(value));
+    const lessons = new Map(clone(app.bundledLessons).map(lesson => [lesson.id, lesson]));
+    const books = new Map(clone(app.bundledBooks).map(book => [book.id, book]));
+    const allowedBooks = new Map(app.bundledBooks.map(book => [book.id, book]));
+    const warnings = [];
+    const previousLessons = new Map(app.lessons.map(lesson => [lesson.id, lesson]));
+    const packs = native?.listPacks ? JSON.parse(native.listPacks() || '[]') : [];
+    if (!Array.isArray(packs)) throw new Error('The installed package list could not be read. Reopen the app and try again.');
     for (const pack of packs) {
       try {
+        if (!pack?.manifest || !pack.baseUrl) throw new Error('Missing content package metadata.');
         const data = Array.isArray(pack.manifest.lessons) ? pack.manifest.lessons : await fetchJSON(new URL(pack.manifest.lessonsFile || 'lessons.json', pack.baseUrl));
         const imported = Array.isArray(data) ? data : data.lessons;
         if (!Array.isArray(imported) || imported.some(x => !validLesson(x))) throw new Error('The lesson package uses an unsupported lesson format.');
+        const publications = Array.isArray(pack.manifest.books) ? pack.manifest.books : [];
+        if (imported.some(lesson => !allowedBooks.has(lesson.source?.bookId)) || publications.some(book => !allowedBooks.has(book.id))) {
+          throw new Error('A package from a different book is hidden. This collection accepts only the original bundled publication. Its files and your learning history are preserved.');
+        }
+        for (const book of publications) {
+          const original = allowedBooks.get(book.id);
+          if (['title', 'author', 'year', 'totalQuestions'].some(key => book[key] != null && String(book[key]) !== String(original[key]))) throw new Error('A package has publication details that do not match the original book. It is hidden; its files and your learning history are preserved.');
+        }
         for (const lesson of imported) {
-          const index = app.lessons.findIndex(x => x.id === lesson.id);
-          const item = { ...lesson, _baseUrl: pack.baseUrl };
-          if (index < 0) app.lessons.push(item); else if (Number(item.version || 1) >= Number(app.lessons[index].version || 1)) app.lessons[index] = item;
+          const previous = lessons.get(lesson.id);
+          const paths = new Set([lesson.audioUrl, lesson.poster, ...(lesson.scenes || []).map(scene => scene.image), ...(lesson.realImages || []).map(image => image.url), ...(lesson.presentation?.clinicalGallery?.images || []).map(image => image.url)]);
+          const hashes = Object.fromEntries(Object.entries(pack.manifest.sha256 || {}).filter(([path, hash]) => paths.has(path) && /^[a-f0-9]{64}$/i.test(hash)));
+          const item = { ...clone(lesson), _baseUrl: pack.baseUrl, _assetHashes: hashes };
+          if (!previous || Number(item.version || 1) >= Number(previous.version || 1)) lessons.set(item.id, item);
         }
-        const books = Array.isArray(pack.manifest.books) ? pack.manifest.books : [];
-        for (const book of books) {
-          const index = app.books.findIndex(x => x.id === book.id);
-          const previous = index >= 0 ? app.books[index] : null;
-          const item = { ...previous, ...book, _baseUrl: pack.baseUrl };
+        for (const book of publications) {
+          const previous = books.get(book.id);
+          const item = { ...previous, ...clone(book), _baseUrl: pack.baseUrl };
           if (!book.coverUrl && previous?.coverUrl) item.coverUrl = asset(previous.coverUrl, previous._baseUrl);
-          if (index < 0) app.books.push(item); else app.books[index] = item;
+          books.set(item.id, item);
         }
-      } catch (error) { console.warn('A content pack could not be loaded:', error); toast('One content package could not be read. The rest of your collection is available.'); }
+      } catch (error) { console.warn('A content pack could not be loaded:', error); warnings.push(error.message || 'One content package could not be read. The rest of your collection is available.'); }
     }
+    // Commit one fresh catalog. Removed/replaced packs cannot leave stale books
+    // or lessons behind, and an older in-flight import cannot undo a newer one.
+    if (generation !== app.collectionGeneration) return false;
+    app.lessons = [...lessons.values()]; app.books = [...books.values()]; app.collectionWarnings = [...new Set(warnings)];
+    if (warnings.length) toast(app.collectionWarnings[0]);
+    for (const key of ['pendingQuestion', 'lastQuestionResult', 'explanationContext']) {
+      const id = app[key]?.lessonId;
+      if (id && (!lessons.has(id) || JSON.stringify(previousLessons.get(id)?.quiz) !== JSON.stringify(lessons.get(id)?.quiz))) app[key] = null;
+    }
+    if (app.modal?.lessonId && (!lessons.has(app.modal.lessonId) || (app.modal.kind === 'quiz' && JSON.stringify(previousLessons.get(app.modal.lessonId)?.quiz) !== JSON.stringify(lessons.get(app.modal.lessonId)?.quiz)))) {
+      const id = app.modal.lessonId; closeModal(false);
+      if (app.pendingQuestion?.lessonId === id) app.pendingQuestion = null;
+      if (app.lastQuestionResult?.lessonId === id) app.lastQuestionResult = null;
+    }
+    return true;
   }
   async function checkUpdates(interactive = true) {
     if (interactive) openModal('updates', 'Your collection, up to date.', 'CONTENT & APP', '<p class="modal-intro">Checking the release catalog…</p>');
@@ -736,7 +929,9 @@
     const pack = app.catalog?.packs.find(x => x.id === id); if (!pack) return;
     if (!native?.downloadPack) { toast('Install the Android app to download and install a lesson package.'); return; }
     if (!/^[a-f0-9]{64}$/i.test(pack.sha256 || '') || !pack.url) { toast('This package is missing a valid download checksum.'); return; }
-    app.downloading = true; renderUpdates(); native.downloadPack(pack.url, pack.sha256);
+    app.downloading = true; renderUpdates();
+    if (native.downloadPackVerified && Number.isSafeInteger(pack.sizeBytes) && pack.sizeBytes > 0) native.downloadPackVerified(pack.url, pack.sha256, pack.sizeBytes);
+    else native.downloadPack(pack.url, pack.sha256);
   }
   function downloadJSON(data, filename) {
     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
@@ -747,14 +942,20 @@
     const book = app.books.find(x => x.id === id); if (!book) return;
     const done = [...(book.completedQuestionNumbers || [])].sort((a, b) => a - b);
     const remaining = (book.questions || []).filter(q => q.status !== 'produced').map(q => q.number);
-    const text = `Continue the InstaAnki collection for ${book.title} (${book.author}, ${book.year}).\nBook ID: ${book.id}\nCompleted source question numbers: ${done.join(', ') || 'none'}.\n${remaining.length} source questions remain.\nNext batch: ${remaining.slice(0, 10).map(n => `Q${n}`).join(', ')}.\nKeep stable lesson IDs, English narration, source references, licensed real clinical images, and the existing JSON content format. Use the original 2D visual-mnemonic style and the fixed symbol dictionary. Do not mark questions complete until their media and MCQs are produced and checked.`;
-    try { await navigator.clipboard.writeText(text); toast('The next-batch brief was copied.'); }
-    catch (_) { openModal('copy-plan', 'Your next-batch brief.', 'CONTINUE PRODUCTION', `<p class="modal-intro">Copy this brief into your next content-generation conversation.</p><textarea class="textarea" readonly autofocus>${esc(text)}</textarea>`); }
+    const paused = isProductionPaused(book);
+    const existing = app.lessons.filter(lesson => lesson.source?.bookId === book.id).map(lesson => lesson.id);
+    const text = paused
+      ? `Repair the InstaAnki app and its existing ${existing.length} lessons only.\nDo not create new videos, lessons, narration, or mnemonic artwork until an explicit new user request.\nOriginal publication: ${book.title} (${book.author}, ${book.year}).\nBook ID: ${book.id}\nProduced source question numbers: ${done.join(', ') || 'none'}.\nExisting lesson IDs: ${existing.join(', ') || 'none'}.\nKeep the original book as the only active publication. Preserve lesson IDs, reviews, private notes, preferences, source references, and produced counts.\nAllowed work: app errors, interface and playback repairs, lossless media optimization, feedback, and update delivery.\n${remaining.length} source questions remain unproduced; new production is paused.`
+      : `Continue the InstaAnki collection for ${book.title} (${book.author}, ${book.year}).\nBook ID: ${book.id}\nCompleted source question numbers: ${done.join(', ') || 'none'}.\n${remaining.length} source questions remain.\nNext batch: ${remaining.slice(0, 10).map(n => `Q${n}`).join(', ')}.\nKeep stable lesson IDs, English narration, source references, licensed real clinical images, and the existing JSON content format. Use the original 2D visual-mnemonic style and the fixed symbol dictionary. Do not mark questions complete until their media and MCQs are produced and checked.`;
+    try { await navigator.clipboard.writeText(text); toast(paused ? 'The collection brief was copied.' : 'The next-batch brief was copied.'); }
+    catch (_) { openModal('copy-plan', paused ? 'Your collection brief.' : 'Your next-batch brief.', paused ? 'APP REPAIRS ONLY' : 'CONTINUE PRODUCTION', `<p class="modal-intro">${paused ? 'Share this brief when asking for app or existing-lesson updates.' : 'Copy this brief into your next content-generation conversation.'}</p><textarea class="textarea" readonly autofocus>${esc(text)}</textarea>`); }
   }
   const actions = {
     play: () => audio.paused ? playAudio() : pauseAudio(), next: () => nextLesson(),
     like: () => { if (current()) { L.like(current().id); syncIndicators(); } },
     note: showNote, source: () => showSource(false), 'image-credit': () => showSource(true),
+    report: showReport, 'save-feedback': saveFeedback, 'feedback-history': showFeedbackHistory, 'export-feedback': exportFeedback,
+    'save-feedback-file': () => { if (!native?.exportFeedback?.(L.exportFeedback())) downloadJSON(JSON.parse(L.exportFeedback()), `InstaAnki-feedback-${new Date().toISOString().slice(0, 10)}.json`); },
     speed: showSpeed, filters: showFilters, 'local-info': showLocalInfo, licenses: showLicenses,
     captions: showTranscript,
     'close-modal': () => closeModal(),
@@ -802,9 +1003,17 @@
         return;
       }
       if (button.dataset.watchLesson) { watchLesson(button.dataset.watchLesson); return; }
+      if (button.hasAttribute('data-clinical-image')) {
+        const lesson = current(); const image = lesson?.presentation?.clinicalGallery?.images?.[Number(button.dataset.clinicalImage)];
+        if (image) openModal('clinical-image', image.title || 'Clinical image', 'FULL IMAGE & SOURCE', imageCredit(image, lesson._baseUrl));
+        return;
+      }
+      if (button.dataset.unhideLesson) {
+        L.setHidden(button.dataset.unhideLesson, false); rebuildFeed(current()?.id); showFeedbackHistory(); toast('Lesson restored with its existing review history.'); return;
+      }
       if (button.hasAttribute('data-seek-scene')) {
         const target = Number(button.dataset.seekScene); closeModal(false);
-        if (Number.isFinite(audio.duration)) { audio.currentTime = clamp(target, 0, audio.duration); app.lastClock = 0; paintFrame(); playAudio(false); }
+        if (Number.isFinite(audio.duration)) { audio.currentTime = clamp(target, 0, playbackDuration()); app.lastClock = 0; paintFrame(); playAudio(false); }
         return;
       }
       if (button.dataset.reviewLesson) { showQuiz(byId(button.dataset.reviewLesson), 'review', 'review'); return; }
@@ -836,9 +1045,12 @@
     if (event.target.id === 'retention-input') $('#retention-value').textContent = event.target.value;
     if (event.target.id === 'daily-topic-search') renderTopicOptions();
   });
-  $('#seek').addEventListener('input', event => { if (Number.isFinite(audio.duration)) { audio.currentTime = Number(event.target.value) / 100 * audio.duration; app.lastClock = 0; paintFrame(); } });
-  audio.addEventListener('play', () => { app.lastClock = 0; updatePlayButtons(); paintFrame(); });
-  audio.addEventListener('pause', () => { flushExposure(); updatePlayButtons(); paintFrame(); });
+  $('#seek').addEventListener('input', event => { if (Number.isFinite(audio.duration)) { audio.currentTime = Number(event.target.value) / 100 * playbackDuration(); app.lastClock = 0; paintFrame(); } });
+  audio.addEventListener('play', () => {
+    if (app.modal || app.tab !== 'feed' || document.visibilityState !== 'visible') { pauseAudio(); return; }
+    app.lastClock = 0; updatePlayButtons(); paintFrame(); startFrames();
+  });
+  audio.addEventListener('pause', () => { stopFrames(); flushExposure(); updatePlayButtons(); paintFrame(); });
   audio.addEventListener('loadedmetadata', paintFrame);
   $('#lesson-image').addEventListener('load', () => {
     const image = $('#lesson-image');
@@ -846,20 +1058,12 @@
     paintFrame();
   });
   $('#lesson-image').addEventListener('error', () => { app.imageReady = false; paintFrame(); });
-  audio.addEventListener('timeupdate', paintFrame);
+  audio.addEventListener('timeupdate', () => { paintFrame(); handlePlaybackEnd(); });
   audio.addEventListener('seeking', () => { app.lastClock = 0; paintFrame(); });
   audio.addEventListener('seeked', paintFrame);
   audio.addEventListener('ratechange', paintFrame);
   audio.addEventListener('error', () => { updatePlayButtons(); if (current()) { $('#lesson-caption').textContent = 'The narration file is unavailable. Reimport this lesson package to restore playback.'; } });
-  audio.addEventListener('ended', () => {
-    flushExposure(); updatePlayButtons();
-    if (!app.endHandled && current()) {
-      app.endHandled = true;
-      // Revealing a due lesson before answering is assisted practice, not a
-      // successful recall. A first learning pass still schedules its end MCQ.
-      finishLessonPlayback();
-    }
-  });
+  audio.addEventListener('ended', () => { flushExposure(); updatePlayButtons(); handlePlaybackEnd(true); });
   window.addEventListener('resize', paintFrame);
   if (window.ResizeObserver) new ResizeObserver(paintFrame).observe($('#visual-stage'));
   motionPreference.addEventListener?.('change', paintFrame);
@@ -881,17 +1085,23 @@
     if (app.tab === 'feed' && event.key === 'ArrowUp') { event.preventDefault(); nextLesson(-1); }
   });
   let touchStart = null;
+  let lastSwipeAt = 0;
   $('#visual-stage').addEventListener('touchstart', event => {
-    if (event.target.closest('button') || app.modal || event.touches.length !== 1) return;
+    if (event.target.closest('button') || app.modal || event.touches.length !== 1) { touchStart = null; return; }
     touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY, at: performance.now() };
   }, { passive: true });
   $('#visual-stage').addEventListener('touchend', event => {
     if (!touchStart || !event.changedTouches.length) return;
     const deltaY = event.changedTouches[0].clientY - touchStart.y;
     const deltaX = event.changedTouches[0].clientX - touchStart.x;
-    if (Math.abs(deltaY) > 62 && Math.abs(deltaY) > Math.abs(deltaX) * 1.4 && performance.now() - touchStart.at < 950) nextLesson(deltaY < 0 ? 1 : -1);
+    if (Math.abs(deltaY) > 62 && Math.abs(deltaY) > Math.abs(deltaX) * 1.4 && performance.now() - touchStart.at < 950) { lastSwipeAt = performance.now(); nextLesson(deltaY < 0 ? 1 : -1); }
     touchStart = null;
   }, { passive: true });
+  $('#visual-stage').addEventListener('touchcancel', () => { touchStart = null; }, { passive: true });
+  $('#visual-stage').addEventListener('click', event => {
+    if (event.target.closest('button, .scene-heading, .lesson-copy') || app.modal || performance.now() - lastSwipeAt < 500) return;
+    actions.play();
+  });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState !== 'visible') pauseAudio(); });
   window.addEventListener('instaanki:background', pauseAudio);
   window.addEventListener('learning:changed', () => { syncIndicators(); paintFrame(); });
@@ -904,10 +1114,14 @@
     box.querySelector('.progress-fill').style.width = `${clamp(detail.percent || 0, 0, 100)}%`;
   });
   window.addEventListener('instaanki:pack-imported', async () => {
-    app.downloading = false; const id = current()?.id;
-    await loadNativePacks(); rebuildFeed(id); syncIndicators();
-    if (app.tab === 'settings') renderSettings(); if (app.tab === 'publications') renderPublications(); if (app.tab === 'review') renderReview();
-    if (app.modal?.kind === 'updates') renderUpdates(); toast('Your new lessons are ready. Learning history was preserved.');
+    app.downloading = false; const id = current()?.id; pauseAudio();
+    try {
+      if (await loadNativePacks() === false) return;
+      rebuildFeed(id); syncIndicators();
+      if (app.tab === 'settings') renderSettings(); if (app.tab === 'publications') renderPublications(); if (app.tab === 'review') renderReview();
+      if (app.modal?.kind === 'updates') renderUpdates(); toast(app.collectionWarnings[0] || 'Your collection is updated. Learning history was preserved.');
+      window.dispatchEvent(new CustomEvent('instaanki:collection-reloaded', { detail: { lessons: app.lessons.length, books: app.books.length } }));
+    } catch (error) { console.error(error); toast(error.message || 'The collection could not be refreshed. Reopen the app and try again.'); }
   });
   window.addEventListener('instaanki:backup-exported', () => toast('Your learning backup was saved.'));
   window.addEventListener('instaanki:backup-imported', () => { L.load(); syncWarning(); syncIndicators(); closeModal(false); rebuildFeed(current()?.id); showTab(app.tab); toast('Your learning backup was restored.'); });
@@ -926,9 +1140,9 @@
       const results = await Promise.allSettled([fetchJSON('data/lessons.json'), fetchJSON('data/books.json'), fetchJSON('data/taxonomy.json')]);
       if (results[0].status === 'fulfilled') {
         const raw = results[0].value;
-        app.lessons = (Array.isArray(raw) ? raw : raw.lessons || []).filter(validLesson);
+        app.bundledLessons = (Array.isArray(raw) ? raw : raw.lessons || []).filter(validLesson);
       }
-      if (results[1].status === 'fulfilled') { const raw = results[1].value; app.books = Array.isArray(raw) ? raw : raw.books || []; }
+      if (results[1].status === 'fulfilled') { const raw = results[1].value; app.bundledBooks = Array.isArray(raw) ? raw : raw.books || []; }
       await loadNativePacks();
       const loadedTags = new Map();
       for (const lesson of app.lessons) {
@@ -941,7 +1155,7 @@
       const fallbackTags = [...loadedTags.values()];
       app.topicModel = window.TopicSelection.create(results[2].status === 'fulfilled' ? results[2].value : { tags: fallbackTags });
       if (!app.lessons.length && results[0].status === 'rejected') throw new Error('Your lesson collection could not be opened. Use Settings to import a package, or reopen the app.');
-      rebuildFeed(); syncIndicators(); app.frame = requestAnimationFrame(tick);
+      rebuildFeed(); syncIndicators(); syncImmersive();
       if (settings().autoPlay && current()) playAudio(false);
       if (settings().autoCheckUpdates && navigator.onLine) checkUpdates(false);
     } catch (error) {

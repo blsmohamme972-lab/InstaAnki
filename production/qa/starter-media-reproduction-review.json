@@ -1,0 +1,32 @@
+{
+  "mode": "download-sources",
+  "verifiedOutputImages": 12,
+  "verifiedOutputBytes": 9983024,
+  "downloadedOriginals": 6,
+  "reproducedOutputs": 9,
+  "restoredOutputs": 0,
+  "existingFilesReplaced": 0,
+  "verifiedAgain": {
+    "mode": "verify",
+    "verifiedOutputImages": 12,
+    "verifiedOutputBytes": 9983024,
+    "downloadedOriginals": 0,
+    "reproducedOutputs": 0,
+    "restoredOutputs": 0,
+    "existingFilesReplaced": 0
+  },
+  "checkedOn": "2026-11-07T18:14:12.490258+00:00",
+  "freshCheckoutTest": true,
+  "publicSourcesFetched": [
+    "media/real/starter-q005-ct.png",
+    "media/real/starter-q005-followup-ct.png",
+    "media/real/starter-q054-collaterals.png",
+    "media/real/starter-q054-small-rca.png",
+    "media/real/starter-q182-arteriole.jpg",
+    "media/real/starter-q182-celiac-ultrasound.jpg"
+  ],
+  "pillowVersion": "13.0.0",
+  "libwebpVersion": "1.6.0",
+  "elapsedSeconds": 166.42,
+  "existingWorkingTreeImagesModified": false
+}

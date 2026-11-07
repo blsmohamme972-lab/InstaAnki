@@ -215,6 +215,7 @@ def claim(path, count, batch_id):
     policy = SourcePolicy(REPO)
     with locked_manifest(path) as document:
         policy.check_ledger(document)
+        policy.require_new_production()
         batches = document.setdefault("batches", {})
         by_number = {q["number"]: q for q in document["questions"]}
         batch = batches.get(batch_id)
@@ -700,7 +701,11 @@ def main():
             policy = SourcePolicy(REPO)
             try:
                 policy.source_records(load_manifest(path))
-                result["sourcePolicy"] = {"activeBookId": policy.book_id, "sourceAvailable": True}
+                enabled = policy.policy.get("newProductionEnabled") is True
+                result["sourcePolicy"] = {"activeBookId": policy.book_id, "sourceAvailable": True,
+                                          "newProductionBlocked": not enabled}
+                if not enabled:
+                    result["sourcePolicy"]["reason"] = "New lesson production is paused by the current explicit user instruction; existing app repairs remain allowed."
             except ValueError as exc:
                 result["sourcePolicy"] = {"activeBookId": policy.book_id, "sourceAvailable": False,
                                           "newProductionBlocked": True, "reason": str(exc)}

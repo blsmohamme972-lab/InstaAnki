@@ -70,12 +70,28 @@ public final class ContentPacksTest {
         rejects(manager, files, "invalid SHA-256 rejected");
         files = valid(); files.put("large.json", new byte[5 * 1024 * 1024 + 1]);
         rejects(manager, files, "expanded JSON size enforced");
+        files = valid(); files.put("lessons.json", "{\"unexpected\":[]}".getBytes(StandardCharsets.UTF_8));
+        rejects(manager, files, "non-lesson object rejected before replacement");
+        files = valid(); files.put("lessons.json", "[{\"id\":\"a\"},{\"id\":\"a\"}]".getBytes(StandardCharsets.UTF_8));
+        rejects(manager, files, "duplicate stable lesson IDs rejected before replacement");
+        byte[] complete = zip(valid());boolean friendly = false;
+        try { manager.importZip(new ByteArrayInputStream(java.util.Arrays.copyOf(complete, complete.length / 2))); }
+        catch (Exception expected) { friendly = expected.getMessage().contains("incomplete or damaged"); }
+        assertTrue(friendly, "truncated ZIP reports a friendly recovery instruction");
+        assertTrue(manager.list().length() == 1, "truncated ZIP preserves installed package");
         files = valid(); files.put("lessons.json", "[{\"id\":\"b\"}]".getBytes(StandardCharsets.UTF_8));
         manager.importZip(new ByteArrayInputStream(zip(files)));
         assertTrue(manager.list().length() == 1, "same id updates in place");
         assertTrue(new String(Files.readAllBytes(manager.resolve("test-pack/lessons.json").toPath()), StandardCharsets.UTF_8).contains("\"b\""), "updated files activated");
         File[] leftovers = new File(parent, "packs").listFiles((dir, name) -> name.startsWith("."));
         assertTrue(leftovers != null && leftovers.length == 0, "staging is cleaned after failures and updates");
+        File root = new File(parent, "packs");
+        assertTrue(new File(root, "test-pack").renameTo(new File(root, ".previous-interrupted-fixture")), "simulate interruption after old package is staged aside");
+        new File(root, ".staging-abandoned-fixture").mkdirs();
+        manager = new ContentPacks(root);
+        assertTrue(manager.list().length() == 1, "cold start recovers interrupted package replacement");
+        assertTrue(new String(Files.readAllBytes(manager.resolve("test-pack/lessons.json").toPath()), StandardCharsets.UTF_8).contains("\"b\""), "recovery retains the previous complete lesson version");
+        assertTrue(!new File(root, ".staging-abandoned-fixture").exists(), "cold start removes abandoned staging data only");
         System.out.println("All " + passed + " importer assertions passed.");
     }
 }

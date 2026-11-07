@@ -1,6 +1,6 @@
 # InstaAnki
 
-An English-only personal Android app that combines a short-form medical lesson feed with automatic spaced review. **Version 0.1.1 is a personal preview with three narrated lessons, precise visual guidance and saved daily-topic choices.** It has not yet been installed or tested on a physical Android device or emulator.
+An English-only personal Android app that combines a short-form medical lesson feed with automatic spaced review. **Version 0.2.0 repairs the app and its three existing Raja lessons. New lesson production is paused.** It has not yet been installed or tested on a physical Android device or emulator.
 
 ## What works in this version
 
@@ -22,20 +22,22 @@ The source collection contains 200 extracted questions. **Three source questions
 
 | Source question | Lesson | Duration |
 |---|---|---|
-| Q5 | Extralobar Sequestration: Its Own Pleural Coat | 74.5 seconds |
-| Q54 | Coronary Dominance: Follow the PDA | 71.2 seconds |
-| Q182 | Vascular Resistance: The Fourth-Power Rule | 72.0 seconds |
+| Q5 | Extralobar Sequestration: Its Own Pleural Coat | 65.2 seconds |
+| Q54 | Coronary Dominance: Follow the PDA | 61.8 seconds |
+| Q182 | Vascular Resistance: The Fourth-Power Rule | 62.6 seconds |
 
-Each lesson has an original explanation, mnemonic symbols, a stable memory location, MP3 narration, a timed real-image outro, an MCQ and source references. Original book text and private source material are excluded from the public app assets. The personal build includes the book cover.
+Each lesson has an original explanation, mnemonic symbols, a stable memory location, MP3 narration, a narrated three-image clinical gallery and synchronized recap, an MCQ and source references. Original book text and private source material are excluded from the public app assets. The personal build includes the book cover.
 
 ## Build and verify
 
-Requires Linux x86_64, Python 3.10+, Node.js/npm and Java 17 with `jdk.compiler` and `keytool`.
+Requires Linux x86_64, Python 3.11+, Node.js/npm and Java 17 with `jdk.compiler` and `keytool`.
 
 The complete browser suite includes a personal book-cover check and requires the authorized cover in `private-content/app-assets/`. The app and public code can be built without that private asset.
 
 ```bash
 npm ci
+python -m pip install Pillow==13.0.0
+python tools/prepare_existing_media.py --download-sources
 npm run build:web
 npm test
 npx playwright install chromium --only-shell
@@ -43,18 +45,21 @@ npm run test:browser
 npm run test:guidance
 npm run test:topics
 npm run test:flow
+node tests/reels-browser.cjs
 python -m unittest discover -s tests -p 'test_guidance_pipeline.py'
 python android/bootstrap_sdk.py
 python android/build_apk.py
 ```
 
-The output is `dist/InstaAnki-0.1.1.apk`. For a personal build with an authorized cover restored to `private-content/app-assets/`, use:
+The output is `dist/InstaAnki-0.2.0.apk`. For a personal build with an authorized cover restored to `private-content/app-assets/`, use:
 
 ```bash
 python android/build_apk.py --include-private
 ```
 
 Keep the signing identity private and reuse it for updates. See [Android build and native behavior](android/README.md) for build options, import limits and backup behavior.
+
+The [0.2.0 repair notes](docs/APP_REPAIRS_0.2.0.md) describe the current changes and installation gates. Missing original signing material blocks an installable update; `--unsigned` only checks compilation.
 
 The [0.1.1 release notes](docs/RELEASE_NOTES_0.1.1.md) and [verification report](docs/verification-0.1.1.json) record this update’s checks. The original [0.1.0 verification](docs/verification-0.1.0.json) remains available as historical evidence. Browser playback, measured target geometry, audio decoding and Android package signing are separate checks; physical Android playback and human listening remain unverified.
 
@@ -64,12 +69,14 @@ The app can import ZIP lessons and check [the content catalog](content/catalog.j
 
 Interface OTA updates and automatic in-app APK installation are **not implemented**. Interface or native-code changes require a new APK signed with the same key, installed through Android. Content-only packs preserve local learning history. Checksums detect changes relative to the catalog; they do not authenticate a publisher.
 
-## Continuing production
+## Production is paused
 
 ```bash
 python tools/production.py status
 python tools/production.py next --count 10
 ```
+
+These commands are read-only. Claims, narration and new-lesson production fail while `newProductionEnabled` is false. Resuming requires a new explicit user instruction.
 
 The [production ledger](production/books/shahzad-raja-2015-200-practice-questions.json) records each question separately, so completing Q182 does not skip earlier questions. Follow the [production workflow](docs/production-workflow.md), [visual rules](docs/visual-production-rules.md) and [tagging policy](taxonomy/README.md). New lessons require source, visual, audio-decode and timeline checks before marking them produced; device and human-listening checks are recorded separately.
 

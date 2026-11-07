@@ -19,3 +19,7 @@ __pycache__/
 # Private source exports remain in private delivery, outside the public repo.
 /source-vault/*.iaenc
 /source-vault/*.metadata.json
+
+# Reproducible review media stays in temporary lesson packages, not new Git blobs.
+web/media/optimized/
+web/media/real/starter-q*

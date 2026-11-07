@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-07T18:29:04.971157+00:00",
+  "checkedAt": "2026-11-07T18:33:51.320642+00:00",
   "scope": "App repairs and display-only updates to existing Raja Q5/Q54/Q182. No new lessons, narration or rendered videos.",
   "activeCollection": {
     "books": 1,
@@ -9,7 +9,7 @@
     "newProductionEnabled": false
   },
   "tests": {
-    "publicSnapshotPythonTests": 112,
+    "publicSnapshotPythonTests": 121,
     "javascriptLearningFeedbackTopicTests": 29,
     "browserScenarios": 54,
     "independentGuidanceGeometrySamples": 132,
@@ -20,7 +20,8 @@
       "backups": 7,
       "urlAllowlist": 13,
       "collectionCorrection": 17
-    }
+    },
+    "mediaRestorationTests": 23
   },
   "androidBuild": {
     "file": "InstaAnki-0.2.0-unsigned.apk",
@@ -55,7 +56,14 @@
     "optimizedBytes": 9983024,
     "savedPercent": 25.149,
     "pixelIdentical": true,
-    "freshRestorationPassed": true
+    "freshRestorationPassed": true,
+    "restorationHttpRetry": {
+      "attemptLimit": 4,
+      "waitBudgetSeconds": 180,
+      "respectsRetryAfter": true,
+      "integrityFailuresRetried": false,
+      "regressionTests": 9
+    }
   },
   "deployment": {
     "signedApkBuilt": false,

@@ -9,13 +9,19 @@ Existing files are never replaced, including on an integrity failure.
 from __future__ import annotations
 
 import argparse
+from datetime import timezone
+from email.utils import parsedate_to_datetime
 import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
+import random
 import re
 import stat
+import sys
 import tempfile
+import time
+from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 import zipfile
@@ -44,6 +50,11 @@ SOURCE_PATHS = DOWNLOAD_PATHS | {
     'media/real/artery-cross-section.png',
 }
 DOWNLOAD_HOSTS = {'media.springernature.com', 'upload.wikimedia.org'}
+USER_AGENT = ('InstaAnki-reviewed-media-restore/0.2 '
+              '(https://github.com/blsmohamme972-lab/InstaAnki)')
+TRANSIENT_HTTP_STATUSES = {408, 429, 500, 502, 503, 504}
+MAX_DOWNLOAD_ATTEMPTS = 4
+MAX_RETRY_WAIT_SECONDS = 180
 SHA256_RE = re.compile(r'[0-9a-f]{64}\Z')
 
 
@@ -207,6 +218,43 @@ class NoRedirects(HTTPRedirectHandler):
         return None
 
 
+def retry_after_seconds(headers):
+    """Read a server's minimum wait, accepting delta-seconds or an HTTP date."""
+    value = (headers or {}).get('Retry-After', '').strip()
+    if re.fullmatch(r'[0-9]+', value):
+        # An enormous valid integer still means "do not retry soon". Avoid
+        # treating an integer-conversion limit as a missing Retry-After header.
+        return int(value) if len(value) <= 9 else float('inf')
+    if value:
+        try:
+            target = parsedate_to_datetime(value)
+            if target.tzinfo is None:
+                target = target.replace(tzinfo=timezone.utc)
+            return max(0.0, target.timestamp() - time.time())
+        except (TypeError, ValueError, OverflowError):
+            pass
+    return None
+
+
+def retry_delay(error, retry_index, waited_seconds):
+    remaining = MAX_RETRY_WAIT_SECONDS - waited_seconds
+    delay = max(15 * (2 ** retry_index), retry_after_seconds(error.headers) or 0)
+    if delay > remaining:
+        raise MediaPreparationError(
+            f'HTTP {error.code}: the host requested a wait beyond the remaining '
+            f'{remaining:g}-second retry budget. Retry later after the server wait '
+            'or restore the reviewed ZIP with --from-pack; no early request was sent.')
+    # Jitter only adds time and never shortens the server's requested wait.
+    return delay + min(random.uniform(0, 5), remaining - delay)
+
+
+def wait_for_retry(seconds):
+    while seconds > 0:
+        interval = min(seconds, 60)
+        time.sleep(interval)
+        seconds -= interval
+
+
 def download_source(spec):
     if spec['sourcePath'] not in DOWNLOAD_PATHS:
         raise MediaPreparationError('Only the six reviewed public originals may be downloaded')
@@ -217,23 +265,40 @@ def download_source(spec):
             or parts.fragment or parts.query
             or PurePosixPath(parts.path).suffix.lower() not in {'.png', '.jpg', '.jpeg'}):
         raise MediaPreparationError(f'Unreviewed public-image URL for {spec["sourcePath"]}')
-    request = Request(url, headers={'User-Agent': 'InstaAnki-reviewed-media-restore/0.2',
+    request = Request(url, headers={'User-Agent': USER_AGENT,
                                     'Accept': 'image/png,image/jpeg', 'Accept-Encoding': 'identity'})
     opener = build_opener(NoRedirects())
-    try:
-        with opener.open(request, timeout=45) as response:
-            if response.status != 200 or response.geturl() != url:
-                raise MediaPreparationError('Public image request did not return the exact reviewed URL')
-            length = response.headers.get('Content-Length')
-            if length is not None and int(length) != spec['originalBytes']:
-                raise MediaPreparationError(f'Public image length differs from its pin: {spec["sourcePath"]}')
-            data = response.read(spec['originalBytes'] + 1)
-    except (OSError, ValueError) as exc:
-        if isinstance(exc, MediaPreparationError):
-            raise
-        raise MediaPreparationError(f'Cannot fetch reviewed public image {spec["sourcePath"]}: {exc}') from exc
-    verify_bytes(data, spec['originalSha256'], spec['originalBytes'], spec['sourcePath'])
-    return data
+    waited_seconds = 0
+    for attempt in range(MAX_DOWNLOAD_ATTEMPTS):
+        try:
+            with opener.open(request, timeout=45) as response:
+                if response.status != 200 or response.geturl() != url:
+                    raise MediaPreparationError('Public image request did not return the exact reviewed URL')
+                length = response.headers.get('Content-Length')
+                if length is not None and int(length) != spec['originalBytes']:
+                    raise MediaPreparationError(f'Public image length differs from its pin: {spec["sourcePath"]}')
+                data = response.read(spec['originalBytes'] + 1)
+            verify_bytes(data, spec['originalSha256'], spec['originalBytes'], spec['sourcePath'])
+            return data
+        except HTTPError as exc:
+            exc.close()
+            if exc.code not in TRANSIENT_HTTP_STATUSES or exc.geturl() != url:
+                raise MediaPreparationError(
+                    f'Cannot fetch reviewed public image {spec["sourcePath"]}: {exc}') from exc
+            if attempt + 1 == MAX_DOWNLOAD_ATTEMPTS:
+                raise MediaPreparationError(
+                    f'HTTP {exc.code} fetching {spec["sourcePath"]} after '
+                    f'{MAX_DOWNLOAD_ATTEMPTS} attempts. Retry later or restore '
+                    'the reviewed ZIP with --from-pack.') from exc
+            delay = retry_delay(exc, attempt, waited_seconds)
+            print(f'HTTP {exc.code} for {spec["sourcePath"]}; waiting {delay:g}s '
+                  f'before attempt {attempt + 2}/{MAX_DOWNLOAD_ATTEMPTS}.', file=sys.stderr)
+            wait_for_retry(delay)
+            waited_seconds += delay
+        except (OSError, ValueError) as exc:
+            if isinstance(exc, MediaPreparationError):
+                raise
+            raise MediaPreparationError(f'Cannot fetch reviewed public image {spec["sourcePath"]}: {exc}') from exc
 
 
 def require_encoder():

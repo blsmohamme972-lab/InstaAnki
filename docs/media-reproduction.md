@@ -37,6 +37,15 @@ atomic new-file write. Redirects and other hosts are rejected. Existing files
 are checked before downloads begin. A missing tracked original is reported as a
 checkout error; the tool does not search for substitutes.
 
+Temporary HTTP 408, 429, 500, 502, 503 and 504 responses allow at most four
+attempts, with 15/30/60-second backoff and up to five additional seconds of
+jitter. `Retry-After` seconds or HTTP dates are honored as a minimum wait. Total
+retry waiting is limited to 180 seconds per image; a longer server wait stops
+with instructions to retry later or use the reviewed ZIP, without sending an
+early request. Missing/forbidden files, redirects and integrity failures are
+never retried. The stable User-Agent identifies this tool and the public project
+URL, following the [Wikimedia User-Agent policy](https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy).
+
 Reproduction requires **Pillow 13.0.0 with libwebp 1.6.0**. The command checks both
 versions and runs the same lossless encoder used for the reviewed images. Each
 saved result must match the expected output hash and length exactly. It also

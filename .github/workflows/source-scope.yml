@@ -2,10 +2,17 @@ name: Source scope
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
   contents: read
+
+# Pull requests cover their branch updates; running a second push job would
+# fetch the same reviewed images twice and needlessly hit source rate limits.
+concurrency:
+  group: source-scope-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   original-book-policy:

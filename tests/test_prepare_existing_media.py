@@ -1,5 +1,9 @@
 """Integrity and file-scope tests for code-only restoration of reviewed media."""
 from copy import deepcopy
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from email.utils import format_datetime
+import io
 import json
 from pathlib import Path
 import random
@@ -9,6 +13,7 @@ import sys
 import tempfile
 import unittest
 from unittest import mock
+from urllib.error import HTTPError
 import warnings
 import zipfile
 
@@ -74,6 +79,36 @@ class ExistingMediaPreparationTests(unittest.TestCase):
                 (self.web / asset['outputPath']).unlink()
         for name in prepare.DOWNLOAD_PATHS:
             (self.web / name).unlink()
+
+    def download_fixture(self):
+        spec = next(s for s in prepare.load_recipe(self.repo)
+                    if s['sourcePath'] == 'media/real/starter-q182-arteriole.jpg')
+        return spec, (self.template / 'web' / spec['sourcePath']).read_bytes()
+
+    def response(self, spec, data, *, url=None, length=None):
+        response = mock.MagicMock()
+        response.__enter__.return_value = response
+        response.status = 200
+        response.geturl.return_value = url or spec['provenance']['originalImageUrl']
+        response.headers = {'Content-Length': str(len(data) if length is None else length)}
+        response.read.return_value = data
+        return response
+
+    def http_error(self, spec, status, retry_after=None, *, url=None):
+        headers = {} if retry_after is None else {'Retry-After': retry_after}
+        return HTTPError(url or spec['provenance']['originalImageUrl'], status,
+                         'mock HTTP error', headers, io.BytesIO(b'mock error body'))
+
+    @contextmanager
+    def mock_download_attempts(self, events, *, now=1767225600, jitter=0):
+        opener = mock.Mock()
+        opener.open.side_effect = events
+        with mock.patch.object(prepare, 'build_opener', return_value=opener) as factory, \
+                mock.patch.object(prepare.time, 'sleep') as sleep, \
+                mock.patch.object(prepare.time, 'time', return_value=now), \
+                mock.patch.object(prepare.random, 'uniform', return_value=jitter), \
+                mock.patch.object(prepare.sys, 'stderr', io.StringIO()):
+            yield opener, sleep, factory
 
     def pack(self, *, corrupt=None, extra=None, duplicate=None, symlink=None, omit=None):
         pack = Path(self.temp.name) / 'reviewed.zip'
@@ -241,6 +276,121 @@ class ExistingMediaPreparationTests(unittest.TestCase):
             prepare.atomic_create(destination, b'new', prepare.sha256(b'new'), 3)
         self.assertEqual(destination.read_bytes(), b'keep this')
         self.assertFalse(list(destination.parent.glob('.media-prepare-*')))
+
+    def test_http_429_retries_after_server_delay_and_keeps_identity(self):
+        spec, data = self.download_fixture()
+        error = self.http_error(spec, 429, '30')
+        response = self.response(spec, data)
+        with self.mock_download_attempts([error, response], jitter=2) as (opener, sleep, factory):
+            self.assertEqual(prepare.download_source(spec), data)
+        self.assertEqual(opener.open.call_count, 2)
+        sleep.assert_called_once_with(32)
+        self.assertTrue(error.fp.closed)
+        for call in opener.open.call_args_list:
+            request = call.args[0]
+            self.assertEqual(request.full_url, spec['provenance']['originalImageUrl'])
+            self.assertEqual(request.get_header('User-agent'),
+                             'InstaAnki-reviewed-media-restore/0.2 '
+                             '(https://github.com/blsmohamme972-lab/InstaAnki)')
+            self.assertEqual(request.get_header('Accept-encoding'), 'identity')
+            self.assertEqual(call.kwargs, {'timeout': 45})
+        response.read.assert_called_once_with(spec['originalBytes'] + 1)
+        handler = factory.call_args.args[0]
+        self.assertIsInstance(handler, prepare.NoRedirects)
+        self.assertIsNone(handler.redirect_request(None, None, 302, None, None, 'https://example.invalid/'))
+
+    def test_http_date_retry_after_is_honored(self):
+        spec, data = self.download_fixture()
+        now = 1767225600
+        header = format_datetime(datetime.fromtimestamp(now + 45, timezone.utc), usegmt=True)
+        with self.mock_download_attempts([self.http_error(spec, 503, header), self.response(spec, data)],
+                                        now=now) as (opener, sleep, _):
+            self.assertEqual(prepare.download_source(spec), data)
+        sleep.assert_called_once_with(45)
+        self.assertEqual(opener.open.call_count, 2)
+
+    def test_transient_http_exhaustion_is_bounded(self):
+        spec, _ = self.download_fixture()
+        for status in (408, 429, 500, 502, 503, 504):
+            with self.subTest(status=status):
+                errors = [self.http_error(spec, status) for _ in range(4)]
+                with self.mock_download_attempts(errors) as (opener, sleep, _):
+                    with self.assertRaisesRegex(prepare.MediaPreparationError, 'after 4 attempts'):
+                        prepare.download_source(spec)
+                self.assertEqual(opener.open.call_count, 4)
+                self.assertEqual(sleep.call_args_list, [mock.call(15), mock.call(30), mock.call(60)])
+
+    def test_retry_after_over_budget_stops_without_early_request(self):
+        spec, _ = self.download_fixture()
+        now = 1767225600
+        future = format_datetime(datetime.fromtimestamp(now + 600, timezone.utc), usegmt=True)
+        for header in ('600', future, '999999999999999999999999999999'):
+            with self.subTest(header=header):
+                with self.mock_download_attempts([self.http_error(spec, 429, header)],
+                                                now=now) as (opener, sleep, _):
+                    with self.assertRaisesRegex(prepare.MediaPreparationError, 'no early request was sent'):
+                        prepare.download_source(spec)
+                self.assertEqual(opener.open.call_count, 1)
+                sleep.assert_not_called()
+
+    def test_retry_wait_budget_is_cumulative(self):
+        spec, data = self.download_fixture()
+        events = [self.http_error(spec, 429, '100'), self.http_error(spec, 429, '100'),
+                  self.response(spec, data)]
+        with self.mock_download_attempts(events) as (opener, sleep, _):
+            with self.assertRaisesRegex(prepare.MediaPreparationError, 'remaining 80-second retry budget'):
+                prepare.download_source(spec)
+        self.assertEqual(opener.open.call_count, 2)
+        self.assertEqual(sleep.call_args_list, [mock.call(60), mock.call(40)])
+
+    def test_invalid_or_past_retry_after_uses_polite_backoff(self):
+        spec, data = self.download_fixture()
+        past = format_datetime(datetime.fromtimestamp(1767225500, timezone.utc), usegmt=True)
+        for header in ('not a date', '-3', '0', past):
+            with self.subTest(header=header):
+                with self.mock_download_attempts([self.http_error(spec, 503, header),
+                                                 self.response(spec, data)]) as (opener, sleep, _):
+                    self.assertEqual(prepare.download_source(spec), data)
+                self.assertEqual(opener.open.call_count, 2)
+                sleep.assert_called_once_with(15)
+
+    def test_permanent_http_and_redirect_errors_never_retry(self):
+        spec, _ = self.download_fixture()
+        for status, url in ((404, None), (403, None), (301, None), (302, None),
+                            (429, 'https://example.invalid/other-image.jpg')):
+            with self.subTest(status=status, url=url):
+                with self.mock_download_attempts([self.http_error(spec, status, '30', url=url)]) as (opener, sleep, _):
+                    with self.assertRaises(prepare.MediaPreparationError):
+                        prepare.download_source(spec)
+                self.assertEqual(opener.open.call_count, 1)
+                sleep.assert_not_called()
+
+    def test_integrity_failures_after_retry_never_retry_again(self):
+        spec, data = self.download_fixture()
+        altered = bytes([data[0] ^ 1]) + data[1:]
+        for kind in ('declared length', 'actual length', 'hash'):
+            with self.subTest(kind=kind):
+                if kind == 'declared length':
+                    invalid = self.response(spec, data, length=len(data) + 1)
+                elif kind == 'actual length':
+                    invalid = self.response(spec, data + b'extra', length=len(data))
+                else:
+                    invalid = self.response(spec, altered)
+                with self.mock_download_attempts([self.http_error(spec, 429), invalid,
+                                                 self.response(spec, data)]) as (opener, sleep, _):
+                    with self.assertRaises(prepare.MediaPreparationError):
+                        prepare.download_source(spec)
+                self.assertEqual(opener.open.call_count, 2)
+                sleep.assert_called_once_with(15)
+
+    def test_redirected_success_after_retry_is_rejected(self):
+        spec, data = self.download_fixture()
+        redirected = self.response(spec, data, url='https://example.invalid/other-image.jpg')
+        with self.mock_download_attempts([self.http_error(spec, 503), redirected]) as (opener, sleep, _):
+            with self.assertRaisesRegex(prepare.MediaPreparationError, 'exact reviewed URL'):
+                prepare.download_source(spec)
+        self.assertEqual(opener.open.call_count, 2)
+        sleep.assert_called_once_with(15)
 
 
 if __name__ == '__main__':

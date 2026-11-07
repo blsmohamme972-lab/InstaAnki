@@ -38,6 +38,7 @@ class SourceEvidenceTests(unittest.TestCase):
         } for n in [1, 2]]
         self.manifest_path = self.root / "production/books" / f"{ORIGINAL_BOOK}.json"
         self.policy_doc = json.loads((ROOT / "production/source-policy.json").read_text())
+        self.policy_doc.pop("productionTrial", None)  # Never inherit real trial authorization into synthetic fixtures.
         self.policy_doc["newProductionEnabled"] = True  # Explicit synthetic authorization for these isolated fixtures.
         self.policy_doc["publishedSourceRecords"] = {}
         self.policy_doc["publishedRevisionReports"] = []

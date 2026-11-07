@@ -11,6 +11,7 @@ import hashlib
 import json
 from datetime import datetime
 from pathlib import Path, PurePosixPath
+import re
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,12 +50,61 @@ def first(record, *keys):
     return next((record[k] for k in keys if k in record), None)
 
 
+def visual_supplement(lesson, *, authoring=False):
+    """Normalize reviewed gallery/recap content without measured timestamps.
+
+    Legacy content without a presentation has no supplemental fingerprint.
+    Exact published replay remains governed by its immutable release record.
+    New presentations must bind their complete image records and narrated map;
+    hashes are evidence of what was reviewed, never a substitute for review.
+    """
+    if "presentationPlan" not in lesson and "presentation" not in lesson:
+        return None
+    field = "presentationPlan" if authoring else "presentation"
+    other = "presentation" if authoring else "presentationPlan"
+    presentation = lesson.get(field)
+    if (other in lesson or not isinstance(presentation, dict)
+            or type(presentation.get("schemaVersion")) is not int
+            or presentation["schemaVersion"] != 1):
+        raise SourcePolicyError("visualSupplementSha256 requires the unambiguous reviewed presentation schema")
+    images = lesson.get("realImages")
+    if not isinstance(images, list) or not images or any(not isinstance(image, dict) for image in images):
+        raise SourcePolicyError("visualSupplementSha256 requires the complete reviewed realImages records")
+    recap = presentation.get("recap")
+    if (not isinstance(recap, dict) or not isinstance(recap.get("nodes"), list)
+            or not recap["nodes"] or any(not isinstance(node, dict) for node in recap["nodes"])
+            or not isinstance(recap.get("edges"), list)
+            or any(not isinstance(edge, dict) for edge in recap["edges"])
+            or not isinstance(recap.get("cueBindings"), list) or not recap["cueBindings"]):
+        raise SourcePolicyError("visualSupplementSha256 requires the reviewed recap nodes, edges and phrase bindings")
+    allowed_recap = {"nodes", "edges", "cueBindings"}
+    allowed_binding = {"phraseId", "nodeId"}
+    if not authoring:
+        allowed_recap |= {"startSeconds", "endSeconds"}
+        allowed_binding |= {"startSeconds", "endSeconds"}
+        gallery = presentation.get("clinicalGallery")
+        if not isinstance(gallery, dict) or gallery.get("images") != images:
+            raise SourcePolicyError("visualSupplementSha256 requires the displayed gallery to match reviewed realImages")
+    if set(recap) - allowed_recap:
+        raise SourcePolicyError("visualSupplementSha256 cannot ignore unexpected authored recap fields")
+    bindings = []
+    for binding in recap["cueBindings"]:
+        if (not isinstance(binding, dict) or set(binding) - allowed_binding
+                or not text(binding.get("phraseId")) or not text(binding.get("nodeId"))):
+            raise SourcePolicyError("visualSupplementSha256 requires the exact reviewed phraseId/nodeId bindings")
+        bindings.append({"phraseId": binding["phraseId"], "nodeId": binding["nodeId"]})
+    return {"realImages": images,
+            "recap": {"nodes": recap["nodes"], "edges": recap["edges"], "cueBindings": bindings}}
+
+
 def content_fingerprints(lesson, *, authoring=False):
     """Compute review fingerprints without approving or writing any review.
 
     The same teaching content is expressed as mcq/headline/voice_text in private
-    drafts and quiz/caption/transcript in public lessons. Media timing and asset
-    checks happen separately. These hashes do not establish semantic accuracy;
+    drafts and quiz/caption/transcript in public lessons. A separate visual
+    supplement binds complete gallery provenance/captions and recap content;
+    only measured recap timing is excluded. Media timing and asset checks
+    happen separately. These hashes do not establish semantic accuracy;
     an actual comparison with the retained question and answer must precede the
     sourceReview record that approves them.
     """
@@ -109,7 +159,11 @@ def content_fingerprints(lesson, *, authoring=False):
             or isinstance(correct, bool) or not isinstance(correct, int) or not 0 <= correct < len(options)):
         raise SourcePolicyError("Reviewed quiz requires a question, options, key and explanation")
     content = {"title": lesson["title"], "locus": locus, "scenes": scenes, "quiz": quiz}
-    return {"authoredContentSha256": canonical_hash(content), "quizSha256": canonical_hash(quiz)}
+    fingerprints = {"authoredContentSha256": canonical_hash(content), "quizSha256": canonical_hash(quiz)}
+    supplement = visual_supplement(lesson, authoring=authoring)
+    if supplement is not None:
+        fingerprints["visualSupplementSha256"] = canonical_hash(supplement)
+    return fingerprints
 
 
 def validate_content_review(question, lesson, evidence, *, authoring=False):
@@ -133,11 +187,15 @@ def validate_content_review(question, lesson, evidence, *, authoring=False):
     except (ValueError, TypeError, AttributeError):
         raise SourcePolicyError("Source-content review requires an actual ISO reviewedAt timestamp with timezone")
     fingerprints = content_fingerprints(lesson, authoring=authoring)
+    if "visualSupplementSha256" in review and "visualSupplementSha256" not in fingerprints:
+        raise SourcePolicyError(
+            f"Q{question['number']} is missing its reviewed visualSupplementSha256 content. "
+            "The approved gallery or recap cannot be deleted to bypass source review.")
     for key, actual in fingerprints.items():
         if review.get(key) != actual:
             raise SourcePolicyError(
                 f"Q{question['number']} {key} differs from its source-reviewed content. "
-                "Review the changed script and quiz against the source before regenerating or completing.")
+                "Review the changed teaching content, gallery or recap against the source before regenerating or completing.")
     return fingerprints
 
 
@@ -201,7 +259,58 @@ class SourcePolicy:
         self.check_ledger(document)
         return document
 
-    def require_new_production(self):
+    def production_trial(self, document=None):
+        """Return the explicit finite authorization without opening general production.
+
+        This record is deliberately policy data, not a CLI override. Its real
+        user instruction and selected source identities must be reviewed before
+        it is written. A completed/paused trial remains useful audit metadata.
+        """
+        trial = self.policy.get("productionTrial")
+        if trial is None:
+            return None
+        if (not isinstance(trial, dict) or type(trial.get("schemaVersion")) is not int
+                or trial["schemaVersion"] != 1
+                or trial.get("status") not in ("active", "paused", "completed")
+                or trial.get("bookId") != self.book_id):
+            raise SourcePolicyError("The limited production trial is missing a valid schema, status or original-book identity")
+        if self.policy.get("newProductionEnabled") is not False:
+            raise SourcePolicyError("A limited production trial must keep general new production paused")
+        numbers = trial.get("questionNumbers")
+        maximum = trial.get("maxNewLessons")
+        if (not isinstance(numbers, list) or not numbers
+                or any(type(n) is not int or n < 1 for n in numbers)
+                or len(set(numbers)) != len(numbers)
+                or type(maximum) is not int or maximum != len(numbers)):
+            raise SourcePolicyError("A limited production trial requires unique positive question numbers and their exact lesson limit")
+        if (not isinstance(trial.get("batchId"), str)
+                or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", trial["batchId"])
+                or not text(trial.get("authorizationText"))):
+            raise SourcePolicyError("A limited production trial must record its batch ID and actual user authorization")
+        try:
+            authorized_at = datetime.fromisoformat(trial.get("authorizedAt", "").replace("Z", "+00:00"))
+            if authorized_at.utcoffset() is None:
+                raise ValueError("Timezone missing")
+        except (ValueError, TypeError, AttributeError):
+            raise SourcePolicyError("A limited production trial requires an ISO authorizedAt timestamp with timezone")
+        if document is not None:
+            self.require_book(document.get("bookId"))
+            known = {question["number"] for question in document.get("questions", [])}
+            if not set(numbers).issubset(known):
+                raise SourcePolicyError("A limited production trial names questions outside the original-book ledger")
+        return trial
+
+    def require_new_production(self, question_number=None, *, batch_id=None):
+        trial = self.production_trial()
+        if trial is not None:
+            if trial["status"] != "active":
+                raise SourcePolicyError("New lesson production is paused; the limited trial is not active")
+            if batch_id != trial["batchId"]:
+                raise SourcePolicyError("The limited production trial requires its exact authorized batch ID")
+            if question_number is not None and (type(question_number) is not int
+                                                or question_number not in trial["questionNumbers"]):
+                raise SourcePolicyError(f"Q{question_number!r} is outside the explicitly authorized limited production trial")
+            return
         if self.policy.get("newProductionEnabled") is not True:
             raise SourcePolicyError(
                 "New lesson production is paused by the current task scope. "
@@ -212,6 +321,7 @@ class SourcePolicy:
         self.require_book(document.get("bookId"))
         if document.get("source", {}).get("extractionSha256") != self.policy["source"]["questionsSha256"]:
             raise SourcePolicyError("The ledger extraction hash differs from the reviewed source policy")
+        self.production_trial(document)
 
     def _private_path(self, key):
         name = self.policy["source"][key]
@@ -333,7 +443,7 @@ class SourcePolicy:
                 raise SourcePolicyError("Authoring lesson has no stable original source question number")
             question = by_number[n]
             if question.get("status") != "produced":
-                self.require_new_production()
+                self.require_new_production(n, batch_id=question.get("batchId"))
             evidence = self.evidence_for(ledger, question)
             self.check_claim_binding(question, evidence)
             if supplied != evidence:
@@ -347,7 +457,7 @@ class SourcePolicy:
     def validate_lesson_source(self, lesson, document, question):
         self.check_ledger(document)
         if question.get("status") != "produced":
-            self.require_new_production()
+            self.require_new_production(question["number"], batch_id=question.get("batchId"))
         source = lesson.get("source", {})
         self.require_book(source.get("bookId"))
         if source.get("questionNumber") != question["number"]:

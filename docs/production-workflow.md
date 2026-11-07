@@ -66,13 +66,16 @@ For each claimed source ID:
 
 1. Check the original question, keyed answer, explanation and any linked source figures or cross-references. Review historical management statements against suitable current sources before using them in a new lesson.
 2. Write one tested objective and validate its canonical English annotation against the declared taxonomy version.
-3. Draft the fixed locus, original English narration and quiz. Compare them against the specific source question, keyed answer and explanation, then record the per-question `sourceReview` described below. Prepare the mnemonic and scene images only after this source review. Keep source text in the private archive.
-4. Generate the final voice segments and derive their timing from the actual audio samples. Regenerating the voice invalidates the previous timing until it is checked again.
-5. Assemble the lesson, quiz, measured timeline and attributed real-image outro.
-6. Inspect the images and labels, decode the actual audio, and test the browser timeline: camera/spotlight positions, pauses, seeking, playback speed and the transition to the MCQ.
-7. Record exactly which checks were performed. Device playback and human listening are separate checks; when unavailable, retain them as false and pending.
+3. Draft the fixed locus, original English narration and quiz. Compare them against the specific source question, keyed answer and explanation, then record the per-question `sourceReview` described below. Keep source text in the private archive.
+4. Follow [mnemonic-image-prompt.md](mnemonic-image-prompt.md): actually inspect Pixorize, Picmonic and Sketchy examples, write the fact-to-symbol/action map and `artBrief`, and review the exact `imagePrompt`. Pass `tools/prepare_image_prompt.py --emit` before any new or replacement mnemonic image-generator call. A missing or stale review blocks generation; the fingerprint-only command never grants approval. Send the exact emitted `prompt`, then visually inspect the generated result before lossless optimization and target placement.
+5. Generate the final voice segments and derive their timing from the actual audio samples. Regenerating the voice invalidates the previous timing until it is checked again.
+6. Assemble the lesson, quiz, measured timeline and attributed real-image gallery/recap.
+7. Inspect the images and labels, decode the actual audio, and test the browser timeline: camera/spotlight positions, pauses, seeking, playback speed and the transition to the MCQ.
+8. Record exactly which checks were performed. Device playback and human listening are separate checks; when unavailable, retain them as false and pending.
 
 The detailed visual criteria are in [visual-production-rules.md](visual-production-rules.md). Writing a script, downloading an image or creating an audio file alone does not mark a source question produced.
+
+The image-prompt gate binds the exact prompt, brief, symbols, locus, source evidence, reviewed teaching content and both visual specifications. It supplements the source review; it does not expand production authorization or replace post-generation visual inspection. Keep its review and ready artifact private. Existing unchanged-media replay and audio-only repair do not require invented retrospective prompt reviews. The Python tool validates records and emits the approved prompt; agents must obey the documented checkpoint when calling external image-generation tools.
 
 ### Bind the authored content to an actual source review
 
@@ -82,8 +85,13 @@ For a new question, its production-ledger record must contain a `sourceReview` w
 - `sourceQuestionChecked`, `keyedAnswerChecked` and `explanationChecked`, each set to true only after that comparison occurred.
 - `sourceRecordSha256` from the claim and `evidenceSha256`, the canonical hash of its complete `sourceEvidence` object.
 - `authoredContentSha256` and `quizSha256`, computed from the reviewed draft by `source_policy.content_fingerprints(draft_lesson, authoring=True)`.
+- For a lesson with a gallery/recap presentation, `visualSupplementSha256` from that same helper. It binds the complete `realImages` records (including captions and provenance) and the recap's nodes, edges and ordered phrase-to-node bindings. Actually review those visual teaching details before recording their hash.
 
 The fingerprint helper calculates hashes only; it does not create a review or approve content. The authored fingerprint covers the title, locus, ordered scene identities, captions and narration, plus the quiz. The gate recomputes the equivalent public-lesson representation at completion. Changed teaching content invalidates the review. Copying `sourceEvidence` from a legitimate claim onto an unrelated draft does not satisfy this gate.
+
+The separate visual fingerprint has the same value in an authored `presentationPlan` and its assembled `presentation`: measured recap timestamps are excluded, while image records, node labels, edges and `phraseId`/`nodeId` bindings remain exact. Deleting the gallery or recap cannot remove an existing review requirement. A display gallery must also exactly match the registered `realImages`. Timing remains subject to its independent measured-media checks.
+
+`assemble_book_batch.py --prepare-audio` carries `realImages` and `presentationPlan` into the audio-authoring input so the same approval is enforced before narration. Adding those metadata fields to an already reviewed input does not alter spoken text or a guidance plan; existing measured audio need not be regenerated when those remain identical. Keep old audio provenance as the truthful record of the input used for its synthesis, and revalidate the prepared input against the current review. Do not rewrite old provenance to suggest that audio was synthesized again.
 
 These records make source comparison explicit and detect later changes. They do not decide clinical correctness or establish that a reviewer performed an honest comparison. Record the actual work and preserve the source evidence for audit. The exact frozen starter lessons use their separately pinned historical reviews.
 

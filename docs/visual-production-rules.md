@@ -1,6 +1,6 @@
 # Visual production rules
 
-Status: production specification, version 1.1.0. Applies to every InstaAnki lesson. All narration, on-screen labels and questions are English. A full teaching lesson normally lasts 60–90 seconds.
+Status: production specification, version 2.0.0. Applies to every new or regenerated InstaAnki mnemonic illustration. Existing unchanged media retain their truthful historical review records. All narration, on-screen labels and questions are English. A full teaching lesson normally lasts 60–90 seconds. This specification does not enable paused production.
 
 ## Core rules
 
@@ -8,14 +8,14 @@ Status: production specification, version 1.1.0. Applies to every InstaAnki less
 2. **Use a clear metaphor or analogy.** Select a familiar visual comparison that explains the idea. Record the mapping between each important symbol and its medical meaning. Do not imply that a metaphor is literal anatomy.
 3. **Create a distinctive visual mnemonic.** Use a small number of recognizable anchors. Keep recurring symbols, colors and meanings consistent across lessons.
 4. **Use emotion and exaggeration deliberately.** Emphasize scale, expression, contrast or a surprising interaction to make the central idea memorable. Preserve the medical facts, sequence, direction and causal relationships. Exaggerated appearance must not imply unsupported probability, severity, urgency or dosage.
-5. **Use stable memory-palace locations.** Assign an approved `locus_id` to the concept. Use persistent areas for Cardiac, Thoracic and Vascular Surgery and repeat the same landmark for the same concept across books. The palace layout organizes memory; it is not anatomical geography. A shared concept has a single canonical location or an explicitly recorded shared link.
+5. **Use stable memory locations.** Assign an approved `locus_id` to the concept. Use persistent areas for Cardiac, Thoracic and Vascular Surgery and repeat the same landmark for the same concept across books. A locus is a spatial recall anchor, not a requirement to draw a literal palace, corridor or ornate building. A familiar workshop, dock, kitchen or other purposeful setting can support the story. The layout is not anatomical geography. A shared concept has a single canonical location or an explicitly recorded shared link.
 6. **Keep the picture simple and readable.** Every object must contribute to the explanation or mnemonic. Give each narrated phrase one clear focal target. Keep English labels clear at phone size. Add exact labels, numbers and arrows as controlled overlays after image generation.
 7. **Keep medical evidence accurate.** Validate anatomical relationships and factual diagrams against the source and suitable references. A mnemonic image is not a substitute for an authentic diagnostic image; label illustrative memory aids where confusion is possible.
 8. **Plan the movement before rendering.** Write a storyboard that states what the viewer should see at each phrase, with image anchors, camera framing, spotlight target and keyframe timing.
 9. **Use the voice-over as the master clock.** Derive camera, spotlight, captions and object states from audio playback time. Establish timing from the final audio, not estimated reading speed or independent timers. Editing or regenerating the voice-over invalidates the previous alignment until it is checked again.
 10. **Make movement precise and purposeful.** Use explicit keyframes, bounded zoom, deliberate easing, stable endpoints and controlled transitions. Camera and spotlight follow the intended target without unrelated drift. The spotlight stays attached to its scene anchor during camera movement.
 11. **Preserve synchronization during interaction.** Pause, seek and playback-speed changes must produce the correct scene state at the current audio time. Use deterministic rendering for these effects.
-12. **Review the result on a phone.** Check the final audio, symbol meanings, labels, crop, focus target and synchronization at normal and accelerated playback. A lesson is complete only after its media and metadata pass review.
+12. **Review before and after generation.** Pass the mandatory reference and exact-prompt checkpoint below before any mnemonic image-generator call. Then inspect the actual image, and check the final audio, symbol meanings, labels, phone crop, focus target and synchronization at normal and accelerated playback. Record device and listening checks separately and honestly.
 
 ## Per-scene production record
 
@@ -24,6 +24,7 @@ Each scene records:
 - `scene_id`, source question ID, source objective and canonical tag IDs.
 - `locus_id` and the fixed landmark used for the concept.
 - Image asset/version and symbol-to-meaning mappings.
+- Private pre-generation art brief, reviewed exact prompt, reference observations and matching gate receipt for new or regenerated mnemonic art.
 - Final narration segment and aligned start/end times.
 - Camera keyframes (scene coordinates, zoom, rotation if needed, duration and easing).
 - Spotlight target anchor, shape, size, intensity and timed visibility.
@@ -31,19 +32,45 @@ Each scene records:
 - Whether an asset is a mnemonic illustration, a factual diagram or a licensed source image.
 - Asset source, license and attribution where applicable.
 
-Use scene coordinates for anchors, then transform them with the camera so highlights remain on the intended object. Simple movement can be rendered from still assets; Blender may produce selected 3D scenes in advance. Generative images supply assets, while controlled timeline code supplies precise camera and spotlight behavior.
+Use scene coordinates for anchors, then transform them with the camera so highlights remain on the intended object. Render simple movement from the approved 2D assets. Generative images supply illustrations; controlled timeline code supplies precise camera, spotlight, labels and recap behavior. Accurate clinical diagrams and authentic clinical photographs remain separate asset types.
 
 ## Production sequence
 
-Source objective → medical check → mnemonic concept and stable locus → storyboard → images/3D assets → final voice-over → timing alignment → deterministic animation → MCQ and feedback → visual/audio review → content package.
+Source objective and source review → inspect all three visual references → fact-to-symbol story and stable locus → art brief/storyboard and exact prompt → recorded prompt review → `prepare_image_prompt.py` approval check → image generation and actual image inspection → lossless optimization → final voice-over → measured timing alignment → deterministic animation → MCQ and feedback → visual/audio review → content package.
 
-## Illustration style and real-image ending
+## Required illustration direction
 
-The initial reference direction is the visual-learning approach of Pixorize, Picmonic and Sketchy: original two-dimensional cartoon scenes, strong outlines, simple colors, expressive characters and a small set of deliberately mapped mnemonic objects. Reference the general learning approach; do not reuse another product's scenes, characters, logos or lesson artwork. Cinematic three-dimensional styling is optional when a specific lesson benefits from it, rather than the default.
+Study all three references before authoring a generation prompt:
 
-Every lesson ends with one or more authentic images obtained from the web, such as a clinical photograph, angiogram or photomicrograph. Store each image locally with its source URL, author, license, attribution, image hash and an explanation of what it demonstrates. Choose a clear licensed source; personal use alone does not establish redistribution rights. Show the correct panel and preserve the original clinical meaning. Never label a generated mnemonic as a clinical photograph. Avoid implying that an illustrative clinical image is the exact patient or numerical scenario from the MCQ.
+- **[Pixorize](https://pixorize.com/):** [facts, symbols, story and art review](https://blog.pixorize.com/2024/04/26/anatomy-of-a-pixorize-video/).
+- **[Picmonic](https://www.picmonic.com/):** [phonetic keyword characters and a connecting narrative](https://www.picmonic.com/pages/educators-engage-students-in-the-classroom-with-visual-mnemonics/).
+- **[Sketchy](https://www.sketchy.com/):** [memorable symbols in a familiar location, connected by color, proximity, story and narration](https://www.sketchy.com/blog/visual-memory-and-elaborative-encoding).
 
-## Current pilot implementation
+Use their broad illustrated teaching approach to create original scenes: crisp dark outlines, expressive 2D cartoon characters, exaggerated mnemonic props, bright distinguishable colors, restrained shading and strong silhouettes. Convert source facts into recoverable visual cues, using sound-alikes where useful, familiar semantic associations, and actions that show the intended relationship. Connect the symbols through one coherent event in one memorable setting. A collection of unrelated props or an attractive room alone is insufficient.
+
+Make the characters and teaching objects the visual focus. Keep scenery simple enough that it does not compete with narrated targets. Each important prop, action, position or color assignment must have a documented mnemonic purpose and must not introduce a false medical relationship. Compose deliberately for portrait phone viewing and app-overlay space. Add exact text, numbers, arrows and diagrams through controlled overlays. Do not ask the image model to render them accurately.
+
+Do not use photorealism, glossy 3D rendering, cinematic depth of field or ornate architectural spectacle for mnemonic illustrations. Develop original characters and compositions; do not copy a reference product's specific scene, signature characters, logos or lesson artwork. The three websites supply visual-method references, not replacement medical source content.
+
+## Mandatory prompt checkpoint
+
+Use the complete master prompt, review checklist and CLI instructions in [mnemonic-image-prompt.md](mnemonic-image-prompt.md). Before any new or replacement mnemonic image-generator call, the authoring agent must:
+
+1. Inspect a usable actual public artwork/video example and method page for **each** provider. Record exact URLs, inspection scope, observations and how the method is applied. A homepage, search snippet or unreadable thumbnail is insufficient. Record access problems honestly; an inaccessible example cannot pass.
+2. Prepare the source-aligned fact/symbol/action map, coherent story, stable locus, phone composition, overlay plan and exact final prompt. Resolve all placeholders and conflicting style instructions.
+3. Have the actual reviewer check every required criterion and bind that decision to the complete request fingerprint. Revise failures before recording approval. Do not generate an approval from boilerplate, brand names, a score average or a hash command.
+4. Run `tools/prepare_image_prompt.py --emit` with the private draft and review. Only its validated ready artifact may supply the exact generator prompt. Relevant edits invalidate the review. The tool checks recorded evidence and freshness; it cannot browse for the agent, certify artistic quality, or intercept arbitrary external tool calls.
+5. Inspect the result against the approved map and style. Reject a polished image if its symbols, interactions, source fidelity or phone readability fail. Prompt approval does not automatically approve the resulting artwork.
+
+Keep source reviews, authored prompts, reference review records and receipts in private production storage. The checkpoint must not change the source ledger or authorize new lessons. It does not retroactively apply to unchanged historical media replay or audio-only repair.
+
+## Real-image ending
+
+New lessons use at least three relevant authentic clinical images in a clear single-screen gallery, followed by the simple narrated recap specified in the lesson's presentation plan. Obtain clinical images from suitable licensed web sources; do not generate substitutes. Store each image locally with its source URL, author, license, attribution, image hash and an explanation of what it demonstrates. Choose a clear licensed source; personal use alone does not establish redistribution rights. Show the correct panel and preserve the original clinical meaning. Never label a generated mnemonic as a clinical photograph. Avoid implying that an illustrative clinical image is the exact patient or numerical scenario from the MCQ. Optimize both generated and retrieved images losslessly and verify decoded-image equality before packaging.
+
+## Historical pilot implementation
+
+The following describes the frozen starter implementation for maintenance and replay; its nine-second ending is not the template for new lessons. New gallery and recap sections require narration and timing measured from their actual audio, with playback ending when the approved narrated sequence ends.
 
 The three starter lessons have original two-dimensional mnemonic illustrations, locally generated English audio, an MCQ, and a nine-second real-image ending. Their 18 scenes now contain **55 measured narration phrases** linked to named visual targets. This replaces the earlier single spotlight anchor per scene. Kokoro ONNX synthesizes each phrase independently during production; neither the voice model nor a cloud voice service is needed on the phone. Runtime MP3 playback remains the master clock. These are measured phrase boundaries, **not forced word-level alignment** or estimates based on reading speed.
 

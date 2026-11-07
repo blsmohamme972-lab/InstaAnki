@@ -4,6 +4,8 @@
 
 The user explicitly stopped new-video production. Work only on app errors, interface/playback improvements, lossless media optimization, feedback/reporting, and update delivery. Do not generate new lessons, narration, mnemonic artwork, or video exports, and do not increase the produced count. Resuming new lesson production requires a new explicit user instruction. Unfinished batch drafts are paused and are not active content.
 
+The subsequent prompt-update request authorizes improving the image prompt, reference-study instructions and pre-generation checkpoint. It does not authorize generating or replacing images, narration or lessons. Follow the mandatory workflow below whenever a later instruction authorizes mnemonic artwork.
+
 On 2026-11-07 the user explicitly requested: "No need for old videos! Start fresh." The approved fresh distribution is **InstaAnki Fresh**, package **com.instaanki.fresh**, initially version **0.3.0 / code 4**. It ships an empty lesson collection and no old lesson media or progress. The three verified Raja lessons remain historical records and QA inputs, not bundled fresh content. Keep the historical production count truthful at 3/200 and show zero installed lessons in the fresh app. The approved source remains the same Raja book.
 
 ## Active source and user intent
@@ -23,6 +25,16 @@ The active source is **200 Practice Questions in Cardiothoracic Surgery**, Shahz
 - Existing exactly verified starter lessons may be repackaged under the policy's immutable replay checks. This does not authorize new source-derived lessons without evidence.
 - Keep question identities stable and count only verified produced records. The current original-book total is 3/200 (Q5, Q54, Q182). A separate collection does not increase that count.
 - Keep raw source text, private archives, encryption keys and Android signing keys outside Git. Recover and verify a durable private backup before relying on it for later batches.
+
+## Mandatory checkpoint before mnemonic image generation
+
+- Read `docs/mnemonic-image-prompt.md` and `docs/visual-production-rules.md` before drafting any new or replacement mnemonic image prompt. The required direction is an original 2D cartoon mnemonic story with expressive characters, memorable visual puns, purposeful interactions and clear fact-to-symbol mappings.
+- Actually study public artwork and the teaching method at all three references: [Pixorize](https://pixorize.com/), [Picmonic](https://www.picmonic.com/) and [Sketchy](https://www.sketchy.com/). Use the official method/example links in the prompt guide. Record the exact page and example, what was visibly inspected, and how each method informs this lesson. A homepage visit, brand-name mention, search snippet or tiny promotional thumbnail is not a completed visual review. Never mark an inaccessible example as inspected.
+- A stable `locus` organizes recall; it does not require an ornate literal palace. Build one coherent story in which the teaching characters and objects interact. Keep scenery subordinate to those symbols. Do not drift into glossy 3D, photorealism or decorative architectural scenes for mnemonic art.
+- After the original-source review, prepare the full `artBrief`, `mnemonicSymbols` and exact `imagePrompt`. Complete the per-prompt review checklist in the guide. The reviewer must record actual observations and decisions; calculating a fingerprint does not approve a prompt.
+- Run `tools/prepare_image_prompt.py` for the selected lesson immediately before every new or replacement mnemonic generator call. It must validate the private reference/prompt review and emit a matching ready artifact. Send exactly its `prompt` to the image generator. Editing the prompt, art brief, symbols, locus, reviewed source/content, or either visual specification requires a new review and gate run. No force flag, fabricated review or hand-written ready receipt is permitted.
+- This is an authoring-tool checkpoint plus an agent workflow requirement, not a claim that Python intercepts external image-generation tools. Keep review records and ready artifacts private; do not publish source-derived briefs or source evidence to GitHub. Inspect the actual generated image afterward and reject any result that fails the same style, mnemonic, source-fidelity or phone-readability checks.
+- Existing unchanged media replay and audio-only repair retain their established checks. Do not invent retroactive image-prompt approvals for historical assets or regenerate media just to fill a new field. Source policy and the user's production authorization remain required independently of this checkpoint.
 
 ## User data and review
 

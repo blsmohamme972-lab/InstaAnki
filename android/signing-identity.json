@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "packageName": "com.instaanki.app",
+  "certificateSha256": "545768dcedb118ffa17b73cdf9edca14f4576d59376839489abb861492622ea7",
+  "lastDeliveredVersionCode": 2,
+  "evidence": "docs/verification-0.1.1.json signatureVerification; matches delivered 0.1.0 and 0.1.1"
+}

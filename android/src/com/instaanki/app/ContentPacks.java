@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipException;
+import java.io.EOFException;
 
 /** Imports data-only packages. Imported files can never replace executable UI assets. */
 final class ContentPacks {
@@ -33,6 +35,7 @@ final class ContentPacks {
     ContentPacks(File root) throws IOException {
         this.root = root;
         if (!root.isDirectory() && !root.mkdirs()) throw new IOException("Cannot create content directory.");
+        recoverInterruptedInstall();
     }
 
     synchronized JSONArray list() {
@@ -99,12 +102,13 @@ final class ContentPacks {
             if (!validId(id)) throw new IOException("The package needs a valid id (letters, numbers, dots, underscores and hyphens).");
             int schema = manifest.optInt("schemaVersion", 1);
             if (schema != 1) throw new IOException("This package requires a newer app version.");
-            if (manifest.optJSONArray("lessons") == null) {
+            JSONArray lessonData = manifest.optJSONArray("lessons");
+            if (lessonData == null) {
                 String lessonsPath = manifest.optString("lessonsFile", "lessons.json");
                 File lessons = safeChild(staging, lessonsPath);
                 if (!lessons.isFile()) throw new IOException("Package must contain its lessons JSON file.");
                 String json = readText(lessons, 5 * 1024 * 1024).trim();
-                if (json.startsWith("[")) new JSONArray(json); else new JSONObject(json);
+                lessonData = json.startsWith("[") ? new JSONArray(json) : new JSONObject(json).optJSONArray("lessons");
             }
             // Optional SHA-256 map provides corruption detection. It is not a publisher signature.
             JSONObject hashes = manifest.optJSONObject("sha256");
@@ -119,23 +123,65 @@ final class ContentPacks {
                     }
                 }
             }
+            validateLessons(lessonData);
             File installed = new File(root, id);
             File previous = new File(root, ".previous-" + UUID.randomUUID());
             boolean hadPrevious = installed.exists();
             if (hadPrevious && !installed.renameTo(previous)) throw new IOException("Cannot update the existing package.");
             if (!staging.renameTo(installed)) {
-                if (hadPrevious) previous.renameTo(installed);
+                if (hadPrevious && !previous.renameTo(installed)) throw new IOException("The package update was interrupted. The previous package is retained and will be recovered when you reopen the app.");
                 throw new IOException("Cannot finish installing the package.");
             }
             committed = true;
             if (hadPrevious) deleteTree(previous);
             return describe(id, manifest).put("uncompressedBytes", totalBytes);
+        } catch (ZipException | EOFException incomplete) {
+            throw new IOException("This ZIP is incomplete or damaged. Download the file again, then import it. Your installed lessons and learning data were preserved.", incomplete);
+        } catch (org.json.JSONException invalid) {
+            throw new IOException("This package has invalid lesson metadata. Choose a complete InstaAnki lesson ZIP. Your installed lessons and learning data were preserved.", invalid);
         } finally {
             if (!committed) deleteTree(staging);
         }
     }
 
     File resolve(String path) throws IOException { return safeChild(root, path); }
+
+    private static void validateLessons(JSONArray lessons) throws IOException {
+        if (lessons == null || lessons.length() > 20000) throw new IOException("The package must contain a valid lesson list.");
+        Set<String> ids = new HashSet<>();
+        for (int i = 0; i < lessons.length(); i++) {
+            JSONObject lesson = lessons.optJSONObject(i);
+            Object value = lesson == null ? null : lesson.opt("id");
+            if (!(value instanceof String) || !((String) value).matches("[A-Za-z0-9][A-Za-z0-9._-]{0,119}")
+                || value.equals("__proto__") || value.equals("constructor") || value.equals("prototype") || !ids.add((String) value)) {
+                throw new IOException("The package contains an invalid or duplicate lesson ID. Nothing was installed.");
+            }
+        }
+    }
+
+    /** Recover a process stop between moving the old directory aside and activating its replacement. */
+    private void recoverInterruptedInstall() throws IOException {
+        File[] previous = root.listFiles((dir, name) -> name.startsWith(".previous-"));
+        if (previous != null) {
+            Arrays.sort(previous, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+            for (File backup : previous) {
+                if (!backup.isDirectory()) continue;
+                try {
+                    JSONObject manifest = new JSONObject(readText(new File(backup, "manifest.json"), 5 * 1024 * 1024));
+                    String id = manifest.optString("packId", manifest.optString("id", ""));
+                    if (!validId(id)) continue;
+                    File installed = new File(root, id);
+                    if (!installed.exists()) {
+                        // If storage is temporarily unavailable, keep the recovery copy and
+                        // let the app open its other lessons and independent learning store.
+                        if (!backup.renameTo(installed)) continue;
+                    } else if (new File(installed, "manifest.json").isFile()) deleteTree(backup);
+                } catch (Exception invalid) { /* Retain an unreadable backup for recovery; never touch SQLite. */ }
+            }
+        }
+        File[] stages = root.listFiles((dir, name) -> name.startsWith(".staging-"));
+        if (stages != null) for (File stage : stages) deleteTree(stage);
+    }
 
     private static JSONObject describe(String id, JSONObject manifest) throws Exception {
         return new JSONObject().put("packId", id).put("baseUrl", CONTENT_ORIGIN + id + "/").put("manifest", manifest);

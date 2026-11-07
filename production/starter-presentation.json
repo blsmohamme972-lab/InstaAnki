@@ -1,0 +1,1143 @@
+{
+  "schemaVersion": 1,
+  "status": "reviewed presentation proposal; active lesson integration pending",
+  "checkedOn": "2026-11-07",
+  "scope": "Existing three Raja lessons only; same IDs, authored narration, quiz and source. Proposed content version 3 changes display timing and image packaging only.",
+  "lessons": [
+    {
+      "lessonId": "shahzad2015-q054",
+      "questionNumber": 54,
+      "baseVersion": 2,
+      "proposedVersion": 3,
+      "baseline": {
+        "lessonSha256": "f3c1e2655ba5ba541a6eedc2929987c6f3e9c37f7e9312e2ad2dde26f24552fa",
+        "authoredContentSha256": "3660cbddc0ba32b915bf7cae0a7d0ea1faf8de9b823b863bc0fcd97d7df7aec5",
+        "quizSha256": "3f7fe6609192d77680a55cfdd59370adb37e242f6be7cdbfbf90ae6f91f57eca",
+        "sourceSha256": "b84d456f9477b4e9c9c97f193a435cd955227ac8d4c30a7bc4cdb22a7a8e1396",
+        "audioUrl": "media/audio/lesson-shahzad2015-q054-v1.mp3",
+        "audioSha256": "d66dc9ebd1c2e1a2bf38ec1a3751722525680149bb0e346d46cc2d766f3a48f7",
+        "timingPath": "media/audio/lesson-shahzad2015-q054-v1.timing.json",
+        "timingSha256": "e9fb523de09c2a92557ee2366bb076cf705b8fd13ad47df353eaacbb17b43f60",
+        "sourceNarrationSha256": "d7586367a753a6d65570ad62bd5540f31da410c8abaa1bfd6a84d180486730ac"
+      },
+      "assetReplacements": [
+        {
+          "sourcePath": "media/mnemonic/coronary-palace.png",
+          "outputPath": "media/optimized/coronary-palace.07db19e1ecdb.lossless.webp",
+          "originalSha256": "07db19e1ecdb5862c5f6b0b530c6022d45b465f49f9098e5486e2fb5f43a672f",
+          "sha256": "139994e9c309927c285e715b606f97e60d76efb8e76fb82ccc4ed7e2021ad78b",
+          "originalBytes": 1926095,
+          "optimizedBytes": 1369524,
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "decoded": {
+            "width": 1024,
+            "height": 1536,
+            "rgbaSha256": "3c67d3b99a5e7de4e1688d17c315646ae043ea63c2bb0b787f30dbdda903af8d",
+            "alphaSha256": "852aad42795f401e21ded6e51fc392da9d94e2f386cacc08327046c319e903fc",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "frames": 1
+          }
+        },
+        {
+          "sourcePath": "media/real/coronary-dominance-angiograms.png",
+          "outputPath": "media/optimized/coronary-dominance-angiograms.c05a32baa2a5.lossless.webp",
+          "originalSha256": "c05a32baa2a5bde37d86bdb8d300f54c38840a93ba22366e965be04542aa9fa2",
+          "sha256": "cb88d68a9e36209923d68718d5bd78f4fd300ce767d64befdd0460cc0918c378",
+          "originalBytes": 1022887,
+          "optimizedBytes": 683480,
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "decoded": {
+            "width": 1535,
+            "height": 613,
+            "rgbaSha256": "e6836dcaf1c5afd7d213b791a527eb64f881a0d16d7532752f19e9ccf4a0627f",
+            "alphaSha256": "e7e98159b408cbd14ffa2b57067e86927af53cd0ca56351d83f6cfbb026c8bde",
+            "iccProfileSha256": "eddaf344b5edea13269e0d20055f335610e5e0b6e33e6e536f2701bc18c5f7d5",
+            "orientation": 1,
+            "frames": 1
+          }
+        }
+      ],
+      "realImages": [
+        {
+          "url": "media/optimized/coronary-dominance-angiograms.c05a32baa2a5.lossless.webp",
+          "title": "Coronary angiograms showing right and left dominance",
+          "caption": "Real coronary angiograms: panel (a) shows a right-sided origin of the posterior descending artery; panel (b) illustrates left coronary dominance. Red arrows identify the posterior descending artery in the published figure.",
+          "displayNotes": "For the left-dominance lesson, direct attention to panel (b), the right half of the figure. Keep source panel labels and attribution visible or accessible. This figure illustrates dominance, not the particular occlusion described in the source MCQ.",
+          "sourceUrl": "https://link.springer.com/article/10.1134/S1064562424602026",
+          "author": "I. Kruzhilov; E. Ikryannikov; A. Shadrin; R. Utegenov; G. Zubkova; I. Bessonov",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Kruzhilov et al., Figure 1, Doklady Mathematics 110 (Suppl 1), S212-S222 (2024; online 2025), doi:10.1134/S1064562424602026. CC BY 4.0. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+          "focusRegion": {
+            "coordinates": "normalized-original-image",
+            "x": 0.5,
+            "y": 0.0,
+            "width": 0.5,
+            "height": 1.0,
+            "label": "Panel (b): left-dominant coronary circulation"
+          },
+          "sha256": "cb88d68a9e36209923d68718d5bd78f4fd300ce767d64befdd0460cc0918c378",
+          "originalSha256": "c05a32baa2a5bde37d86bdb8d300f54c38840a93ba22366e965be04542aa9fa2",
+          "originalPath": "media/real/coronary-dominance-angiograms.png",
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "checkedOn": "2026-11-07",
+          "shortLabel": "Left dominance · panel (b)",
+          "alt": "Real coronary angiograms: panel (a) shows a right-sided origin of the posterior descending artery; panel (b) illustrates left coronary dominance. Red arrows identify the posterior descending artery in the published figure.",
+          "pixelsIdentical": true,
+          "alphaIdentical": true,
+          "encoding": {
+            "method": "WebP lossless=True, exact=True, method=6, quality=100",
+            "originalBytes": 1022887,
+            "bytes": 683480,
+            "width": 1535,
+            "height": 613,
+            "decodedRgbaSha256": "e6836dcaf1c5afd7d213b791a527eb64f881a0d16d7532752f19e9ccf4a0627f",
+            "alphaSha256": "e7e98159b408cbd14ffa2b57067e86927af53cd0ca56351d83f6cfbb026c8bde",
+            "iccProfileSha256": "eddaf344b5edea13269e0d20055f335610e5e0b6e33e6e536f2701bc18c5f7d5",
+            "orientation": 1,
+            "resized": false,
+            "newLossyEncoding": false
+          },
+          "visualInspection": "Existing source figure re-inspected on 2026-11-07: complete original figure, source annotations and relevant anatomy match its retained caption.",
+          "caseRelationship": "Published right/left dominance comparison, separate examples from the other gallery figures; not the book occlusion."
+        },
+        {
+          "url": "media/optimized/starter-q054-collaterals.96d3d33e9ad5.lossless.webp",
+          "title": "RCA and LCA views with collaterals",
+          "caption": "A separate RCA-occlusion example: paired right and left coronary views show collateral filling marked by red arrows. It is not the circumflex occlusion in the lesson vignette.",
+          "displayNotes": "Full Figure 4 is retained. Panel (a) is the RCA view and panel (b) the LCA view. The source uses this example to show why occlusion and collaterals can complicate dominance interpretation from an RCA view alone.",
+          "caseRelationship": "A different published example from the dominance comparison and small-RCA figures; do not present these as serial views of one patient.",
+          "sourceUrl": "https://link.springer.com/article/10.1134/S1064562424602026",
+          "sourceFigureUrl": "https://link.springer.com/article/10.1134/S1064562424602026/figures/4",
+          "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1134%2FS1064562424602026/MediaObjects/11472_2025_9834_Fig4_HTML.png",
+          "author": "I. Kruzhilov; E. Ikryannikov; A. Shadrin; R. Utegenov; G. Zubkova; I. Bessonov",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Kruzhilov et al., Figure 4, Doklady Mathematics 110 (Suppl 1), S212-S222 (2024; online 2025), doi:10.1134/S1064562424602026. CC BY 4.0. Original source figure downloaded without edits. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+          "sha256": "cdec65265b6f342ca23bbf08cd87a145cdda27a089e4e3ad31e8b657061cf6af",
+          "checkedOn": "2026-11-07",
+          "visualInspection": "Inspected both downloaded angiographic panels. The source labels (a)/(b) and red collateral arrows are present. The image is an angiogram, not an AI-generated illustration.",
+          "originalSha256": "96d3d33e9ad510736b2c1cf89788babca3626d2e805bdd06819e8763e76bb046",
+          "originalPath": "media/real/starter-q054-collaterals.png",
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "shortLabel": "Separate collateral case",
+          "alt": "A separate RCA-occlusion example: paired right and left coronary views show collateral filling marked by red arrows. It is not the circumflex occlusion in the lesson vignette.",
+          "pixelsIdentical": true,
+          "alphaIdentical": true,
+          "encoding": {
+            "method": "WebP lossless=True, exact=True, method=6, quality=100",
+            "originalBytes": 708575,
+            "bytes": 524748,
+            "width": 1535,
+            "height": 655,
+            "decodedRgbaSha256": "43f221023e12822cd6fd37c9e0457592e2cf37950266fbb650c711d417ae0ea4",
+            "alphaSha256": "c22db55ad4cb7c11cb87f47abc2386a3d9ba22be87e99525c2f98cf9ac8300e8",
+            "iccProfileSha256": "eddaf344b5edea13269e0d20055f335610e5e0b6e33e6e536f2701bc18c5f7d5",
+            "orientation": 1,
+            "resized": false,
+            "newLossyEncoding": false
+          }
+        },
+        {
+          "url": "media/optimized/starter-q054-small-rca.b37613f7869e.lossless.webp",
+          "title": "Small RCA: assess the PDA origin",
+          "caption": "Separate small-RCA angiogram. Dominance is determined by the posterior descending artery's origin; vessel size alone does not establish the pattern.",
+          "displayNotes": "Full Figure 5 is retained. Its caption identifies a small RCA and the difficulty of dominance classification. Do not label this particular image as definitively left dominant: the source caption does not provide that classification.",
+          "caseRelationship": "A different published example from the dominance comparison and collateral figures; not a before/after sequence or the book's patient.",
+          "sourceUrl": "https://link.springer.com/article/10.1134/S1064562424602026",
+          "sourceFigureUrl": "https://link.springer.com/article/10.1134/S1064562424602026/figures/5",
+          "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1134%2FS1064562424602026/MediaObjects/11472_2025_9834_Fig5_HTML.png",
+          "author": "I. Kruzhilov; E. Ikryannikov; A. Shadrin; R. Utegenov; G. Zubkova; I. Bessonov",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Kruzhilov et al., Figure 5, Doklady Mathematics 110 (Suppl 1), S212-S222 (2024; online 2025), doi:10.1134/S1064562424602026. CC BY 4.0. Original source figure downloaded without edits. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+          "sha256": "a52d68f9da93f32e40c79b85030bb2a3bbd496511d575af87b35364fed1fe7be",
+          "checkedOn": "2026-11-07",
+          "visualInspection": "Inspected the downloaded single angiographic frame with the source's complete small-RCA view. No added dominance labels, arrows or crop.",
+          "originalSha256": "b37613f7869e20b81ee689c5c8feaf5e5bd27c67d6429d685492a0bb9e90e56d",
+          "originalPath": "media/real/starter-q054-small-rca.png",
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "shortLabel": "Separate small-RCA case",
+          "alt": "Separate small-RCA angiogram. Dominance is determined by the posterior descending artery's origin; vessel size alone does not establish the pattern.",
+          "pixelsIdentical": true,
+          "alphaIdentical": true,
+          "encoding": {
+            "method": "WebP lossless=True, exact=True, method=6, quality=100",
+            "originalBytes": 607030,
+            "bytes": 409494,
+            "width": 709,
+            "height": 815,
+            "decodedRgbaSha256": "028045038cacddf2fa6e3329696235fc88d3c752cd666cb8448648c8b84d7fbe",
+            "alphaSha256": "334ab8059316502c486cb14d5500809dd6e2dd8df69594fc18edd4bb9ede46dd",
+            "iccProfileSha256": "eddaf344b5edea13269e0d20055f335610e5e0b6e33e6e536f2701bc18c5f7d5",
+            "orientation": 1,
+            "resized": false,
+            "newLossyEncoding": false
+          }
+        }
+      ],
+      "presentation": {
+        "schemaVersion": 1,
+        "effectiveEndSeconds": 61.816625,
+        "narrationEndSeconds": 61.816625,
+        "clinicalGallery": {
+          "startSeconds": 51.056,
+          "endSeconds": 61.816625,
+          "images": [
+            {
+              "url": "media/optimized/coronary-dominance-angiograms.c05a32baa2a5.lossless.webp",
+              "title": "Coronary angiograms showing right and left dominance",
+              "caption": "Real coronary angiograms: panel (a) shows a right-sided origin of the posterior descending artery; panel (b) illustrates left coronary dominance. Red arrows identify the posterior descending artery in the published figure.",
+              "displayNotes": "For the left-dominance lesson, direct attention to panel (b), the right half of the figure. Keep source panel labels and attribution visible or accessible. This figure illustrates dominance, not the particular occlusion described in the source MCQ.",
+              "sourceUrl": "https://link.springer.com/article/10.1134/S1064562424602026",
+              "author": "I. Kruzhilov; E. Ikryannikov; A. Shadrin; R. Utegenov; G. Zubkova; I. Bessonov",
+              "license": "CC BY 4.0",
+              "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+              "attribution": "Kruzhilov et al., Figure 1, Doklady Mathematics 110 (Suppl 1), S212-S222 (2024; online 2025), doi:10.1134/S1064562424602026. CC BY 4.0. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+              "focusRegion": {
+                "coordinates": "normalized-original-image",
+                "x": 0.5,
+                "y": 0.0,
+                "width": 0.5,
+                "height": 1.0,
+                "label": "Panel (b): left-dominant coronary circulation"
+              },
+              "sha256": "cb88d68a9e36209923d68718d5bd78f4fd300ce767d64befdd0460cc0918c378",
+              "originalSha256": "c05a32baa2a5bde37d86bdb8d300f54c38840a93ba22366e965be04542aa9fa2",
+              "originalPath": "media/real/coronary-dominance-angiograms.png",
+              "imageBytesModified": true,
+              "encodedBytesModified": true,
+              "checkedOn": "2026-11-07",
+              "shortLabel": "Left dominance · panel (b)",
+              "alt": "Real coronary angiograms: panel (a) shows a right-sided origin of the posterior descending artery; panel (b) illustrates left coronary dominance. Red arrows identify the posterior descending artery in the published figure.",
+              "pixelsIdentical": true,
+              "alphaIdentical": true,
+              "encoding": {
+                "method": "WebP lossless=True, exact=True, method=6, quality=100",
+                "originalBytes": 1022887,
+                "bytes": 683480,
+                "width": 1535,
+                "height": 613,
+                "decodedRgbaSha256": "e6836dcaf1c5afd7d213b791a527eb64f881a0d16d7532752f19e9ccf4a0627f",
+                "alphaSha256": "e7e98159b408cbd14ffa2b57067e86927af53cd0ca56351d83f6cfbb026c8bde",
+                "iccProfileSha256": "eddaf344b5edea13269e0d20055f335610e5e0b6e33e6e536f2701bc18c5f7d5",
+                "orientation": 1,
+                "resized": false,
+                "newLossyEncoding": false
+              },
+              "visualInspection": "Existing source figure re-inspected on 2026-11-07: complete original figure, source annotations and relevant anatomy match its retained caption.",
+              "caseRelationship": "Published right/left dominance comparison, separate examples from the other gallery figures; not the book occlusion."
+            },
+            {
+              "url": "media/optimized/starter-q054-collaterals.96d3d33e9ad5.lossless.webp",
+              "title": "RCA and LCA views with collaterals",
+              "caption": "A separate RCA-occlusion example: paired right and left coronary views show collateral filling marked by red arrows. It is not the circumflex occlusion in the lesson vignette.",
+              "displayNotes": "Full Figure 4 is retained. Panel (a) is the RCA view and panel (b) the LCA view. The source uses this example to show why occlusion and collaterals can complicate dominance interpretation from an RCA view alone.",
+              "caseRelationship": "A different published example from the dominance comparison and small-RCA figures; do not present these as serial views of one patient.",
+              "sourceUrl": "https://link.springer.com/article/10.1134/S1064562424602026",
+              "sourceFigureUrl": "https://link.springer.com/article/10.1134/S1064562424602026/figures/4",
+              "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1134%2FS1064562424602026/MediaObjects/11472_2025_9834_Fig4_HTML.png",
+              "author": "I. Kruzhilov; E. Ikryannikov; A. Shadrin; R. Utegenov; G. Zubkova; I. Bessonov",
+              "license": "CC BY 4.0",
+              "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+              "attribution": "Kruzhilov et al., Figure 4, Doklady Mathematics 110 (Suppl 1), S212-S222 (2024; online 2025), doi:10.1134/S1064562424602026. CC BY 4.0. Original source figure downloaded without edits. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+              "sha256": "cdec65265b6f342ca23bbf08cd87a145cdda27a089e4e3ad31e8b657061cf6af",
+              "checkedOn": "2026-11-07",
+              "visualInspection": "Inspected both downloaded angiographic panels. The source labels (a)/(b) and red collateral arrows are present. The image is an angiogram, not an AI-generated illustration.",
+              "originalSha256": "96d3d33e9ad510736b2c1cf89788babca3626d2e805bdd06819e8763e76bb046",
+              "originalPath": "media/real/starter-q054-collaterals.png",
+              "imageBytesModified": true,
+              "encodedBytesModified": true,
+              "shortLabel": "Separate collateral case",
+              "alt": "A separate RCA-occlusion example: paired right and left coronary views show collateral filling marked by red arrows. It is not the circumflex occlusion in the lesson vignette.",
+              "pixelsIdentical": true,
+              "alphaIdentical": true,
+              "encoding": {
+                "method": "WebP lossless=True, exact=True, method=6, quality=100",
+                "originalBytes": 708575,
+                "bytes": 524748,
+                "width": 1535,
+                "height": 655,
+                "decodedRgbaSha256": "43f221023e12822cd6fd37c9e0457592e2cf37950266fbb650c711d417ae0ea4",
+                "alphaSha256": "c22db55ad4cb7c11cb87f47abc2386a3d9ba22be87e99525c2f98cf9ac8300e8",
+                "iccProfileSha256": "eddaf344b5edea13269e0d20055f335610e5e0b6e33e6e536f2701bc18c5f7d5",
+                "orientation": 1,
+                "resized": false,
+                "newLossyEncoding": false
+              }
+            },
+            {
+              "url": "media/optimized/starter-q054-small-rca.b37613f7869e.lossless.webp",
+              "title": "Small RCA: assess the PDA origin",
+              "caption": "Separate small-RCA angiogram. Dominance is determined by the posterior descending artery's origin; vessel size alone does not establish the pattern.",
+              "displayNotes": "Full Figure 5 is retained. Its caption identifies a small RCA and the difficulty of dominance classification. Do not label this particular image as definitively left dominant: the source caption does not provide that classification.",
+              "caseRelationship": "A different published example from the dominance comparison and collateral figures; not a before/after sequence or the book's patient.",
+              "sourceUrl": "https://link.springer.com/article/10.1134/S1064562424602026",
+              "sourceFigureUrl": "https://link.springer.com/article/10.1134/S1064562424602026/figures/5",
+              "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1134%2FS1064562424602026/MediaObjects/11472_2025_9834_Fig5_HTML.png",
+              "author": "I. Kruzhilov; E. Ikryannikov; A. Shadrin; R. Utegenov; G. Zubkova; I. Bessonov",
+              "license": "CC BY 4.0",
+              "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+              "attribution": "Kruzhilov et al., Figure 5, Doklady Mathematics 110 (Suppl 1), S212-S222 (2024; online 2025), doi:10.1134/S1064562424602026. CC BY 4.0. Original source figure downloaded without edits. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+              "sha256": "a52d68f9da93f32e40c79b85030bb2a3bbd496511d575af87b35364fed1fe7be",
+              "checkedOn": "2026-11-07",
+              "visualInspection": "Inspected the downloaded single angiographic frame with the source's complete small-RCA view. No added dominance labels, arrows or crop.",
+              "originalSha256": "b37613f7869e20b81ee689c5c8feaf5e5bd27c67d6429d685492a0bb9e90e56d",
+              "originalPath": "media/real/starter-q054-small-rca.png",
+              "imageBytesModified": true,
+              "encodedBytesModified": true,
+              "shortLabel": "Separate small-RCA case",
+              "alt": "Separate small-RCA angiogram. Dominance is determined by the posterior descending artery's origin; vessel size alone does not establish the pattern.",
+              "pixelsIdentical": true,
+              "alphaIdentical": true,
+              "encoding": {
+                "method": "WebP lossless=True, exact=True, method=6, quality=100",
+                "originalBytes": 607030,
+                "bytes": 409494,
+                "width": 709,
+                "height": 815,
+                "decodedRgbaSha256": "028045038cacddf2fa6e3329696235fc88d3c752cd666cb8448648c8b84d7fbe",
+                "alphaSha256": "334ab8059316502c486cb14d5500809dd6e2dd8df69594fc18edd4bb9ede46dd",
+                "iccProfileSha256": "eddaf344b5edea13269e0d20055f335610e5e0b6e33e6e536f2701bc18c5f7d5",
+                "orientation": 1,
+                "resized": false,
+                "newLossyEncoding": false
+              }
+            }
+          ]
+        },
+        "recap": {
+          "startSeconds": 51.056,
+          "endSeconds": 61.816625,
+          "nodes": [
+            {
+              "id": "left-dominance",
+              "label": "Left dominance"
+            },
+            {
+              "id": "circumflex",
+              "label": "Circumflex"
+            },
+            {
+              "id": "territories",
+              "label": "Lateral LV + posterior septum"
+            }
+          ],
+          "edges": [
+            {
+              "from": "left-dominance",
+              "to": "circumflex"
+            },
+            {
+              "from": "circumflex",
+              "to": "territories"
+            }
+          ],
+          "cueBindings": [
+            {
+              "phraseId": "s06-p01",
+              "nodeId": "left-dominance",
+              "startSeconds": 51.056,
+              "endSeconds": 52.42133333333334
+            },
+            {
+              "phraseId": "s06-p02",
+              "nodeId": "circumflex",
+              "startSeconds": 52.501333333333335,
+              "endSeconds": 54.22933333333334
+            },
+            {
+              "phraseId": "s06-p03",
+              "nodeId": "territories",
+              "startSeconds": 54.309333333333335,
+              "endSeconds": 55.376
+            },
+            {
+              "phraseId": "s06-p04",
+              "nodeId": "territories",
+              "startSeconds": 55.456,
+              "endSeconds": 57.012625
+            },
+            {
+              "phraseId": "s06-p05",
+              "nodeId": "circumflex",
+              "startSeconds": 57.092625,
+              "endSeconds": 61.816625
+            }
+          ]
+        }
+      },
+      "removeVisualGuidanceFields": [
+        "outroTargetId"
+      ],
+      "integrationNotes": [
+        "Map poster, scenes[].image, visualGuidance.images keys and targets[].image using assetReplacements; update encoded SHA-256 while preserving coordinates and dimensions.",
+        "Include every gallery image in realImages so media collection and offline packs contain all three.",
+        "Remove legacy visualGuidance.outroTargetId because the new simultaneous gallery has no clinical pointer. Keep original .timing.json and audio bytes unchanged.",
+        "The player uses presentation.effectiveEndSeconds for transition/progress. Do not add the legacy silent outro or re-encode audio."
+      ]
+    },
+    {
+      "lessonId": "shahzad2015-q005",
+      "questionNumber": 5,
+      "baseVersion": 2,
+      "proposedVersion": 3,
+      "baseline": {
+        "lessonSha256": "8323906176d70628fde01aabf1be927cce3f84500a6b14ada27ee6860f692c9b",
+        "authoredContentSha256": "b5f639a47ddbea0c52a1d109840b631c18ded45fe6703e2c4e610ca98caf090b",
+        "quizSha256": "2dcf69694aca9546f83285b6ecefa73553dde504d581378b43799033ae4f6b01",
+        "sourceSha256": "049d26dd61eeb89243a9214eea83c90df6efa8188c840716f883a1bce64a738e",
+        "audioUrl": "media/audio/lesson-shahzad2015-q005-v1.mp3",
+        "audioSha256": "7225a777c6642472c3aac68c8912b87e23edf8bc83bac496838d32e75de04f98",
+        "timingPath": "media/audio/lesson-shahzad2015-q005-v1.timing.json",
+        "timingSha256": "88b9426b0c55f94a8256f8f1c85ce32ba9442b34c3ce531413e9bad99b307579",
+        "sourceNarrationSha256": "ccd870aaa314f5555c254f5a635d70bea057d40c1a52a64cefa5202f67f6dccf"
+      },
+      "assetReplacements": [
+        {
+          "sourcePath": "media/mnemonic/sequestration-palace.png",
+          "outputPath": "media/optimized/sequestration-palace.e1916db3d6f4.lossless.webp",
+          "originalSha256": "e1916db3d6f429b7eef27d200815bb5fddc7186d9a2f790210794d91034d7bac",
+          "sha256": "79deb863fdd85dfa2aacc4df259318b2bcda8eb3f41ce815d989baf1e5b9d294",
+          "originalBytes": 1846808,
+          "optimizedBytes": 1338508,
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "decoded": {
+            "width": 1024,
+            "height": 1536,
+            "rgbaSha256": "de6873844a2397f987993ff705fc4ae4d45bacb8298d7c73279e1bf92c5eda59",
+            "alphaSha256": "852aad42795f401e21ded6e51fc392da9d94e2f386cacc08327046c319e903fc",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "frames": 1
+          }
+        },
+        {
+          "sourcePath": "media/real/extralobar-sequestration-thoracoscopy.jpg",
+          "outputPath": "media/real/extralobar-sequestration-thoracoscopy.jpg",
+          "originalSha256": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8",
+          "sha256": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8",
+          "originalBytes": 141030,
+          "optimizedBytes": 141030,
+          "imageBytesModified": false,
+          "encodedBytesModified": false,
+          "decoded": {
+            "width": 787,
+            "height": 620,
+            "rgbaSha256": "a17d27b8be65731ba266a45fff9084fa8a5b423c1d2d6de99210a23a1b5644b6",
+            "alphaSha256": "12cf112bf3bc376397d7c4f9b368601413318ddf4c0f4545a60925f832ccd62e",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "frames": 1
+          }
+        }
+      ],
+      "realImages": [
+        {
+          "url": "media/real/extralobar-sequestration-thoracoscopy.jpg",
+          "title": "Extralobar pulmonary sequestration at thoracoscopy",
+          "caption": "Real thoracoscopic views of an extralobar pulmonary sequestration. Panel A shows the separate lesion covered by its own pleura. Panel D depicts an associated bronchogenic cyst, not the sequestration.",
+          "displayNotes": "Focus the lesson on panel A. Panels B and C show the stalk; panel D shows a different associated lesion. Do not highlight all four panels as if each represents the tested pleural feature.",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7884597/",
+          "author": "Carolyn Hanna; Priya G. Sharma; Moiz M. Mustafa; Jennifer Reppucci; Archana Shenoy; Dhanashree Rajderkar",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Hanna et al., Figure 4, Egyptian Journal of Radiology and Nuclear Medicine 52:54 (2021), doi:10.1186/s43055-021-00440-1. CC BY 4.0. Unmodified. Displayed encoded bytes are unchanged.",
+          "focusRegion": {
+            "coordinates": "normalized-original-image",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 0.5,
+            "height": 0.5,
+            "label": "Panel A: sequestration with its own pleural covering"
+          },
+          "sha256": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8",
+          "originalSha256": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8",
+          "originalPath": "media/real/extralobar-sequestration-thoracoscopy.jpg",
+          "imageBytesModified": false,
+          "encodedBytesModified": false,
+          "checkedOn": "2026-11-07",
+          "shortLabel": "Own pleura · panel A",
+          "alt": "Real thoracoscopic views of an extralobar pulmonary sequestration. Panel A shows the separate lesion covered by its own pleura. Panel D depicts an associated bronchogenic cyst, not the sequestration.",
+          "pixelsIdentical": true,
+          "alphaIdentical": true,
+          "encoding": {
+            "method": "original bytes retained",
+            "originalBytes": 141030,
+            "bytes": 141030,
+            "width": 787,
+            "height": 620,
+            "decodedRgbaSha256": "a17d27b8be65731ba266a45fff9084fa8a5b423c1d2d6de99210a23a1b5644b6",
+            "alphaSha256": "12cf112bf3bc376397d7c4f9b368601413318ddf4c0f4545a60925f832ccd62e",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "resized": false,
+            "newLossyEncoding": false
+          },
+          "visualInspection": "Existing source figure re-inspected on 2026-11-07: complete original figure, source annotations and relevant anatomy match its retained caption.",
+          "caseRelationship": "Same published Hanna et al. case as the two CT figures; separate from the book teaching vignette."
+        },
+        {
+          "url": "media/optimized/starter-q005-ct.3c97f005c565.lossless.webp",
+          "title": "CT: sequestration and associated cyst",
+          "caption": "Contrast CT from the same published case as the operative image. The posterior right lung opacity is sequestration; the large central cyst is a separate associated bronchogenic cyst.",
+          "displayNotes": "Full Figure 1 is retained. In panel A the arrowhead marks sequestration, while thin arrows mark the associated cyst. In panel B the block arrow identifies venous drainage. CT does not itself demonstrate the tested separate pleural covering.",
+          "caseRelationship": "Same published Hanna et al. case as the other two Q5 gallery figures; separate from the book's teaching vignette.",
+          "sourceUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1",
+          "sourceFigureUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1/figures/1",
+          "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1186%2Fs43055-021-00440-1/MediaObjects/43055_2021_440_Fig1_HTML.png",
+          "author": "Carolyn Hanna; Priya G. Sharma; Moiz M. Mustafa; Jennifer Reppucci; Archana Shenoy; Dhanashree Rajderkar",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Hanna et al., Figure 1, Egyptian Journal of Radiology and Nuclear Medicine 52:54 (2021), doi:10.1186/s43055-021-00440-1. CC BY 4.0. Original source figure downloaded without edits. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+          "sha256": "27d241e97d1c0fd7ecf1b3ca5ff7a13b5b17cc930367c2f558c66780dfd16b5e",
+          "checkedOn": "2026-11-07",
+          "visualInspection": "Inspected the downloaded two-panel axial/coronal CT. Both panel labels, thin arrows, arrowhead and block arrow are present; full framing retained. Source caption distinguishes the cyst and sequestration.",
+          "originalSha256": "3c97f005c5650e6f42b2f8262a44804056df95fa520fbdc36dc9e42ffec4ffc8",
+          "originalPath": "media/real/starter-q005-ct.png",
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "shortLabel": "CT: lung + associated cyst",
+          "alt": "Contrast CT from the same published case as the operative image. The posterior right lung opacity is sequestration; the large central cyst is a separate associated bronchogenic cyst.",
+          "pixelsIdentical": true,
+          "alphaIdentical": true,
+          "encoding": {
+            "method": "WebP lossless=True, exact=True, method=6, quality=100",
+            "originalBytes": 257576,
+            "bytes": 199458,
+            "width": 1418,
+            "height": 502,
+            "decodedRgbaSha256": "da5866ce340819eac046ad4c4b89c9abe93cb0e3facc7e23f2ba7a62dbd8a6bf",
+            "alphaSha256": "7158d5069a2c20e8d0f48a390a9d0bf571ce0d99ffcaf06dcfee4b5a4d7d8b42",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "resized": false,
+            "newLossyEncoding": false
+          }
+        },
+        {
+          "url": "media/optimized/starter-q005-followup-ct.2af5f08468fb.lossless.webp",
+          "title": "CT: persistent sequestered lung",
+          "caption": "Follow-up CT of the same case after aspiration of the associated cyst. The arrow marks persistent sequestered lung; the arrowhead marks the less compressed trachea.",
+          "displayNotes": "Full Figure 3 is retained. The intervention treated the associated bronchogenic cyst, not the sequestered lung. This scan supports anatomical context, not direct proof of a separate pleural layer.",
+          "caseRelationship": "Same published Hanna et al. case as the other two Q5 gallery figures; separate from the book's teaching vignette.",
+          "sourceUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1",
+          "sourceFigureUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1/figures/3",
+          "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1186%2Fs43055-021-00440-1/MediaObjects/43055_2021_440_Fig3_HTML.png",
+          "author": "Carolyn Hanna; Priya G. Sharma; Moiz M. Mustafa; Jennifer Reppucci; Archana Shenoy; Dhanashree Rajderkar",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Hanna et al., Figure 3, Egyptian Journal of Radiology and Nuclear Medicine 52:54 (2021), doi:10.1186/s43055-021-00440-1. CC BY 4.0. Original source figure downloaded without edits. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+          "sha256": "8e2ab19f208b4584fdec77bf599aef3783fda8a99d2a1a312f3394cd9e2301fa",
+          "checkedOn": "2026-11-07",
+          "visualInspection": "Inspected the downloaded axial CT. The long source arrow points at the posterior right lung opacity, and the white arrowhead points at the trachea. No crop or extra annotations.",
+          "originalSha256": "2af5f08468fb425bdede6ca31bca456bb543cd1ed48d264e1fe241c3a8039eea",
+          "originalPath": "media/real/starter-q005-followup-ct.png",
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "shortLabel": "Follow-up CT",
+          "alt": "Follow-up CT of the same case after aspiration of the associated cyst. The arrow marks persistent sequestered lung; the arrowhead marks the less compressed trachea.",
+          "pixelsIdentical": true,
+          "alphaIdentical": true,
+          "encoding": {
+            "method": "WebP lossless=True, exact=True, method=6, quality=100",
+            "originalBytes": 263143,
+            "bytes": 197950,
+            "width": 1181,
+            "height": 781,
+            "decodedRgbaSha256": "dff254a125a9045dd43972b4b5e9acfcf2cf277a06757b32d6ed4907a4ef9531",
+            "alphaSha256": "bb9f69d50a80161736ec5323a766983ad329742f8cd474a867d359b734ccbd48",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "resized": false,
+            "newLossyEncoding": false
+          }
+        }
+      ],
+      "presentation": {
+        "schemaVersion": 1,
+        "effectiveEndSeconds": 65.19508333333333,
+        "narrationEndSeconds": 65.19508333333333,
+        "clinicalGallery": {
+          "startSeconds": 55.081208333333336,
+          "endSeconds": 65.19508333333333,
+          "images": [
+            {
+              "url": "media/real/extralobar-sequestration-thoracoscopy.jpg",
+              "title": "Extralobar pulmonary sequestration at thoracoscopy",
+              "caption": "Real thoracoscopic views of an extralobar pulmonary sequestration. Panel A shows the separate lesion covered by its own pleura. Panel D depicts an associated bronchogenic cyst, not the sequestration.",
+              "displayNotes": "Focus the lesson on panel A. Panels B and C show the stalk; panel D shows a different associated lesion. Do not highlight all four panels as if each represents the tested pleural feature.",
+              "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7884597/",
+              "author": "Carolyn Hanna; Priya G. Sharma; Moiz M. Mustafa; Jennifer Reppucci; Archana Shenoy; Dhanashree Rajderkar",
+              "license": "CC BY 4.0",
+              "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+              "attribution": "Hanna et al., Figure 4, Egyptian Journal of Radiology and Nuclear Medicine 52:54 (2021), doi:10.1186/s43055-021-00440-1. CC BY 4.0. Unmodified. Displayed encoded bytes are unchanged.",
+              "focusRegion": {
+                "coordinates": "normalized-original-image",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 0.5,
+                "height": 0.5,
+                "label": "Panel A: sequestration with its own pleural covering"
+              },
+              "sha256": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8",
+              "originalSha256": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8",
+              "originalPath": "media/real/extralobar-sequestration-thoracoscopy.jpg",
+              "imageBytesModified": false,
+              "encodedBytesModified": false,
+              "checkedOn": "2026-11-07",
+              "shortLabel": "Own pleura · panel A",
+              "alt": "Real thoracoscopic views of an extralobar pulmonary sequestration. Panel A shows the separate lesion covered by its own pleura. Panel D depicts an associated bronchogenic cyst, not the sequestration.",
+              "pixelsIdentical": true,
+              "alphaIdentical": true,
+              "encoding": {
+                "method": "original bytes retained",
+                "originalBytes": 141030,
+                "bytes": 141030,
+                "width": 787,
+                "height": 620,
+                "decodedRgbaSha256": "a17d27b8be65731ba266a45fff9084fa8a5b423c1d2d6de99210a23a1b5644b6",
+                "alphaSha256": "12cf112bf3bc376397d7c4f9b368601413318ddf4c0f4545a60925f832ccd62e",
+                "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "orientation": 1,
+                "resized": false,
+                "newLossyEncoding": false
+              },
+              "visualInspection": "Existing source figure re-inspected on 2026-11-07: complete original figure, source annotations and relevant anatomy match its retained caption.",
+              "caseRelationship": "Same published Hanna et al. case as the two CT figures; separate from the book teaching vignette."
+            },
+            {
+              "url": "media/optimized/starter-q005-ct.3c97f005c565.lossless.webp",
+              "title": "CT: sequestration and associated cyst",
+              "caption": "Contrast CT from the same published case as the operative image. The posterior right lung opacity is sequestration; the large central cyst is a separate associated bronchogenic cyst.",
+              "displayNotes": "Full Figure 1 is retained. In panel A the arrowhead marks sequestration, while thin arrows mark the associated cyst. In panel B the block arrow identifies venous drainage. CT does not itself demonstrate the tested separate pleural covering.",
+              "caseRelationship": "Same published Hanna et al. case as the other two Q5 gallery figures; separate from the book's teaching vignette.",
+              "sourceUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1",
+              "sourceFigureUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1/figures/1",
+              "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1186%2Fs43055-021-00440-1/MediaObjects/43055_2021_440_Fig1_HTML.png",
+              "author": "Carolyn Hanna; Priya G. Sharma; Moiz M. Mustafa; Jennifer Reppucci; Archana Shenoy; Dhanashree Rajderkar",
+              "license": "CC BY 4.0",
+              "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+              "attribution": "Hanna et al., Figure 1, Egyptian Journal of Radiology and Nuclear Medicine 52:54 (2021), doi:10.1186/s43055-021-00440-1. CC BY 4.0. Original source figure downloaded without edits. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+              "sha256": "27d241e97d1c0fd7ecf1b3ca5ff7a13b5b17cc930367c2f558c66780dfd16b5e",
+              "checkedOn": "2026-11-07",
+              "visualInspection": "Inspected the downloaded two-panel axial/coronal CT. Both panel labels, thin arrows, arrowhead and block arrow are present; full framing retained. Source caption distinguishes the cyst and sequestration.",
+              "originalSha256": "3c97f005c5650e6f42b2f8262a44804056df95fa520fbdc36dc9e42ffec4ffc8",
+              "originalPath": "media/real/starter-q005-ct.png",
+              "imageBytesModified": true,
+              "encodedBytesModified": true,
+              "shortLabel": "CT: lung + associated cyst",
+              "alt": "Contrast CT from the same published case as the operative image. The posterior right lung opacity is sequestration; the large central cyst is a separate associated bronchogenic cyst.",
+              "pixelsIdentical": true,
+              "alphaIdentical": true,
+              "encoding": {
+                "method": "WebP lossless=True, exact=True, method=6, quality=100",
+                "originalBytes": 257576,
+                "bytes": 199458,
+                "width": 1418,
+                "height": 502,
+                "decodedRgbaSha256": "da5866ce340819eac046ad4c4b89c9abe93cb0e3facc7e23f2ba7a62dbd8a6bf",
+                "alphaSha256": "7158d5069a2c20e8d0f48a390a9d0bf571ce0d99ffcaf06dcfee4b5a4d7d8b42",
+                "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "orientation": 1,
+                "resized": false,
+                "newLossyEncoding": false
+              }
+            },
+            {
+              "url": "media/optimized/starter-q005-followup-ct.2af5f08468fb.lossless.webp",
+              "title": "CT: persistent sequestered lung",
+              "caption": "Follow-up CT of the same case after aspiration of the associated cyst. The arrow marks persistent sequestered lung; the arrowhead marks the less compressed trachea.",
+              "displayNotes": "Full Figure 3 is retained. The intervention treated the associated bronchogenic cyst, not the sequestered lung. This scan supports anatomical context, not direct proof of a separate pleural layer.",
+              "caseRelationship": "Same published Hanna et al. case as the other two Q5 gallery figures; separate from the book's teaching vignette.",
+              "sourceUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1",
+              "sourceFigureUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1/figures/3",
+              "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1186%2Fs43055-021-00440-1/MediaObjects/43055_2021_440_Fig3_HTML.png",
+              "author": "Carolyn Hanna; Priya G. Sharma; Moiz M. Mustafa; Jennifer Reppucci; Archana Shenoy; Dhanashree Rajderkar",
+              "license": "CC BY 4.0",
+              "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+              "attribution": "Hanna et al., Figure 3, Egyptian Journal of Radiology and Nuclear Medicine 52:54 (2021), doi:10.1186/s43055-021-00440-1. CC BY 4.0. Original source figure downloaded without edits. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+              "sha256": "8e2ab19f208b4584fdec77bf599aef3783fda8a99d2a1a312f3394cd9e2301fa",
+              "checkedOn": "2026-11-07",
+              "visualInspection": "Inspected the downloaded axial CT. The long source arrow points at the posterior right lung opacity, and the white arrowhead points at the trachea. No crop or extra annotations.",
+              "originalSha256": "2af5f08468fb425bdede6ca31bca456bb543cd1ed48d264e1fe241c3a8039eea",
+              "originalPath": "media/real/starter-q005-followup-ct.png",
+              "imageBytesModified": true,
+              "encodedBytesModified": true,
+              "shortLabel": "Follow-up CT",
+              "alt": "Follow-up CT of the same case after aspiration of the associated cyst. The arrow marks persistent sequestered lung; the arrowhead marks the less compressed trachea.",
+              "pixelsIdentical": true,
+              "alphaIdentical": true,
+              "encoding": {
+                "method": "WebP lossless=True, exact=True, method=6, quality=100",
+                "originalBytes": 263143,
+                "bytes": 197950,
+                "width": 1181,
+                "height": 781,
+                "decodedRgbaSha256": "dff254a125a9045dd43972b4b5e9acfcf2cf277a06757b32d6ed4907a4ef9531",
+                "alphaSha256": "bb9f69d50a80161736ec5323a766983ad329742f8cd474a867d359b734ccbd48",
+                "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "orientation": 1,
+                "resized": false,
+                "newLossyEncoding": false
+              }
+            }
+          ]
+        },
+        "recap": {
+          "startSeconds": 55.081208333333336,
+          "endSeconds": 65.19508333333333,
+          "nodes": [
+            {
+              "id": "extralobar",
+              "label": "Extralobar"
+            },
+            {
+              "id": "extra-coat",
+              "label": "Extra coat"
+            },
+            {
+              "id": "own-pleura",
+              "label": "Own visceral pleura"
+            }
+          ],
+          "edges": [
+            {
+              "from": "extralobar",
+              "to": "extra-coat"
+            },
+            {
+              "from": "extra-coat",
+              "to": "own-pleura"
+            }
+          ],
+          "cueBindings": [
+            {
+              "phraseId": "s06-p01",
+              "nodeId": "extralobar",
+              "startSeconds": 55.081208333333336,
+              "endSeconds": 56.765208333333334
+            },
+            {
+              "phraseId": "s06-p02",
+              "nodeId": "extra-coat",
+              "startSeconds": 56.84520833333333,
+              "endSeconds": 58.7005
+            },
+            {
+              "phraseId": "s06-p03",
+              "nodeId": "own-pleura",
+              "startSeconds": 58.7805,
+              "endSeconds": 62.449125
+            },
+            {
+              "phraseId": "s06-p04",
+              "nodeId": "own-pleura",
+              "startSeconds": 62.529125,
+              "endSeconds": 65.19508333333333
+            }
+          ]
+        }
+      },
+      "removeVisualGuidanceFields": [
+        "outroTargetId"
+      ],
+      "integrationNotes": [
+        "Map poster, scenes[].image, visualGuidance.images keys and targets[].image using assetReplacements; update encoded SHA-256 while preserving coordinates and dimensions.",
+        "Include every gallery image in realImages so media collection and offline packs contain all three.",
+        "Remove legacy visualGuidance.outroTargetId because the new simultaneous gallery has no clinical pointer. Keep original .timing.json and audio bytes unchanged.",
+        "The player uses presentation.effectiveEndSeconds for transition/progress. Do not add the legacy silent outro or re-encode audio."
+      ]
+    },
+    {
+      "lessonId": "shahzad2015-q182",
+      "questionNumber": 182,
+      "baseVersion": 2,
+      "proposedVersion": 3,
+      "baseline": {
+        "lessonSha256": "4ee9a292a2193236449119b14c2b99d02a6ccc221a0c4ea02ddf320c8fa1021d",
+        "authoredContentSha256": "988cf922645ad3eb0875afd4b5a88308af55629a8fef4207ec1d32c9f77fbcf0",
+        "quizSha256": "b2f53b7c12211796d315332f6e004ac6d87eddbc05ceec46b5db62a0fffb5563",
+        "sourceSha256": "70b77d0fb6825fd40daeb06e9c2665137f50d3e257632a94b67b0a1b40925b29",
+        "audioUrl": "media/audio/lesson-shahzad2015-q182-v1.mp3",
+        "audioSha256": "38a962c05ead5a3b9ef984cdd011ea86644067fcc8776f4105f27520fc2c4fc6",
+        "timingPath": "media/audio/lesson-shahzad2015-q182-v1.timing.json",
+        "timingSha256": "e830e7ed2f456efff2f7e8daf4db12d1b5248daccba78eead3774585cb6299ab",
+        "sourceNarrationSha256": "27415dc50e1e95686bec460690f6b8a08e6a4ea9067e9285fcf6903e3735dc1c"
+      },
+      "assetReplacements": [
+        {
+          "sourcePath": "media/mnemonic/resistance-palace.png",
+          "outputPath": "media/optimized/resistance-palace.60ea64fd19cc.lossless.webp",
+          "originalSha256": "60ea64fd19cce9d21aff5d1601625299687baab2e5667e90a0c5bf8ee4ebcb41",
+          "sha256": "980df65a8fa0b5862e48aeb187b7c6377d4ff5578f2f7c7e0235cf837aac35dc",
+          "originalBytes": 1710743,
+          "optimizedBytes": 1201618,
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "decoded": {
+            "width": 1024,
+            "height": 1536,
+            "rgbaSha256": "84a8b5c8afc1373cf392a1d826b5ee68a449ee8ba510d25ae79c62bae6703554",
+            "alphaSha256": "852aad42795f401e21ded6e51fc392da9d94e2f386cacc08327046c319e903fc",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "frames": 1
+          }
+        },
+        {
+          "sourcePath": "media/real/artery-cross-section.png",
+          "outputPath": "media/optimized/artery-cross-section.e835434db775.lossless.webp",
+          "originalSha256": "e835434db7751e97dcaff6632849baecb9315dd382d80e3d8064b9863944199d",
+          "sha256": "b5dcab7c98a66cf1214cdd84078bfe6ac1e5845ea3311609a892c71f57a6ff87",
+          "originalBytes": 4602468,
+          "optimizedBytes": 3666390,
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "decoded": {
+            "width": 1914,
+            "height": 1637,
+            "rgbaSha256": "63007f1cf75587f4c3c4659c7a0e1c887f819bfb76f594fb009f1804c034f83e",
+            "alphaSha256": "3339806d5a9e1827a79634080887f00c2654a007cb11f2eb1034d663deadcbd0",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "frames": 1
+          }
+        }
+      ],
+      "realImages": [
+        {
+          "url": "media/optimized/artery-cross-section.e835434db775.lossless.webp",
+          "title": "Human artery in cross section",
+          "caption": "A real bright-field micrograph of a human artery. The central lumen provides anatomical context for the lesson on vessel radius and resistance.",
+          "displayNotes": "This is a real anatomical example, not a measurement of the numerical scenario. Do not claim that the image demonstrates a doubled diameter or a measured sixteenfold resistance change. The calculation applies to the lesson's stated idealized assumptions.",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Artery.png",
+          "author": "Lord of Konrad; Commons color adjustment by Tilifa Ocaufa",
+          "license": "CC0 1.0",
+          "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "attribution": "Human artery photomicrograph by Lord of Konrad; Commons color adjustment by Tilifa Ocaufa. Wikimedia Commons, Artery.png. CC0 1.0. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+          "focusRegion": {
+            "coordinates": "normalized-original-image",
+            "x": 0.22,
+            "y": 0.22,
+            "width": 0.62,
+            "height": 0.6,
+            "label": "Arterial lumen"
+          },
+          "sha256": "b5dcab7c98a66cf1214cdd84078bfe6ac1e5845ea3311609a892c71f57a6ff87",
+          "originalSha256": "e835434db7751e97dcaff6632849baecb9315dd382d80e3d8064b9863944199d",
+          "originalPath": "media/real/artery-cross-section.png",
+          "imageBytesModified": true,
+          "encodedBytesModified": true,
+          "checkedOn": "2026-11-07",
+          "shortLabel": "Artery lumen",
+          "alt": "A real bright-field micrograph of a human artery. The central lumen provides anatomical context for the lesson on vessel radius and resistance.",
+          "pixelsIdentical": true,
+          "alphaIdentical": true,
+          "encoding": {
+            "method": "WebP lossless=True, exact=True, method=6, quality=100",
+            "originalBytes": 4602468,
+            "bytes": 3666390,
+            "width": 1914,
+            "height": 1637,
+            "decodedRgbaSha256": "63007f1cf75587f4c3c4659c7a0e1c887f819bfb76f594fb009f1804c034f83e",
+            "alphaSha256": "3339806d5a9e1827a79634080887f00c2654a007cb11f2eb1034d663deadcbd0",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "resized": false,
+            "newLossyEncoding": false
+          },
+          "visualInspection": "Existing source figure re-inspected on 2026-11-07: complete original figure, source annotations and relevant anatomy match its retained caption.",
+          "caseRelationship": "Separate anatomical specimen from the arteriole and ultrasound examples; no numerical resistance measurement."
+        },
+        {
+          "url": "media/real/starter-q182-arteriole.jpg",
+          "title": "Arteriole in cross section",
+          "caption": "A separate arteriole micrograph provides context for a small vessel's wall and lumen. It does not measure the lesson's diameter change or numerical resistance.",
+          "displayNotes": "Source description identifies an arteriole cross section but does not name the species or organ. Do not invent either or present this as the same specimen as the larger artery image. Keep full source framing.",
+          "caseRelationship": "Separate specimen; this gallery is anatomical context, not a controlled before/after flow experiment.",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arteriole-CS.jpg",
+          "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Arteriole-CS.jpg",
+          "author": "FishtailBob",
+          "license": "CC BY-SA 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+          "attribution": "Arteriole cross section (Arteriole-CS.jpg), FishtailBob, Wikimedia Commons, own work. CC BY-SA 4.0. Original source image downloaded without edits; any re-encoded copy retains the same license. Displayed encoded bytes are unchanged.",
+          "sha256": "4baaf5522fbe11d2bc92566d5e6e112859a063761cf26d9037e02deff5552300",
+          "checkedOn": "2026-11-07",
+          "visualInspection": "Inspected the downloaded 640×480 histology image: an elongated, pink-stained vascular cross section is surrounded by pale tissue. Full original field and color retained.",
+          "originalSha256": "4baaf5522fbe11d2bc92566d5e6e112859a063761cf26d9037e02deff5552300",
+          "originalPath": "media/real/starter-q182-arteriole.jpg",
+          "imageBytesModified": false,
+          "encodedBytesModified": false,
+          "shortLabel": "Separate arteriole section",
+          "alt": "A separate arteriole micrograph provides context for a small vessel's wall and lumen. It does not measure the lesson's diameter change or numerical resistance.",
+          "pixelsIdentical": true,
+          "alphaIdentical": true,
+          "encoding": {
+            "method": "original bytes retained",
+            "originalBytes": 208254,
+            "bytes": 208254,
+            "width": 640,
+            "height": 480,
+            "decodedRgbaSha256": "653d3ed33911c0f196c53e3c46d8a490403e51187ede068d255f97d43c210d32",
+            "alphaSha256": "a682fa570213181c0f6fd50f7da5ef6f263c855222c8f7441f19227d925383a3",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "resized": false,
+            "newLossyEncoding": false
+          }
+        },
+        {
+          "url": "media/real/starter-q182-celiac-ultrasound.jpg",
+          "title": "Celiac artery on ultrasound",
+          "caption": "A separate celiac-artery ultrasound shows vascular anatomy in a living subject. The resistance calculation remains an idealized model, not a measurement from this scan.",
+          "displayNotes": "Retain full ultrasound framing and original machine annotations. Do not infer a doubled diameter, resistance value or sixteenfold flow change from this image. This is a separate case from both microscopic specimens.",
+          "caseRelationship": "Separate ultrasound case; not the same subject as the histology images and not a diameter-change experiment.",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Celiac_artery_ultrasound_110330114111_1144480.jpg",
+          "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Celiac_artery_ultrasound_110330114111_1144480.jpg",
+          "author": "Nevit Dilmen",
+          "license": "CC BY-SA 3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+          "attribution": "Celiac artery ultrasound 110330114111 1144480.jpg, © Nevit Dilmen, Wikimedia Commons, own work. Used under CC BY-SA 3.0. Original source image downloaded without edits; any re-encoded copy retains the same license. Displayed encoded bytes are unchanged.",
+          "sha256": "e9262e33b73dc1d313914302d40de0b26af907d9842b6d17b7b3b36077cad10b",
+          "checkedOn": "2026-11-07",
+          "visualInspection": "Inspected the downloaded 800×600 grayscale ultrasound. The complete sector, surrounding black field and machine text remain visible. No invented measurement overlays or crop.",
+          "originalSha256": "e9262e33b73dc1d313914302d40de0b26af907d9842b6d17b7b3b36077cad10b",
+          "originalPath": "media/real/starter-q182-celiac-ultrasound.jpg",
+          "imageBytesModified": false,
+          "encodedBytesModified": false,
+          "shortLabel": "Separate ultrasound case",
+          "alt": "A separate celiac-artery ultrasound shows vascular anatomy in a living subject. The resistance calculation remains an idealized model, not a measurement from this scan.",
+          "pixelsIdentical": true,
+          "alphaIdentical": true,
+          "encoding": {
+            "method": "original bytes retained",
+            "originalBytes": 42570,
+            "bytes": 42570,
+            "width": 800,
+            "height": 600,
+            "decodedRgbaSha256": "9764df7f27c9266279aa3cb2c8c6083c3b2f767be5aee17f6b6f558e10552650",
+            "alphaSha256": "fd3df91fd84ccf152312658b574cb0215e3bca334105a24ecc48f7f4f0a92261",
+            "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "orientation": 1,
+            "resized": false,
+            "newLossyEncoding": false
+          }
+        }
+      ],
+      "presentation": {
+        "schemaVersion": 1,
+        "effectiveEndSeconds": 62.6185,
+        "narrationEndSeconds": 62.6185,
+        "clinicalGallery": {
+          "startSeconds": 51.80920833333333,
+          "endSeconds": 62.6185,
+          "images": [
+            {
+              "url": "media/optimized/artery-cross-section.e835434db775.lossless.webp",
+              "title": "Human artery in cross section",
+              "caption": "A real bright-field micrograph of a human artery. The central lumen provides anatomical context for the lesson on vessel radius and resistance.",
+              "displayNotes": "This is a real anatomical example, not a measurement of the numerical scenario. Do not claim that the image demonstrates a doubled diameter or a measured sixteenfold resistance change. The calculation applies to the lesson's stated idealized assumptions.",
+              "sourceUrl": "https://commons.wikimedia.org/wiki/File:Artery.png",
+              "author": "Lord of Konrad; Commons color adjustment by Tilifa Ocaufa",
+              "license": "CC0 1.0",
+              "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+              "attribution": "Human artery photomicrograph by Lord of Konrad; Commons color adjustment by Tilifa Ocaufa. Wikimedia Commons, Artery.png. CC0 1.0. Displayed copy losslessly re-encoded; decoded pixels, full framing and original annotations are unchanged.",
+              "focusRegion": {
+                "coordinates": "normalized-original-image",
+                "x": 0.22,
+                "y": 0.22,
+                "width": 0.62,
+                "height": 0.6,
+                "label": "Arterial lumen"
+              },
+              "sha256": "b5dcab7c98a66cf1214cdd84078bfe6ac1e5845ea3311609a892c71f57a6ff87",
+              "originalSha256": "e835434db7751e97dcaff6632849baecb9315dd382d80e3d8064b9863944199d",
+              "originalPath": "media/real/artery-cross-section.png",
+              "imageBytesModified": true,
+              "encodedBytesModified": true,
+              "checkedOn": "2026-11-07",
+              "shortLabel": "Artery lumen",
+              "alt": "A real bright-field micrograph of a human artery. The central lumen provides anatomical context for the lesson on vessel radius and resistance.",
+              "pixelsIdentical": true,
+              "alphaIdentical": true,
+              "encoding": {
+                "method": "WebP lossless=True, exact=True, method=6, quality=100",
+                "originalBytes": 4602468,
+                "bytes": 3666390,
+                "width": 1914,
+                "height": 1637,
+                "decodedRgbaSha256": "63007f1cf75587f4c3c4659c7a0e1c887f819bfb76f594fb009f1804c034f83e",
+                "alphaSha256": "3339806d5a9e1827a79634080887f00c2654a007cb11f2eb1034d663deadcbd0",
+                "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "orientation": 1,
+                "resized": false,
+                "newLossyEncoding": false
+              },
+              "visualInspection": "Existing source figure re-inspected on 2026-11-07: complete original figure, source annotations and relevant anatomy match its retained caption.",
+              "caseRelationship": "Separate anatomical specimen from the arteriole and ultrasound examples; no numerical resistance measurement."
+            },
+            {
+              "url": "media/real/starter-q182-arteriole.jpg",
+              "title": "Arteriole in cross section",
+              "caption": "A separate arteriole micrograph provides context for a small vessel's wall and lumen. It does not measure the lesson's diameter change or numerical resistance.",
+              "displayNotes": "Source description identifies an arteriole cross section but does not name the species or organ. Do not invent either or present this as the same specimen as the larger artery image. Keep full source framing.",
+              "caseRelationship": "Separate specimen; this gallery is anatomical context, not a controlled before/after flow experiment.",
+              "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arteriole-CS.jpg",
+              "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Arteriole-CS.jpg",
+              "author": "FishtailBob",
+              "license": "CC BY-SA 4.0",
+              "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+              "attribution": "Arteriole cross section (Arteriole-CS.jpg), FishtailBob, Wikimedia Commons, own work. CC BY-SA 4.0. Original source image downloaded without edits; any re-encoded copy retains the same license. Displayed encoded bytes are unchanged.",
+              "sha256": "4baaf5522fbe11d2bc92566d5e6e112859a063761cf26d9037e02deff5552300",
+              "checkedOn": "2026-11-07",
+              "visualInspection": "Inspected the downloaded 640×480 histology image: an elongated, pink-stained vascular cross section is surrounded by pale tissue. Full original field and color retained.",
+              "originalSha256": "4baaf5522fbe11d2bc92566d5e6e112859a063761cf26d9037e02deff5552300",
+              "originalPath": "media/real/starter-q182-arteriole.jpg",
+              "imageBytesModified": false,
+              "encodedBytesModified": false,
+              "shortLabel": "Separate arteriole section",
+              "alt": "A separate arteriole micrograph provides context for a small vessel's wall and lumen. It does not measure the lesson's diameter change or numerical resistance.",
+              "pixelsIdentical": true,
+              "alphaIdentical": true,
+              "encoding": {
+                "method": "original bytes retained",
+                "originalBytes": 208254,
+                "bytes": 208254,
+                "width": 640,
+                "height": 480,
+                "decodedRgbaSha256": "653d3ed33911c0f196c53e3c46d8a490403e51187ede068d255f97d43c210d32",
+                "alphaSha256": "a682fa570213181c0f6fd50f7da5ef6f263c855222c8f7441f19227d925383a3",
+                "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "orientation": 1,
+                "resized": false,
+                "newLossyEncoding": false
+              }
+            },
+            {
+              "url": "media/real/starter-q182-celiac-ultrasound.jpg",
+              "title": "Celiac artery on ultrasound",
+              "caption": "A separate celiac-artery ultrasound shows vascular anatomy in a living subject. The resistance calculation remains an idealized model, not a measurement from this scan.",
+              "displayNotes": "Retain full ultrasound framing and original machine annotations. Do not infer a doubled diameter, resistance value or sixteenfold flow change from this image. This is a separate case from both microscopic specimens.",
+              "caseRelationship": "Separate ultrasound case; not the same subject as the histology images and not a diameter-change experiment.",
+              "sourceUrl": "https://commons.wikimedia.org/wiki/File:Celiac_artery_ultrasound_110330114111_1144480.jpg",
+              "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Celiac_artery_ultrasound_110330114111_1144480.jpg",
+              "author": "Nevit Dilmen",
+              "license": "CC BY-SA 3.0",
+              "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+              "attribution": "Celiac artery ultrasound 110330114111 1144480.jpg, © Nevit Dilmen, Wikimedia Commons, own work. Used under CC BY-SA 3.0. Original source image downloaded without edits; any re-encoded copy retains the same license. Displayed encoded bytes are unchanged.",
+              "sha256": "e9262e33b73dc1d313914302d40de0b26af907d9842b6d17b7b3b36077cad10b",
+              "checkedOn": "2026-11-07",
+              "visualInspection": "Inspected the downloaded 800×600 grayscale ultrasound. The complete sector, surrounding black field and machine text remain visible. No invented measurement overlays or crop.",
+              "originalSha256": "e9262e33b73dc1d313914302d40de0b26af907d9842b6d17b7b3b36077cad10b",
+              "originalPath": "media/real/starter-q182-celiac-ultrasound.jpg",
+              "imageBytesModified": false,
+              "encodedBytesModified": false,
+              "shortLabel": "Separate ultrasound case",
+              "alt": "A separate celiac-artery ultrasound shows vascular anatomy in a living subject. The resistance calculation remains an idealized model, not a measurement from this scan.",
+              "pixelsIdentical": true,
+              "alphaIdentical": true,
+              "encoding": {
+                "method": "original bytes retained",
+                "originalBytes": 42570,
+                "bytes": 42570,
+                "width": 800,
+                "height": 600,
+                "decodedRgbaSha256": "9764df7f27c9266279aa3cb2c8c6083c3b2f767be5aee17f6b6f558e10552650",
+                "alphaSha256": "fd3df91fd84ccf152312658b574cb0215e3bca334105a24ecc48f7f4f0a92261",
+                "iccProfileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "orientation": 1,
+                "resized": false,
+                "newLossyEncoding": false
+              }
+            }
+          ]
+        },
+        "recap": {
+          "startSeconds": 51.80920833333333,
+          "endSeconds": 62.6185,
+          "nodes": [
+            {
+              "id": "double-diameter",
+              "label": "Diameter × 2"
+            },
+            {
+              "id": "divide-resistance",
+              "label": "Resistance ÷ 16"
+            },
+            {
+              "id": "one-pru",
+              "label": "16 PRU → 1 PRU"
+            }
+          ],
+          "edges": [
+            {
+              "from": "double-diameter",
+              "to": "divide-resistance"
+            },
+            {
+              "from": "divide-resistance",
+              "to": "one-pru"
+            }
+          ],
+          "cueBindings": [
+            {
+              "phraseId": "s06-p01",
+              "nodeId": "double-diameter",
+              "startSeconds": 51.80920833333333,
+              "endSeconds": 54.48654166666667
+            },
+            {
+              "phraseId": "s06-p02",
+              "nodeId": "double-diameter",
+              "startSeconds": 54.566541666666666,
+              "endSeconds": 56.411208333333335
+            },
+            {
+              "phraseId": "s06-p03",
+              "nodeId": "divide-resistance",
+              "startSeconds": 56.49120833333333,
+              "endSeconds": 58.58116666666667
+            },
+            {
+              "phraseId": "s06-p04",
+              "nodeId": "one-pru",
+              "startSeconds": 58.66116666666667,
+              "endSeconds": 62.6185
+            }
+          ]
+        }
+      },
+      "removeVisualGuidanceFields": [
+        "outroTargetId"
+      ],
+      "integrationNotes": [
+        "Map poster, scenes[].image, visualGuidance.images keys and targets[].image using assetReplacements; update encoded SHA-256 while preserving coordinates and dimensions.",
+        "Include every gallery image in realImages so media collection and offline packs contain all three.",
+        "Remove legacy visualGuidance.outroTargetId because the new simultaneous gallery has no clinical pointer. Keep original .timing.json and audio bytes unchanged.",
+        "The player uses presentation.effectiveEndSeconds for transition/progress. Do not add the legacy silent outro or re-encode audio."
+      ]
+    }
+  ],
+  "mediaSummary": {
+    "schemaVersion": 1,
+    "method": "lossless-candidates-with-exact-decoded-rgba-verification",
+    "policy": "No resizing, lossy fallback, alpha changes, original replacement or provenance loss.",
+    "originalBytes": 13337179,
+    "optimizedBytes": 9983024,
+    "savedBytes": 3354155,
+    "savedPercent": 25.149,
+    "checkedOn": "2026-11-07",
+    "existingSixOriginalBytes": 11250031,
+    "existingSixOptimizedBytes": 8400550,
+    "addedGalleryOriginalBytes": 2087148,
+    "addedGalleryOptimizedBytes": 1582474
+  }
+}

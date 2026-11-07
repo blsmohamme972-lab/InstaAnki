@@ -23,6 +23,9 @@ from pathlib import Path, PurePosixPath
 import re
 import tempfile
 import zipfile
+import zlib
+from source_policy import SourcePolicy, SourcePolicyError, validate_pack, validate_publications, canonical_hash
+from presentation import validate_presentation
 
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -44,6 +47,13 @@ def json_bytes(value) -> bytes:
 
 def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def zip_method(data: bytes) -> int:
+    """Choose the smaller lossless ZIP representation, including compressed media."""
+    compressor = zlib.compressobj(level=9, wbits=-15)
+    compressed_bytes = len(compressor.compress(data)) + len(compressor.flush())
+    return zipfile.ZIP_DEFLATED if compressed_bytes < len(data) else zipfile.ZIP_STORED
 
 
 def checked_path(value: str) -> str:
@@ -98,6 +108,7 @@ def collect_media(lessons: list, web_root: Path) -> dict[str, Path]:
     for lesson in lessons:
         if not isinstance(lesson, dict):
             raise ValueError("Each lesson must be an object")
+        validate_presentation(lesson)
         lesson_id = lesson.get("id")
         if not isinstance(lesson_id, str) or not lesson_id.strip() or lesson_id.casefold() in seen_ids:
             raise ValueError(f"Missing or duplicate lesson ID: {lesson_id!r}")
@@ -229,7 +240,11 @@ def main() -> None:
                              if not args.lesson or lesson.get("id") in args.lesson])
     if not lessons:
         parser.error("No matching lessons")
+    validate_pack(lessons, args.web_root.resolve())
+    checked_lesson_hashes = [canonical_hash(lesson) for lesson in lessons]
     media = collect_media(lessons, args.web_root.resolve())
+    if checked_lesson_hashes != [canonical_hash(lesson) for lesson in lessons]:
+        raise ValueError("Pack path normalization changed reviewed lesson content; review the assembled paths first")
     payload = {"lessons.json": json_bytes(lessons)}
     payload.update({name: source.read_bytes() for name, source in sorted(media.items())})
     for name, data in payload.items():
@@ -242,6 +257,7 @@ def main() -> None:
     if args.books.is_file():
         # Preserve source-linked production counts without publishing source scans.
         books = json.loads(args.books.read_text())
+        validate_publications(books, SourcePolicy(PROJECT).ledger())
         related = {lesson.get("source", {}).get("bookId") for lesson in lessons}
         manifest["books"] = [{key: value for key, value in book.items() if key != "coverUrl"}
                              for book in books if book.get("id") in related]
@@ -253,11 +269,12 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="pack-build-", dir=args.output.parent) as temporary:
         temporary_zip = Path(temporary) / "content.zip"
         with zipfile.ZipFile(temporary_zip, "w", compression=zipfile.ZIP_DEFLATED,
-                             compresslevel=6) as archive:
+                             compresslevel=9) as archive:
             for name, data in sorted(entries.items()):
                 # Fixed timestamps/order make unchanged inputs byte-reproducible.
                 entry = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
-                entry.compress_type = zipfile.ZIP_DEFLATED
+                entry.compress_type = zip_method(data)
+                entry._compresslevel = 9
                 entry.external_attr = 0o100644 << 16
                 archive.writestr(entry, data)
         report = verify_archive(temporary_zip)
@@ -271,4 +288,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SourcePolicyError as exc:
+        raise SystemExit(f"Source policy: {exc}")

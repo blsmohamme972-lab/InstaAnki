@@ -19,6 +19,7 @@ import sys
 import tempfile
 from urllib.parse import unquote, urlsplit
 from guidance import verify_guidance
+from source_policy import SourcePolicy, validate_content_review
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -136,7 +137,7 @@ def load_manifest(path):
 
 def summaries(questions):
     return [
-        {key: question.get(key) for key in ("number", "id", "status", "batchId", "lessonId")}
+        {key: question.get(key) for key in ("number", "id", "status", "batchId", "lessonId", "sourceEvidence")}
         for question in sorted(questions, key=lambda item: item["number"])
     ]
 
@@ -211,7 +212,10 @@ def validate_batch_id(value):
 
 def claim(path, count, batch_id):
     validate_batch_id(batch_id)
+    policy = SourcePolicy(REPO)
     with locked_manifest(path) as document:
+        policy.check_ledger(document)
+        policy.require_new_production()
         batches = document.setdefault("batches", {})
         by_number = {q["number"]: q for q in document["questions"]}
         batch = batches.get(batch_id)
@@ -235,6 +239,18 @@ def claim(path, count, batch_id):
         conflicts = [q["number"] for q in chosen if q["status"] == "claimed" and q.get("batchId") != batch_id]
         if conflicts:
             fail(f"Cannot resume batch; questions are claimed by another batch: {conflicts}")
+        # Validate the entire selection before saving any claim or checkpoint.
+        evidence = {q["number"]: policy.evidence_for(document, q)
+                    for q in chosen if q["status"] != "produced"}
+        for question in chosen:
+            if question["number"] not in evidence:
+                continue
+            binding = evidence[question["number"]]
+            if question.get("sourceEvidence", binding) != binding:
+                fail(f"Q{question['number']} source evidence changed after its previous claim")
+            if question.get("sourceEvidence") != binding:
+                question["sourceEvidence"] = binding
+                changed = True
         for question in chosen:
             if question["status"] == "ready":
                 question.update(status="claimed", batchId=batch_id, claimedAt=now())
@@ -257,6 +273,7 @@ def claim(path, count, batch_id):
 def release(path, batch_id):
     validate_batch_id(batch_id)
     with locked_manifest(path) as document:
+        SourcePolicy(REPO).check_ledger(document)
         batch = document.get("batches", {}).get(batch_id)
         claimed = [q for q in document["questions"] if q["status"] == "claimed" and q.get("batchId") == batch_id]
         if batch is None and not claimed:
@@ -302,6 +319,10 @@ def select_lesson(path, book_id, question_number):
 
 
 def expected_content(question, lesson, tag_ids):
+    # Legacy published starters retain their frozen source review. Every new
+    # source-bound claim must approve this exact teaching script and keyed quiz.
+    if question.get("status") != "produced" or "sourceEvidence" in question:
+        validate_content_review(question, lesson, question.get("sourceEvidence"))
     if "expectedTagIds" in question and set(question["expectedTagIds"]) != set(tag_ids):
         fail("Lesson tags do not match this question's reviewed expectedTagIds")
     if "expectedCorrectIndex" in question and question["expectedCorrectIndex"] != lesson["quiz"]["correctIndex"]:
@@ -554,16 +575,37 @@ def complete(path, args):
     if args.qa_report is None:
         fail("Completion requires --qa-report with the checks actually performed; no manifest was changed")
     initial = load_manifest(path)
+    policy = SourcePolicy(REPO)
+    policy.check_ledger(initial)
     record = next((q for q in initial["questions"] if q["number"] == args.question), None)
     if record is None:
         fail(f"Source question {args.question} is not in this book")
     lesson = select_lesson(args.lesson, initial["bookId"], args.question)
+    source_evidence = None
+    if record.get("status") == "produced":
+        published = policy.published_validation(lesson, initial, record)
+        if published is not None:
+            policy.verify_frozen_assets(lesson, published, args.root)
+        else:
+            source_evidence = policy.validate_lesson_source(lesson, initial, record)
+    else:
+        source_evidence = policy.validate_lesson_source(lesson, initial, record)
     validation = verify_lesson(lesson, initial, record, args.root, args.registry, args.timing)
+    if source_evidence is not None:
+        validation["sourceEvidenceSha256"] = canonical_hash(source_evidence)
+        validation["sourceReviewSha256"] = canonical_hash(record["sourceReview"])
     qa_report = verify_qa_report(args.qa_report, initial, record, lesson, validation)
     with locked_manifest(path) as document:
         question = next(q for q in document["questions"] if q["number"] == args.question)
         if question["id"] != validation["sourceQuestionId"]:
             fail("Source identity changed during validation; retry against the updated manifest")
+        if source_evidence is not None:
+            # Reopen the private evidence after asset checks, before any write.
+            current = SourcePolicy(REPO).validate_lesson_source(lesson, document, question)
+            if current != source_evidence:
+                fail("Source evidence changed during validation; no completion was saved")
+            if canonical_hash(question["sourceReview"]) != validation["sourceReviewSha256"]:
+                fail("Authored-content source review changed during validation; no completion was saved")
         expected_content(question, lesson, validation["tagIds"])
         if question["status"] == "needs_review":
             fail("This source question is still needs_review; resolve its recorded issue before completion")
@@ -615,10 +657,7 @@ def manifest_path(args):
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", args.book):
             fail("Unsafe book ID")
         return directory / f"{args.book}.json"
-    choices = sorted(directory.glob("*.json"))
-    if len(choices) != 1:
-        fail("Choose --book BOOK_ID or --manifest PATH when there is not exactly one book manifest")
-    return choices[0]
+    return directory / f"{SourcePolicy(REPO).book_id}.json"
 
 
 def main():
@@ -658,6 +697,18 @@ def main():
             result = release(path, args.batch_id)
         else:
             result = complete(path, args)
+        if args.command in {"status", "next"}:
+            policy = SourcePolicy(REPO)
+            try:
+                policy.source_records(load_manifest(path))
+                enabled = policy.policy.get("newProductionEnabled") is True
+                result["sourcePolicy"] = {"activeBookId": policy.book_id, "sourceAvailable": True,
+                                          "newProductionBlocked": not enabled}
+                if not enabled:
+                    result["sourcePolicy"]["reason"] = "New lesson production is paused by the current explicit user instruction; existing app repairs remain allowed."
+            except ValueError as exc:
+                result["sourcePolicy"] = {"activeBookId": policy.book_id, "sourceAvailable": False,
+                                          "newProductionBlocked": True, "reason": str(exc)}
         print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
         return 0
     except (ProductionError, OSError, ValueError) as exc:

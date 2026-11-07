@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "channel": "app-v3",
+  "updatedAt": "2026-11-07T00:00:00Z",
+  "repository": "blsmohamme972-lab/InstaAnki",
+  "latestApp": {
+    "version": "0.1.0",
+    "versionCode": 1,
+    "notes": "No installable app update is published. New player features require an APK signed with the original signing identity."
+  },
+  "packs": []
+}

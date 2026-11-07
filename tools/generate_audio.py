@@ -25,11 +25,8 @@ import subprocess
 import tempfile
 from datetime import datetime, timezone
 
-import numpy as np
-import onnxruntime as ort
-import soundfile as sf
-from kokoro_onnx import Kokoro
 from guidance import canonical_hash, validate_plan
+from source_policy import SourcePolicy, SourcePolicyError
 
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -54,6 +51,7 @@ def write_json(path: Path, value: dict) -> None:
 
 
 def validate_audio(samples: np.ndarray, name: str) -> dict:
+    import numpy as np
     if samples.ndim != 1 or not samples.size:
         raise ValueError(f"{name}: empty or non-mono audio")
     if not np.isfinite(samples).all():
@@ -83,9 +81,11 @@ def main() -> None:
     parser.add_argument("--lesson", action="append", help="Generate only this lesson ID; repeatable.")
     parser.add_argument("--force", action="store_true", help="Regenerate cached scene audio.")
     args = parser.parse_args()
-    for path in (args.input, args.model, args.voices, args.guidance):
-        if not path.is_file():
-            parser.error(f"Required file does not exist: {path}")
+    policy = SourcePolicy(PROJECT)
+    if not args.input.is_file():
+        # Give the actionable source error even on a clean checkout with no TTS.
+        policy.source_records(policy.ledger())
+        parser.error(f"Required authoring file does not exist: {args.input}")
     if not 0.9 <= args.speed <= 1.0:
         parser.error("Use a speed between 0.90 and 1.00 for these narration scripts.")
     if not 8.0 <= args.outro <= 10.0:
@@ -94,16 +94,25 @@ def main() -> None:
         parser.error("Gap must be 0–0.5 seconds and thread count must be positive.")
 
     draft = json.loads(args.input.read_text())
+    lessons = [lesson for lesson in draft["lessons"]
+               if not args.lesson or lesson["id"] in args.lesson]
+    if not lessons:
+        parser.error("No matching lessons.")
+    policy.validate_authoring(draft, lessons)
+    for path in (args.model, args.voices, args.guidance):
+        if not path.is_file():
+            parser.error(f"Required file does not exist: {path}")
     guidance_document = json.loads(args.guidance.read_text())
     if guidance_document.get("schemaVersion") != 1:
         parser.error("Unsupported visual guidance plan schema")
     guidance_plans = {item["audioLessonId"]: item for item in guidance_document["lessons"]}
     if len(guidance_plans) != len(guidance_document["lessons"]):
         parser.error("Guidance audioLessonId values must be unique")
-    lessons = [lesson for lesson in draft["lessons"]
-               if not args.lesson or lesson["id"] in args.lesson]
-    if not lessons:
-        parser.error("No matching lessons.")
+    # Import and initialize the costly speech runtime only after source checks.
+    import numpy as np
+    import onnxruntime as ort
+    import soundfile as sf
+    from kokoro_onnx import Kokoro
     args.output.mkdir(parents=True, exist_ok=True)
     args.cache.mkdir(parents=True, exist_ok=True)
 
@@ -300,4 +309,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SourcePolicyError as exc:
+        raise SystemExit(f"Source policy: {exc}")

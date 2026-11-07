@@ -1,0 +1,232 @@
+name: Temporary existing-lesson delivery
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Publish a reviewed ZIP, propose retirement, or check merged retirement
+        type: choice
+        required: true
+        default: publish
+        options:
+          - publish
+          - retire
+          - check-retirement
+      version:
+        description: Stable content version, for example 1.2.0; never reuse it for different bytes
+        type: string
+        required: true
+      retention_days:
+        description: Days until retention review (1–90); expiry never deletes an active download
+        type: string
+        required: true
+        default: '30'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: existing-raja-content-delivery
+  cancel-in-progress: false
+
+jobs:
+  delivery-proposal:
+    if: >-
+      github.repository == 'blsmohamme972-lab/InstaAnki' &&
+      github.ref_name == github.event.repository.default_branch &&
+      (inputs.operation == 'publish' || inputs.operation == 'retire')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_REPO: ${{ github.repository }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      OPERATION: ${{ inputs.operation }}
+      CONTENT_VERSION: ${{ inputs.version }}
+      RETENTION_DAYS: ${{ inputs.retention_days }}
+    steps:
+      - name: Check out the current default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - name: Validate the requested delivery identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, sys
+          sys.path.insert(0, 'tools')
+          from prepare_update_release import version_tuple
+          version_tuple(os.environ['CONTENT_VERSION'])
+          if not 1 <= int(os.environ['RETENTION_DAYS']) <= 90:
+              raise SystemExit('Retention review must be between 1 and 90 days')
+          PY
+          printf 'SOURCE_COMMIT=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          printf 'DELIVERY_TAG=content-raja-%s\n' "$CONTENT_VERSION" >> "$GITHUB_ENV"
+          mkdir -p dist/update-release
+
+      - name: Prepare pinned media without adding binaries to Git
+        if: inputs.operation == 'publish'
+        run: |
+          python3 -m pip install --disable-pip-version-check 'Pillow==13.0.0'
+          python3 tools/prepare_existing_media.py --download-sources
+
+      - name: Check the original source and build only the three existing lessons
+        if: inputs.operation == 'publish'
+        run: |
+          python3 tools/check_source_scope.py
+          python3 -m unittest discover -s tests -p 'test_update_release.py' -v
+          python3 tools/build_pack.py \
+            --pack-id instaanki-starter-shahzad2015-v1 \
+            --version "$CONTENT_VERSION" \
+            --title 'Raja existing lessons — presentation repair' \
+            --output "dist/InstaAnki-Raja-Starter-$CONTENT_VERSION.zip"
+          python3 tools/prepare_update_release.py prepare \
+            --pack "dist/InstaAnki-Raja-Starter-$CONTENT_VERSION.zip" \
+            --catalog content/catalog-v2.json \
+            --legacy-catalog content/catalog.json \
+            --output-dir dist/update-release \
+            --retention-days "$RETENTION_DAYS" \
+            --source-commit "$SOURCE_COMMIT"
+
+      - name: Upload one temporary ZIP and verify the downloaded release bytes
+        if: inputs.operation == 'publish'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASSET_NAME="InstaAnki-Raja-Starter-$CONTENT_VERSION.zip"
+          if ! gh api "repos/$GH_REPO/releases/tags/$DELIVERY_TAG" > dist/remote-release.json; then
+            gh release create "$DELIVERY_TAG" \
+              --target "$SOURCE_COMMIT" --draft --latest=false \
+              --title "Raja existing lessons $CONTENT_VERSION" \
+              --notes-file dist/update-release/release-body.md
+            gh api "repos/$GH_REPO/releases/tags/$DELIVERY_TAG" > dist/remote-release.json
+          fi
+          if ! python3 - "$ASSET_NAME" <<'PY'
+          import json, sys
+          release = json.load(open('dist/remote-release.json'))
+          raise SystemExit(0 if any(a.get('name') == sys.argv[1] for a in release.get('assets', [])) else 1)
+          PY
+          then
+            # Never replace a published asset with different bytes under the same version.
+            gh release upload "$DELIVERY_TAG" "dist/update-release/$ASSET_NAME"
+          fi
+          mkdir -p dist/downloaded-release
+          gh release download "$DELIVERY_TAG" --pattern "$ASSET_NAME" --dir dist/downloaded-release
+          gh api "repos/$GH_REPO/releases/tags/$DELIVERY_TAG" > dist/remote-release.json
+          python3 tools/prepare_update_release.py confirm-upload \
+            --delivery dist/update-release/delivery.json \
+            --downloaded "dist/downloaded-release/$ASSET_NAME" \
+            --release-json dist/remote-release.json
+          gh release edit "$DELIVERY_TAG" --draft=false --latest=false
+
+      - name: Prepare a retirement proposal without deleting the asset
+        if: inputs.operation == 'retire'
+        run: |
+          python3 tools/prepare_update_release.py retire \
+            --delivery "content/deliveries/$DELIVERY_TAG.json" \
+            --catalog content/catalog-v2.json \
+            --legacy-catalog content/catalog.json \
+            --output-dir dist/update-release
+
+      - name: Propose only the catalog and delivery record through a pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          CURRENT_HEAD="$(gh api "repos/$GH_REPO/commits/$DEFAULT_BRANCH" --jq '.sha')"
+          if [ "$CURRENT_HEAD" != "$SOURCE_COMMIT" ]; then
+            echo 'The default branch changed during preparation. Rerun from its current state; no catalog change was pushed.' >&2
+            exit 1
+          fi
+          BRANCH="delivery/$DELIVERY_TAG"
+          if [ "$OPERATION" = retire ]; then BRANCH="retire/$DELIVERY_TAG"; fi
+          if gh api "repos/$GH_REPO/git/ref/heads/$BRANCH" > /dev/null 2>&1; then
+            echo "The review branch $BRANCH already exists. Review its PR or retire that branch before rerunning; it will not be overwritten." >&2
+            gh pr list --head "$BRANCH" --state open
+            exit 1
+          fi
+          mkdir -p content/deliveries
+          cp dist/update-release/catalog.proposed.json content/catalog-v2.json
+          cp dist/update-release/delivery.json "content/deliveries/$DELIVERY_TAG.json"
+          git switch -c "$BRANCH"
+          # Exact text allowlist: no media, ZIP, private source, or signing data enters Git.
+          git diff --exit-code -- content/catalog.json
+          git add -- content/catalog-v2.json "content/deliveries/$DELIVERY_TAG.json"
+          if git diff --cached --quiet; then
+            echo 'The reviewed catalog and delivery record already match. No PR is needed.'
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -m "$OPERATION existing Raja delivery $CONTENT_VERSION"
+          gh auth setup-git
+          git push origin "HEAD:refs/heads/$BRANCH"
+          if ! gh pr create --base "$DEFAULT_BRANCH" --head "$BRANCH" \
+            --title "$OPERATION existing Raja delivery $CONTENT_VERSION" \
+            --body-file dist/update-release/release-body.md; then
+            echo "The normal Actions token could not create a pull request. Check the repository's Actions PR permission or open a PR from $BRANCH manually. The default branch was not changed." >&2
+            exit 1
+          fi
+
+      - name: Retain temporary review evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: existing-raja-delivery-${{ github.run_id }}
+          path: dist/update-release/
+          if-no-files-found: ignore
+          retention-days: 30
+
+  retirement-check:
+    if: >-
+      github.repository == 'blsmohamme972-lab/InstaAnki' &&
+      github.ref_name == github.event.repository.default_branch &&
+      inputs.operation == 'check-retirement'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      GH_REPO: ${{ github.repository }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      CONTENT_VERSION: ${{ inputs.version }}
+    steps:
+      - name: Read the merged default-branch catalog
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Check retention, merged retirement and current catalog references
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, sys
+          sys.path.insert(0, 'tools')
+          from prepare_update_release import version_tuple
+          version_tuple(os.environ['CONTENT_VERSION'])
+          PY
+          OBSERVED_HEAD="$(git rev-parse HEAD)"
+          CURRENT_HEAD="$(gh api "repos/$GH_REPO/commits/$DEFAULT_BRANCH" --jq '.sha')"
+          python3 tools/prepare_update_release.py check-retired \
+            --delivery "content/deliveries/content-raja-$CONTENT_VERSION.json" \
+            --catalog content/catalog-v2.json \
+            --legacy-catalog content/catalog.json \
+            --observed-default-head "$OBSERVED_HEAD" \
+            --current-default-head "$CURRENT_HEAD" | tee retirement-check.json
+          printf '\nRetirement check passed. No release asset was deleted; any deletion remains a separate manual action after checking the live catalog again.\n' >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain the read-only check
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: existing-raja-retirement-check-${{ github.run_id }}
+          path: retirement-check.json
+          retention-days: 30

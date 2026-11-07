@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "checkedOn": "2026-11-07",
+  "scope": "Two additional authentic clinical images for each of the existing Q5, Q54 and Q182 lessons; the existing clinical image makes three per gallery.",
+  "reviewer": "ChatGPT source_recovery agent; direct inspection of source pages, licenses and downloaded images",
+  "humanClinicalSignoff": false,
+  "assets": [
+    {
+      "path": "media/real/starter-q005-ct.png",
+      "provenance": {
+        "lessonId": "shahzad2015-q005",
+        "url": "media/real/starter-q005-ct.png",
+        "title": "CT: sequestration and associated cyst",
+        "caption": "Contrast CT from the same published case as the operative image. The posterior right lung opacity is sequestration; the large central cyst is a separate associated bronchogenic cyst.",
+        "displayNotes": "Full Figure 1 is retained. In panel A the arrowhead marks sequestration, while thin arrows mark the associated cyst. In panel B the block arrow identifies venous drainage. CT does not itself demonstrate the tested separate pleural covering.",
+        "caseRelationship": "Same published Hanna et al. case as the other two Q5 gallery figures; separate from the book's teaching vignette.",
+        "sourceUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1",
+        "sourceFigureUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1/figures/1",
+        "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1186%2Fs43055-021-00440-1/MediaObjects/43055_2021_440_Fig1_HTML.png",
+        "author": "Carolyn Hanna; Priya G. Sharma; Moiz M. Mustafa; Jennifer Reppucci; Archana Shenoy; Dhanashree Rajderkar",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": "Hanna et al., Figure 1, Egyptian Journal of Radiology and Nuclear Medicine 52:54 (2021), doi:10.1186/s43055-021-00440-1. CC BY 4.0. Original source figure downloaded without edits.",
+        "sha256": "3c97f005c5650e6f42b2f8262a44804056df95fa520fbdc36dc9e42ffec4ffc8",
+        "checkedOn": "2026-11-07",
+        "visualInspection": "Inspected the downloaded two-panel axial/coronal CT. Both panel labels, thin arrows, arrowhead and block arrow are present; full framing retained. Source caption distinguishes the cyst and sequestration."
+      }
+    },
+    {
+      "path": "media/real/starter-q005-followup-ct.png",
+      "provenance": {
+        "lessonId": "shahzad2015-q005",
+        "url": "media/real/starter-q005-followup-ct.png",
+        "title": "CT: persistent sequestered lung",
+        "caption": "Follow-up CT of the same case after aspiration of the associated cyst. The arrow marks persistent sequestered lung; the arrowhead marks the less compressed trachea.",
+        "displayNotes": "Full Figure 3 is retained. The intervention treated the associated bronchogenic cyst, not the sequestered lung. This scan supports anatomical context, not direct proof of a separate pleural layer.",
+        "caseRelationship": "Same published Hanna et al. case as the other two Q5 gallery figures; separate from the book's teaching vignette.",
+        "sourceUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1",
+        "sourceFigureUrl": "https://link.springer.com/article/10.1186/s43055-021-00440-1/figures/3",
+        "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1186%2Fs43055-021-00440-1/MediaObjects/43055_2021_440_Fig3_HTML.png",
+        "author": "Carolyn Hanna; Priya G. Sharma; Moiz M. Mustafa; Jennifer Reppucci; Archana Shenoy; Dhanashree Rajderkar",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": "Hanna et al., Figure 3, Egyptian Journal of Radiology and Nuclear Medicine 52:54 (2021), doi:10.1186/s43055-021-00440-1. CC BY 4.0. Original source figure downloaded without edits.",
+        "sha256": "2af5f08468fb425bdede6ca31bca456bb543cd1ed48d264e1fe241c3a8039eea",
+        "checkedOn": "2026-11-07",
+        "visualInspection": "Inspected the downloaded axial CT. The long source arrow points at the posterior right lung opacity, and the white arrowhead points at the trachea. No crop or extra annotations."
+      }
+    },
+    {
+      "path": "media/real/starter-q054-collaterals.png",
+      "provenance": {
+        "lessonId": "shahzad2015-q054",
+        "url": "media/real/starter-q054-collaterals.png",
+        "title": "RCA and LCA views with collaterals",
+        "caption": "A separate RCA-occlusion example: paired right and left coronary views show collateral filling marked by red arrows. It is not the circumflex occlusion in the lesson vignette.",
+        "displayNotes": "Full Figure 4 is retained. Panel (a) is the RCA view and panel (b) the LCA view. The source uses this example to show why occlusion and collaterals can complicate dominance interpretation from an RCA view alone.",
+        "caseRelationship": "A different published example from the dominance comparison and small-RCA figures; do not present these as serial views of one patient.",
+        "sourceUrl": "https://link.springer.com/article/10.1134/S1064562424602026",
+        "sourceFigureUrl": "https://link.springer.com/article/10.1134/S1064562424602026/figures/4",
+        "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1134%2FS1064562424602026/MediaObjects/11472_2025_9834_Fig4_HTML.png",
+        "author": "I. Kruzhilov; E. Ikryannikov; A. Shadrin; R. Utegenov; G. Zubkova; I. Bessonov",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": "Kruzhilov et al., Figure 4, Doklady Mathematics 110 (Suppl 1), S212-S222 (2024; online 2025), doi:10.1134/S1064562424602026. CC BY 4.0. Original source figure downloaded without edits.",
+        "sha256": "96d3d33e9ad510736b2c1cf89788babca3626d2e805bdd06819e8763e76bb046",
+        "checkedOn": "2026-11-07",
+        "visualInspection": "Inspected both downloaded angiographic panels. The source labels (a)/(b) and red collateral arrows are present. The image is an angiogram, not an AI-generated illustration."
+      }
+    },
+    {
+      "path": "media/real/starter-q054-small-rca.png",
+      "provenance": {
+        "lessonId": "shahzad2015-q054",
+        "url": "media/real/starter-q054-small-rca.png",
+        "title": "Small RCA: assess the PDA origin",
+        "caption": "Separate small-RCA angiogram. Dominance is determined by the posterior descending artery's origin; vessel size alone does not establish the pattern.",
+        "displayNotes": "Full Figure 5 is retained. Its caption identifies a small RCA and the difficulty of dominance classification. Do not label this particular image as definitively left dominant: the source caption does not provide that classification.",
+        "caseRelationship": "A different published example from the dominance comparison and collateral figures; not a before/after sequence or the book's patient.",
+        "sourceUrl": "https://link.springer.com/article/10.1134/S1064562424602026",
+        "sourceFigureUrl": "https://link.springer.com/article/10.1134/S1064562424602026/figures/5",
+        "originalImageUrl": "https://media.springernature.com/full/springer-static/image/art%3A10.1134%2FS1064562424602026/MediaObjects/11472_2025_9834_Fig5_HTML.png",
+        "author": "I. Kruzhilov; E. Ikryannikov; A. Shadrin; R. Utegenov; G. Zubkova; I. Bessonov",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": "Kruzhilov et al., Figure 5, Doklady Mathematics 110 (Suppl 1), S212-S222 (2024; online 2025), doi:10.1134/S1064562424602026. CC BY 4.0. Original source figure downloaded without edits.",
+        "sha256": "b37613f7869e20b81ee689c5c8feaf5e5bd27c67d6429d685492a0bb9e90e56d",
+        "checkedOn": "2026-11-07",
+        "visualInspection": "Inspected the downloaded single angiographic frame with the source's complete small-RCA view. No added dominance labels, arrows or crop."
+      }
+    },
+    {
+      "path": "media/real/starter-q182-arteriole.jpg",
+      "provenance": {
+        "lessonId": "shahzad2015-q182",
+        "url": "media/real/starter-q182-arteriole.jpg",
+        "title": "Arteriole in cross section",
+        "caption": "A separate arteriole micrograph provides context for a small vessel's wall and lumen. It does not measure the lesson's diameter change or numerical resistance.",
+        "displayNotes": "Source description identifies an arteriole cross section but does not name the species or organ. Do not invent either or present this as the same specimen as the larger artery image. Keep full source framing.",
+        "caseRelationship": "Separate specimen; this gallery is anatomical context, not a controlled before/after flow experiment.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arteriole-CS.jpg",
+        "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Arteriole-CS.jpg",
+        "author": "FishtailBob",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "attribution": "Arteriole cross section (Arteriole-CS.jpg), FishtailBob, Wikimedia Commons, own work. CC BY-SA 4.0. Original source image downloaded without edits; any re-encoded copy retains the same license.",
+        "sha256": "4baaf5522fbe11d2bc92566d5e6e112859a063761cf26d9037e02deff5552300",
+        "checkedOn": "2026-11-07",
+        "visualInspection": "Inspected the downloaded 640×480 histology image: an elongated, pink-stained vascular cross section is surrounded by pale tissue. Full original field and color retained."
+      }
+    },
+    {
+      "path": "media/real/starter-q182-celiac-ultrasound.jpg",
+      "provenance": {
+        "lessonId": "shahzad2015-q182",
+        "url": "media/real/starter-q182-celiac-ultrasound.jpg",
+        "title": "Celiac artery on ultrasound",
+        "caption": "A separate celiac-artery ultrasound shows vascular anatomy in a living subject. The resistance calculation remains an idealized model, not a measurement from this scan.",
+        "displayNotes": "Retain full ultrasound framing and original machine annotations. Do not infer a doubled diameter, resistance value or sixteenfold flow change from this image. This is a separate case from both microscopic specimens.",
+        "caseRelationship": "Separate ultrasound case; not the same subject as the histology images and not a diameter-change experiment.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Celiac_artery_ultrasound_110330114111_1144480.jpg",
+        "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Celiac_artery_ultrasound_110330114111_1144480.jpg",
+        "author": "Nevit Dilmen",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "attribution": "Celiac artery ultrasound 110330114111 1144480.jpg, © Nevit Dilmen, Wikimedia Commons, own work. Used under CC BY-SA 3.0. Original source image downloaded without edits; any re-encoded copy retains the same license.",
+        "sha256": "e9262e33b73dc1d313914302d40de0b26af907d9842b6d17b7b3b36077cad10b",
+        "checkedOn": "2026-11-07",
+        "visualInspection": "Inspected the downloaded 800×600 grayscale ultrasound. The complete sector, surrounding black field and machine text remain visible. No invented measurement overlays or crop."
+      }
+    }
+  ]
+}

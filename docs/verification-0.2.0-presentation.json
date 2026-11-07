@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-07T18:05:48.541985+00:00",
+  "reviewer": "ChatGPT root integration review",
+  "scope": "Display-only revision of existing Q5/Q54/Q182; no new lessons or narration. Authored content, quiz, source, audio and timing were compared byte/hash-for-hash to released v2. Lossless image pixel checks and licensed clinical gallery review retained.",
+  "assetInspection": {
+    "bundledLessons": 3,
+    "bookProgress": {
+      "completed": 3,
+      "total": 200,
+      "questionNumbers": [
+        5,
+        54,
+        182
+      ]
+    },
+    "lessons": [
+      {
+        "id": "shahzad2015-q054",
+        "version": 3,
+        "sourceQuestionId": "shahzad-raja-2015-200-practice-questions-q054",
+        "lessonSha256": "710edf2f4fb39d96e20013bb0d3547127d799bb50f110417d29459380ed7618d",
+        "quizSha256": "3f7fe6609192d77680a55cfdd59370adb37e242f6be7cdbfbf90ae6f91f57eca",
+        "authoredContentSha256": "3660cbddc0ba32b915bf7cae0a7d0ea1faf8de9b823b863bc0fcd97d7df7aec5",
+        "priorLessonSha256": "f3c1e2655ba5ba541a6eedc2929987c6f3e9c37f7e9312e2ad2dde26f24552fa",
+        "audioTimingSha256": "e9fb523de09c2a92557ee2366bb076cf705b8fd13ad47df353eaacbb17b43f60",
+        "mediaSha256": {
+          "media/audio/lesson-shahzad2015-q054-v1.mp3": "d66dc9ebd1c2e1a2bf38ec1a3751722525680149bb0e346d46cc2d766f3a48f7",
+          "media/optimized/coronary-dominance-angiograms.c05a32baa2a5.lossless.webp": "cb88d68a9e36209923d68718d5bd78f4fd300ce767d64befdd0460cc0918c378",
+          "media/optimized/coronary-palace.07db19e1ecdb.lossless.webp": "139994e9c309927c285e715b606f97e60d76efb8e76fb82ccc4ed7e2021ad78b",
+          "media/optimized/starter-q054-collaterals.96d3d33e9ad5.lossless.webp": "cdec65265b6f342ca23bbf08cd87a145cdda27a089e4e3ad31e8b657061cf6af",
+          "media/optimized/starter-q054-small-rca.b37613f7869e.lossless.webp": "a52d68f9da93f32e40c79b85030bb2a3bbd496511d575af87b35364fed1fe7be"
+        },
+        "presentationSha256": "797926ff75140ff19a21025c670d4aaf69c92eb93699ca0ea18689ab0d03f73b",
+        "teachingContentUnchanged": true,
+        "narrationBytesUnchanged": true,
+        "sourceIdentityUnchanged": true
+      },
+      {
+        "id": "shahzad2015-q005",
+        "version": 3,
+        "sourceQuestionId": "shahzad-raja-2015-200-practice-questions-q005",
+        "lessonSha256": "63e12e214a0f2c23ae2d167880598ceb028607012db16fb3b0f0de7523ab03ba",
+        "quizSha256": "2dcf69694aca9546f83285b6ecefa73553dde504d581378b43799033ae4f6b01",
+        "authoredContentSha256": "b5f639a47ddbea0c52a1d109840b631c18ded45fe6703e2c4e610ca98caf090b",
+        "priorLessonSha256": "8323906176d70628fde01aabf1be927cce3f84500a6b14ada27ee6860f692c9b",
+        "audioTimingSha256": "88b9426b0c55f94a8256f8f1c85ce32ba9442b34c3ce531413e9bad99b307579",
+        "mediaSha256": {
+          "media/audio/lesson-shahzad2015-q005-v1.mp3": "7225a777c6642472c3aac68c8912b87e23edf8bc83bac496838d32e75de04f98",
+          "media/optimized/sequestration-palace.e1916db3d6f4.lossless.webp": "79deb863fdd85dfa2aacc4df259318b2bcda8eb3f41ce815d989baf1e5b9d294",
+          "media/optimized/starter-q005-ct.3c97f005c565.lossless.webp": "27d241e97d1c0fd7ecf1b3ca5ff7a13b5b17cc930367c2f558c66780dfd16b5e",
+          "media/optimized/starter-q005-followup-ct.2af5f08468fb.lossless.webp": "8e2ab19f208b4584fdec77bf599aef3783fda8a99d2a1a312f3394cd9e2301fa",
+          "media/real/extralobar-sequestration-thoracoscopy.jpg": "ed2cf5467351caca6916a64c5eb94511f345ac497555abb1b04bab2486c3f4e8"
+        },
+        "presentationSha256": "31dbcff41de3e6c08584fa666f07edae85e9423115833c0531c7f02c16f4d151",
+        "teachingContentUnchanged": true,
+        "narrationBytesUnchanged": true,
+        "sourceIdentityUnchanged": true
+      },
+      {
+        "id": "shahzad2015-q182",
+        "version": 3,
+        "sourceQuestionId": "shahzad-raja-2015-200-practice-questions-q182",
+        "lessonSha256": "c1933607866efb09c094e6dbeb4d392602ea30c678b4fc3b649da468ee9ef68f",
+        "quizSha256": "b2f53b7c12211796d315332f6e004ac6d87eddbc05ceec46b5db62a0fffb5563",
+        "authoredContentSha256": "988cf922645ad3eb0875afd4b5a88308af55629a8fef4207ec1d32c9f77fbcf0",
+        "priorLessonSha256": "4ee9a292a2193236449119b14c2b99d02a6ccc221a0c4ea02ddf320c8fa1021d",
+        "audioTimingSha256": "e830e7ed2f456efff2f7e8daf4db12d1b5248daccba78eead3774585cb6299ab",
+        "mediaSha256": {
+          "media/audio/lesson-shahzad2015-q182-v1.mp3": "38a962c05ead5a3b9ef984cdd011ea86644067fcc8776f4105f27520fc2c4fc6",
+          "media/optimized/artery-cross-section.e835434db775.lossless.webp": "b5dcab7c98a66cf1214cdd84078bfe6ac1e5845ea3311609a892c71f57a6ff87",
+          "media/optimized/resistance-palace.60ea64fd19cc.lossless.webp": "980df65a8fa0b5862e48aeb187b7c6377d4ff5578f2f7c7e0235cf837aac35dc",
+          "media/real/starter-q182-arteriole.jpg": "4baaf5522fbe11d2bc92566d5e6e112859a063761cf26d9037e02deff5552300",
+          "media/real/starter-q182-celiac-ultrasound.jpg": "e9262e33b73dc1d313914302d40de0b26af907d9842b6d17b7b3b36077cad10b"
+        },
+        "presentationSha256": "ff58bdbfa760335d8e4dc82b761c03028e26dfe42deb1c19dad7bbedff596193",
+        "teachingContentUnchanged": true,
+        "narrationBytesUnchanged": true,
+        "sourceIdentityUnchanged": true
+      }
+    ]
+  },
+  "presentationReview": {
+    "schemaVersion": 1,
+    "status": "proposal reviewed; final integrated lesson hashes and device/browser checks belong to release review",
+    "reviewer": "ChatGPT source_recovery agent",
+    "checkedOn": "2026-11-07",
+    "humanListeningPerformed": false,
+    "physicalAndroidTested": false,
+    "newNarrationGenerated": false,
+    "newVideosRendered": false,
+    "newLessonIds": false,
+    "privateSourceDataIncluded": false,
+    "lessons": [
+      {
+        "lessonId": "shahzad2015-q054",
+        "questionNumber": 54,
+        "baseVersion": 2,
+        "proposedVersion": 3,
+        "baseline": {
+          "lessonSha256": "f3c1e2655ba5ba541a6eedc2929987c6f3e9c37f7e9312e2ad2dde26f24552fa",
+          "authoredContentSha256": "3660cbddc0ba32b915bf7cae0a7d0ea1faf8de9b823b863bc0fcd97d7df7aec5",
+          "quizSha256": "3f7fe6609192d77680a55cfdd59370adb37e242f6be7cdbfbf90ae6f91f57eca",
+          "sourceSha256": "b84d456f9477b4e9c9c97f193a435cd955227ac8d4c30a7bc4cdb22a7a8e1396",
+          "audioUrl": "media/audio/lesson-shahzad2015-q054-v1.mp3",
+          "audioSha256": "d66dc9ebd1c2e1a2bf38ec1a3751722525680149bb0e346d46cc2d766f3a48f7",
+          "timingPath": "media/audio/lesson-shahzad2015-q054-v1.timing.json",
+          "timingSha256": "e9fb523de09c2a92557ee2366bb076cf705b8fd13ad47df353eaacbb17b43f60",
+          "sourceNarrationSha256": "d7586367a753a6d65570ad62bd5540f31da410c8abaa1bfd6a84d180486730ac"
+        },
+        "presentationSha256": "797926ff75140ff19a21025c670d4aaf69c92eb93699ca0ea18689ab0d03f73b",
+        "realImagesSha256": "03e0bf9036efbdae2a9b77a46706b88c4ce4d3cdbd8662b6256e2134affec259",
+        "recapComparedWithExistingFinalScene": true,
+        "sampleRate": 24000,
+        "narrationEndSample": 1483599,
+        "galleryStartSeconds": 51.056,
+        "effectiveEndSeconds": 61.816625,
+        "tailExcludedSeconds": 9.35,
+        "audioBytesChanged": false,
+        "timingBytesChanged": false,
+        "imageCount": 3,
+        "allImagesVisuallyInspected": true,
+        "imageLicensesChecked": true,
+        "imagePixelsVerified": true
+      },
+      {
+        "lessonId": "shahzad2015-q005",
+        "questionNumber": 5,
+        "baseVersion": 2,
+        "proposedVersion": 3,
+        "baseline": {
+          "lessonSha256": "8323906176d70628fde01aabf1be927cce3f84500a6b14ada27ee6860f692c9b",
+          "authoredContentSha256": "b5f639a47ddbea0c52a1d109840b631c18ded45fe6703e2c4e610ca98caf090b",
+          "quizSha256": "2dcf69694aca9546f83285b6ecefa73553dde504d581378b43799033ae4f6b01",
+          "sourceSha256": "049d26dd61eeb89243a9214eea83c90df6efa8188c840716f883a1bce64a738e",
+          "audioUrl": "media/audio/lesson-shahzad2015-q005-v1.mp3",
+          "audioSha256": "7225a777c6642472c3aac68c8912b87e23edf8bc83bac496838d32e75de04f98",
+          "timingPath": "media/audio/lesson-shahzad2015-q005-v1.timing.json",
+          "timingSha256": "88b9426b0c55f94a8256f8f1c85ce32ba9442b34c3ce531413e9bad99b307579",
+          "sourceNarrationSha256": "ccd870aaa314f5555c254f5a635d70bea057d40c1a52a64cefa5202f67f6dccf"
+        },
+        "presentationSha256": "31dbcff41de3e6c08584fa666f07edae85e9423115833c0531c7f02c16f4d151",
+        "realImagesSha256": "c8f3c7124f8c20bcdbdfc6430f043f9cf782c5178bddf3dd1c711899569f5c9e",
+        "recapComparedWithExistingFinalScene": true,
+        "sampleRate": 24000,
+        "narrationEndSample": 1564682,
+        "galleryStartSeconds": 55.081208333333336,
+        "effectiveEndSeconds": 65.19508333333333,
+        "tailExcludedSeconds": 9.35,
+        "audioBytesChanged": false,
+        "timingBytesChanged": false,
+        "imageCount": 3,
+        "allImagesVisuallyInspected": true,
+        "imageLicensesChecked": true,
+        "imagePixelsVerified": true
+      },
+      {
+        "lessonId": "shahzad2015-q182",
+        "questionNumber": 182,
+        "baseVersion": 2,
+        "proposedVersion": 3,
+        "baseline": {
+          "lessonSha256": "4ee9a292a2193236449119b14c2b99d02a6ccc221a0c4ea02ddf320c8fa1021d",
+          "authoredContentSha256": "988cf922645ad3eb0875afd4b5a88308af55629a8fef4207ec1d32c9f77fbcf0",
+          "quizSha256": "b2f53b7c12211796d315332f6e004ac6d87eddbc05ceec46b5db62a0fffb5563",
+          "sourceSha256": "70b77d0fb6825fd40daeb06e9c2665137f50d3e257632a94b67b0a1b40925b29",
+          "audioUrl": "media/audio/lesson-shahzad2015-q182-v1.mp3",
+          "audioSha256": "38a962c05ead5a3b9ef984cdd011ea86644067fcc8776f4105f27520fc2c4fc6",
+          "timingPath": "media/audio/lesson-shahzad2015-q182-v1.timing.json",
+          "timingSha256": "e830e7ed2f456efff2f7e8daf4db12d1b5248daccba78eead3774585cb6299ab",
+          "sourceNarrationSha256": "27415dc50e1e95686bec460690f6b8a08e6a4ea9067e9285fcf6903e3735dc1c"
+        },
+        "presentationSha256": "ff58bdbfa760335d8e4dc82b761c03028e26dfe42deb1c19dad7bbedff596193",
+        "realImagesSha256": "2c99163faaf016aa95647fbf2b05675daf8f72c75c6bceed9469c6e2e5b0ff8e",
+        "recapComparedWithExistingFinalScene": true,
+        "sampleRate": 24000,
+        "narrationEndSample": 1502844,
+        "galleryStartSeconds": 51.80920833333333,
+        "effectiveEndSeconds": 62.6185,
+        "tailExcludedSeconds": 9.35,
+        "audioBytesChanged": false,
+        "timingBytesChanged": false,
+        "imageCount": 3,
+        "allImagesVisuallyInspected": true,
+        "imageLicensesChecked": true,
+        "imagePixelsVerified": true
+      }
+    ],
+    "mediaReport": "production/qa/starter-media-optimization.json",
+    "audioAudit": "production/qa/starter-audio-end-audit.json",
+    "imageSourceInventory": "production/starter-gallery-sources.json",
+    "notes": [
+      "Only the existing Q5, Q54 and Q182 teaching content is retained. No unfinished new-batch assets or lessons are referenced.",
+      "Baseline authored-content and quiz hashes are computed from the current v2 title, locus, exact scene captions/narration and quiz. The proposal does not rewrite them or approve any new source content.",
+      "All nine clinical images were visually inspected against their source descriptions. Original panels, annotations, image dimensions and full framing are retained. New image sources and licenses were checked on the recorded date.",
+      "The three Q5 figures are from the same published case; the associated bronchogenic cyst is explicitly distinguished from the sequestration. Q54 images are separate clinical examples, not the lesson occlusion or a single patient sequence. Q182 images are separate anatomical examples and do not demonstrate the numerical resistance change.",
+      "Three gallery images and the recap share the final voiced scene. All recap cues use the exact existing independently synthesized phrase voiceStart/voiceEnd boundaries. The effective end is the final recorded voiceEndSample divided by 24000; no proportional alignment or added hold is used.",
+      "Each effective end excludes the legacy nine-second silent image hold plus 0.35 seconds of final scene padding. Original MP3 and timing JSON bytes are preserved. Q5 has 21 extra decoded trailing samples after the excluded silent tail; the source audit records this rather than rescaling speech cues.",
+      "All optimized candidates must reproduce every decoded RGBA channel, alpha, dimensions, ICC profile and EXIF orientation. No resize, lossy re-encoding, clinical crop or invented anatomical annotation is permitted. Original encoded SHA-256 and licensing survive in each image descriptor.",
+      "Three JPEG originals remain unchanged because the tested lossless candidates were larger. Nine PNG assets use smaller verified lossless WebP encodings. Retaining the existing MP3 bitstream preserves audio quality; ZIP deflate may compress it reversibly for transfer."
+    ],
+    "mediaSummary": {
+      "schemaVersion": 1,
+      "method": "lossless-candidates-with-exact-decoded-rgba-verification",
+      "policy": "No resizing, lossy fallback, alpha changes, original replacement or provenance loss.",
+      "originalBytes": 13337179,
+      "optimizedBytes": 9983024,
+      "savedBytes": 3354155,
+      "savedPercent": 25.149,
+      "checkedOn": "2026-11-07",
+      "existingSixOriginalBytes": 11250031,
+      "existingSixOptimizedBytes": 8400550,
+      "addedGalleryOriginalBytes": 2087148,
+      "addedGalleryOptimizedBytes": 1582474
+    },
+    "proposalContentSha256": "5af7d4fd80cb34fdedbd455fb0a48c92eb30bd03c5cb2b915ef83cf96fe0f37c",
+    "qualityChecks": {
+      "optimizerRegressionTests": 8,
+      "starterMediaAndTimingTests": 4,
+      "allPassed": true,
+      "commands": [
+        "python -m unittest discover -s tests -p 'test_optimize_media.py' -v",
+        "python -m unittest discover -s tests -p 'test_starter_presentation.py' -v"
+      ],
+      "scope": "Exact saved-file pixel/profile/alpha/dimension checks for all12; unchanged original audio/timing hashes; existing3 authored content/source/quiz integrity;3 licensed gallery images perlesson; recap cues match original phrase timestamps."
+    }
+  },
+  "humanListeningPerformed": false,
+  "physicalAndroidTested": false
+}

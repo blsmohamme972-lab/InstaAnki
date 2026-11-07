@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-07T18:39:28.831532+00:00",
+  "scope": "App repairs and display-only updates to existing Raja Q5/Q54/Q182. No new lessons, narration or rendered videos.",
+  "activeCollection": {
+    "books": 1,
+    "produced": 3,
+    "total": 200,
+    "newProductionEnabled": false
+  },
+  "tests": {
+    "publicSnapshotPythonTests": 125,
+    "javascriptLearningFeedbackTopicTests": 29,
+    "browserScenarios": 54,
+    "independentGuidanceGeometrySamples": 132,
+    "nativeJvmAssertions": {
+      "feedback": 12,
+      "contentImporter": 34,
+      "downloadIntegrity": 32,
+      "backups": 7,
+      "urlAllowlist": 13,
+      "collectionCorrection": 17
+    },
+    "mediaRestorationTests": 23,
+    "temporaryDeliveryTests": 35
+  },
+  "androidBuild": {
+    "file": "InstaAnki-0.2.0-unsigned.apk",
+    "packageName": "com.instaanki.app",
+    "version": "0.2.0",
+    "versionCode": 3,
+    "minSdk": 26,
+    "targetSdk": 35,
+    "bytes": 12728215,
+    "sha256": "843d143b5a3d41c63254492ccc850eb15592a5d0bb6c2547cdaccb6b57c0c014",
+    "includesPrivateContent": false,
+    "signed": false,
+    "installableUpdate": false,
+    "bundle": {
+      "activeLessons": 3,
+      "mediaFiles": 15,
+      "mediaBytes": 12598645
+    },
+    "privateAssets": [],
+    "verification": "Unsigned compilation and alignment checked; NOT installable. Device/emulator testing must be reported separately."
+  },
+  "repairPack": {
+    "file": "InstaAnki-Raja-Existing-Lessons-Update.zip",
+    "bytes": 12167118,
+    "sha256": "2ad35dabeced0bdf320df0a34a315f3d53aa0032ecc4890e257ceabd7a28d801",
+    "lessonCount": 3,
+    "newLessonCount": 0,
+    "oldAppSupportsNewPlayerFeatures": false,
+    "packId": "instaanki-starter-shahzad2015-v1",
+    "version": "1.2.0",
+    "title": "Raja existing lessons — presentation repair",
+    "canonicalRebuildMatched": true
+  },
+  "media": {
+    "originalBytes": 13337179,
+    "optimizedBytes": 9983024,
+    "savedPercent": 25.149,
+    "pixelIdentical": true,
+    "freshRestorationPassed": true,
+    "restorationHttpRetry": {
+      "attemptLimit": 4,
+      "waitBudgetSeconds": 180,
+      "respectsRetryAfter": true,
+      "integrityFailuresRetried": false,
+      "regressionTests": 9
+    }
+  },
+  "deployment": {
+    "signedApkBuilt": false,
+    "originalSigningKeyAvailable": false,
+    "temporaryReleaseUploaded": false,
+    "catalogUpdated": false,
+    "pullRequestMerged": false
+  },
+  "physicalAndroidTested": false,
+  "humanListeningPerformed": false,
+  "evidence": [
+    "verification-0.2.0-presentation.json",
+    "../production/qa/starter-media-reproduction-review.json",
+    "../tests/reels-browser.cjs",
+    "../tests/test_update_release.py",
+    "../android/tests/FeedbackDataTest.java"
+  ],
+  "updateCompatibility": {
+    "requiredAppVersionCode": 3,
+    "catalog": "content/catalog-v2.json",
+    "legacyCatalogLessonOffers": 0,
+    "legacyCatalogUnchanged": true,
+    "explicitMinimumRequired": true,
+    "browserGuardChecked": true,
+    "nativeGuardBeforeNetworkChecked": true,
+    "deliveryAndRetirementCheckBothCatalogs": true
+  }
+}

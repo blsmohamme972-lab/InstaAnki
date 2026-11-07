@@ -13,7 +13,9 @@ python android/build_apk.py --include-private
 
 `--include-private` is for the user's personal APK only. It copies only `private-content/app-assets/` (currently the book cover) to `/assets/private-content/`. It does not include the extracted source questions, the original PDF, or signing secrets. Do not publish personal book material or a personal binary as a public release without checking its content and the user's instruction.
 
-The result is `dist/InstaAnki-0.1.1.apk`. The builder verifies APK signatures, zip alignment, and writes a SHA-256 checksum plus a machine-readable build report. It does not claim to have installed or run the app on a device.
+The result is `dist/InstaAnki-0.2.0.apk`. The builder verifies APK signatures, zip alignment, and writes a SHA-256 checksum plus a machine-readable build report. It stages only the active lessons' referenced media. Archived or unfinished media is retained in the workspace but excluded from the app.
+
+Signing fails closed when the original backup is missing or its certificate differs from `android/signing-identity.json`. It never creates a replacement identity for an update. For a compilation-only check without the key, run `python android/build_apk.py --unsigned`; the resulting `-unsigned.apk` cannot be installed as an update. Device playback must still be tested separately.
 
 Future versions must keep package ID `com.instaanki.app`, use the same signing key, and increase `--version-code`. Signing files live in the sibling `.instaanki-signing/` directory, outside this repository. **Back them up privately before this workspace expires. Never commit or publish them.** To use an existing identity, provide `--key-dir /private/signing/folder`.
 
@@ -31,6 +33,8 @@ AndroidNative.importZip();          // Android document picker
 AndroidNative.exportBackup();       // Android save-document picker
 AndroidNative.importBackup();       // Restore a validated backup transactionally
 AndroidNative.downloadPack(httpsUrl, sha256); // Download + verify + install a public GitHub content ZIP
+AndroidNative.downloadPackVerified(httpsUrl, sha256, sizeBytes); // Also check catalog size before installation
+AndroidNative.setImmersive(true);   // Feed only; restore system bars for other screens/dialogs
 AndroidNative.openExternal(httpsUrl);
 ```
 

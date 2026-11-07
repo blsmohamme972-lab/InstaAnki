@@ -8,6 +8,7 @@ from pathlib import Path
 import json, shutil
 from datetime import datetime, timezone
 from guidance import assemble_guidance, validate_plan
+from source_policy import SourcePolicy, SourcePolicyError, canonical_hash
 
 ROOT=Path(__file__).resolve().parents[1]
 PRIVATE=ROOT/'private-content'
@@ -16,7 +17,11 @@ TITLE='200 Practice Questions in Cardiothoracic Surgery'
 def read(p):return json.loads(p.read_text())
 def write(p,value):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(value,indent=2,ensure_ascii=False)+'\n')
 def main():
+    policy=SourcePolicy(ROOT)
+    policy.require_book(BOOK)
+    policy.source_records(policy.ledger())
     draft=read(PRIVATE/'starter-lessons-draft.json')
+    source_bindings=policy.validate_authoring(draft,draft['lessons'])
     guidance_document=read(ROOT/'production/visual-guidance.json')
     guidance_plans={item['audioLessonId']:item for item in guidance_document['lessons']}
     if len(guidance_plans)!=len(guidance_document['lessons']):
@@ -51,6 +56,8 @@ def main():
             scenes.append({'id':s['id'],'start':t['start'],'end':t['end'],'image':f"media/real/{asset['file']}" if clinical else poster,'kind':'clinical' if clinical else 'mnemonic','caption':s['headline'],'transcript':s['voice_text'],'camera':{'from':{'x':.5,'y':.5,'scale':1},'to':{'x':.5,'y':.5,'scale':1}}})
         mcq=original['mcq'];opts=mcq['options'];correct=next(i for i,x in enumerate(opts) if x['label']==mcq['correct_answer_letter'])
         lesson={'id':f'shahzad2015-q{q:03d}','version':2,'title':original['title'],'specialty':tags[original['primary_specialty_id']],'primarySpecialtyId':original['primary_specialty_id'],'taxonomyVersion':registry['version'],'tags':[{'id':x,'label':tags[x]} for x in dict.fromkeys(tag_ids)],'durationSeconds':timing['duration'],'audioUrl':timing['audioPath'].lstrip('/'),'poster':poster,'locus':original['locus'],'mnemonicSymbols':symbols[q],'scenes':scenes,'realImageOutro':{'start':timing['realImageOutro']['start'],'end':timing['realImageOutro']['end']},'realImages':[{'url':f"media/real/{asset['file']}",'title':asset['title'],'caption':asset['caption'],'displayNotes':asset['displayNotes'],'sourceUrl':asset['sourceUrl'],'author':asset['author'],'license':asset['license']['id'].replace('-',' '),'licenseUrl':asset['license']['url'],'attribution':asset['attribution'],'focusRegion':asset['focusRegion']}],'quiz':{'prompt':mcq['stem'],'options':[x['text'] for x in opts],'correctIndex':correct,'explanation':mcq['explanation']},'source':{'bookId':BOOK,'questionNumber':q,'page':original['source_question_pages'][0]['printed_page'],'answerPages':[p['printed_page'] for p in original['source_answer_pages']],'bookTitle':TITLE,'verificationNote':'Source-aligned original teaching content. Core anatomy or physiology checked against the cited references; historical treatment claims are excluded.','corroboratingSources':original.get('corroborating_sources',[])}}
+        binding=source_bindings[original['id']]
+        lesson['source'].update(questionId=binding['questionId'],evidenceSha256=canonical_hash(binding))
         lesson['visualGuidance']=assemble_guidance(plan, timing, scenes, lesson['audioUrl'], ROOT/'web')
         assert 60<=lesson['durationSeconds']<=90
         lessons.append(lesson)
@@ -69,4 +76,6 @@ def main():
     (PRIVATE/'app-assets').mkdir(exist_ok=True)
     shutil.copy2(PRIVATE/'book-cover.jpeg',PRIVATE/'app-assets/book-cover.jpeg')
     print(f'Assembled {len(lessons)} narrated lessons; production ledger: {len(completed)}/200 verified.')
-if __name__=='__main__':main()
+if __name__=='__main__':
+    try:main()
+    except SourcePolicyError as exc:raise SystemExit(f'Source policy: {exc}')

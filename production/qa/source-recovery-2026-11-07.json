@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "bookId": "shahzad-raja-2015-200-practice-questions",
+  "recoverySource": "User-provided 190-page Shahzad Raja 2015 PDF",
+  "questionCount": 200,
+  "figureCount": 32,
+  "pdfAnnotations": 198,
+  "pageRenders": 174,
+  "sourceFilesVerified": 215,
+  "ordinaryZipRoundTripVerified": true,
+  "repeatedRestoreVerified": true,
+  "archiveSha256": "53b677c1a493022b31d7536fd8095a3f7af77e667513ec39f37209cb158ba79e",
+  "archiveBytes": 27485461,
+  "archiveDelivery": "Private download; not stored in GitHub",
+  "completedQuestionNumbers": [
+    5,
+    54,
+    182
+  ],
+  "resolvedSourceReviewQuestionNumbers": [
+    37
+  ],
+  "remainingSourceReviewCount": 42,
+  "nextQuestionNumbers": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    7,
+    9,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    25,
+    26
+  ],
+  "newLessonsProduced": 0,
+  "recoveryTestsPassed": 14,
+  "extractionSha256": "e9a42aeadbc596fa304f853f8b9393ce75d00ec5184e2c2a22baf1ef331dce4a",
+  "historicalExtractionByteIdentical": false,
+  "clinicalCorrectnessOfAllAnswersVerified": false,
+  "installedApkUpdated": false
+}

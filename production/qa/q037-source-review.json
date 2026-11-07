@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "bookId": "shahzad-raja-2015-200-practice-questions",
+  "questionNumber": 37,
+  "reviewedAt": "2026-11-07T17:05:30.342087Z",
+  "scope": "Source layout and arithmetic review only; no lesson assets produced and no general clinical certification.",
+  "sourceAnswerLetter": "D",
+  "reviewedSourceFlags": [
+    "layout_sensitive_source"
+  ],
+  "remainingSourceFlags": [],
+  "sourceQuestionPages": [
+    {
+      "pdf_page": 26,
+      "printed_page": 14
+    },
+    {
+      "pdf_page": 27,
+      "printed_page": 15
+    }
+  ],
+  "sourceAnswerPages": [
+    {
+      "pdf_page": 107,
+      "printed_page": 95
+    }
+  ],
+  "normalizedFormula": "PASP = 4 × Vmax² + RAP = 4 × 3² + 7 = 43 mmHg",
+  "resolution": "Visually checked the question choices and answer-page superscript 2. Text extraction flattens 3² to 32; the exponent and arithmetic are resolved from the page image. Option E continues on the following question page.",
+  "sourcePdfSha256": "d9d1eb749fbf4c691b2a849cb105b86e198e044f081ef6485f3a0bcf28a9d969",
+  "pageRenderSha256": {
+    "pdf-page-26": "632c26f73ef86d272ad041f6f34b4af08cc1a39ebb623c14e35bcdc7644c0212",
+    "pdf-page-27": "26bad11a0afee2977de0cc861af605b4ed7b1588ea9c78ae7e28a0d7f1fcc0d7",
+    "pdf-page-107": "c1a3111b5f3927fe73d7a35315cb98a7f33760e79eb8e49fae91992bfbce3cc9"
+  },
+  "lessonProduced": false
+}

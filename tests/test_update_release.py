@@ -95,6 +95,57 @@ class PackInspectionTest(unittest.TestCase):
     def inspect(self):
         return delivery.inspect_pack(self.pack, self.web, self.repo)
 
+    def prepare_saved_fixture(self):
+        self.build(manifest_change={"version": "1.2.0", "title": "Synthetic saved presentation repair"})
+        with zipfile.ZipFile(self.pack, "a") as archive:
+            archive.comment = b"A"
+        checked = self.inspect()
+        write_json(self.repo / delivery.PREPARED_PACK_REPORT, {"repairPack": {
+            "packId": delivery.PACK_ID, "version": "1.2.0", "title": checked["manifest"]["title"],
+            "bytes": checked["zipBytes"], "sha256": checked["zipSha256"]}})
+        return checked
+
+    def test_saved_prepared_identity_passes_without_creating_a_delivery_record(self):
+        checked = self.prepare_saved_fixture()
+        before = (self.repo / delivery.PREPARED_PACK_REPORT).read_bytes()
+        delivery.check_prepared_pack(checked, self.repo)
+        self.assertEqual((self.repo / delivery.PREPARED_PACK_REPORT).read_bytes(), before)
+        self.assertFalse((self.repo / "content/deliveries").exists())
+
+    def test_changed_title_is_blocked_under_the_saved_prepared_version(self):
+        self.prepare_saved_fixture()
+        self.build(manifest_change={"version": "1.2.0", "title": "A different package title"})
+        # All lesson/source/payload checks still pass; the prepared identity must not.
+        with self.assertRaisesRegex(ValueError, "different pack ID or title"):
+            delivery.check_prepared_pack(self.inspect(), self.repo)
+
+    def test_changed_complete_zip_bytes_are_blocked_with_unchanged_manifest(self):
+        prepared = self.prepare_saved_fixture()
+        for comment in (b"B", b"Different complete ZIP, unchanged valid lesson payloads"):
+            with self.subTest(comment=comment):
+                with zipfile.ZipFile(self.pack, "a") as archive:
+                    archive.comment = comment
+                changed = self.inspect()
+                if comment == b"B":
+                    self.assertEqual(changed["zipBytes"], prepared["zipBytes"])
+                with self.assertRaisesRegex(ValueError, "different ZIP bytes"):
+                    delivery.check_prepared_pack(changed, self.repo)
+
+    def test_prepared_version_floor_and_higher_version_keep_normal_history_rules(self):
+        self.prepare_saved_fixture()
+        self.build(manifest_change={"version": "1.1.9"})
+        with self.assertRaisesRegex(ValueError, "precede the already prepared"):
+            delivery.check_prepared_pack(self.inspect(), self.repo)
+        self.build(manifest_change={"version": "1.3.0", "title": "Explicit later reviewed fixture"})
+        higher = self.inspect()
+        delivery.check_prepared_pack(higher, self.repo)
+        catalog = {"schemaVersion": 1, "channel": delivery.CATALOG_CHANNEL, "repository": delivery.REPOSITORY, "packs": []}
+        proposal, _ = delivery.make_proposal(higher, catalog, 30, now=NOW)
+        self.assertEqual(proposal["packs"][0]["version"], "1.3.0")
+        proposal["packs"][0]["version"] = "1.4.0"
+        with self.assertRaisesRegex(ValueError, "older version"):
+            delivery.make_proposal(higher, proposal, 30, now=NOW)
+
     def test_source_checked_three_lesson_pack_passes_real_policy_gate(self):
         self.build()
         report = self.inspect()

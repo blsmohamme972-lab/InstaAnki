@@ -23,6 +23,8 @@ The old 0.1.1 app does not enforce minimum app versions. Its `content/catalog.js
 3. Check the source and media review evidence for the existing three lessons. The workflow uses `tools/prepare_existing_media.py --download-sources` before source checks or packaging. That script restores the pinned reviewed public images and verifies the exact expected output bytes. It pins Pillow 13.0.0 and verifies the encoder; it does not generate art. See [media reproduction](media-reproduction.md).
 4. Choose a new stable content version when bytes have changed. The currently prepared three-lesson content pack is version `1.2.0`, with integer lesson versions `3`. Use the actual reviewed pack version for its first publication; use a later version for a later changed archive. Never reuse a version to repair a URL, replace bytes, or revive a retired release.
 
+The saved version `1.2.0` is bound by `repairPack` in [the verification report](verification-0.2.0-app.json): pack ID `instaanki-starter-shahzad2015-v1`, manifest title **Raja existing lessons — presentation repair**, **12,167,118 bytes**, SHA-256 `2ad35dabeced0bdf320df0a34a315f3d53aa0032ecc4890e257ceabd7a28d801`. The workflow preserves that exact title, including the em dash. The delivery helper rejects a lower version, or a different identity or complete ZIP fingerprint under `1.2.0`, even before the first GitHub release exists. A higher explicit version still undergoes all source, media and delivery-history checks. This prepared-artifact record does not claim that a release was uploaded or a catalog entry activated.
+
 GitHub documents [manual workflow dispatch](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow), [the automatic workflow token](https://docs.github.com/en/actions/concepts/security/github_token), and [repository Actions settings](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository). A PR opened by the normal Actions token may require a repository writer to approve its checks. Review the PR's actual check state before merging.
 
 Publication remains queued until the reviewed merge is approved and completed. Do not add a branch-push publisher or retarget a tag to work around that approval. GitHub also requires workflow-write authority when a release target changes workflow files relative to the default branch; its ordinary `GITHUB_TOKEN` cannot receive that authority. The [release API documentation](https://docs.github.com/en/rest/releases/releases#create-a-release) describes this restriction.
@@ -83,6 +85,7 @@ python3 -m unittest discover -s tests -p 'test_update_release.py' -v
 python3 tools/build_pack.py \
   --pack-id instaanki-starter-shahzad2015-v1 \
   --version 1.2.0 \
+  --title 'Raja existing lessons — presentation repair' \
   --output dist/InstaAnki-Raja-Starter-1.2.0.zip
 python3 tools/prepare_update_release.py prepare \
   --pack dist/InstaAnki-Raja-Starter-1.2.0.zip \

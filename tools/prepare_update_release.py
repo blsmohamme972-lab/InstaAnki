@@ -30,6 +30,7 @@ BOOK_ID = "shahzad-raja-2015-200-practice-questions"
 PACK_ID = "instaanki-starter-shahzad2015-v1"
 MIN_APP_VERSION_CODE = 3
 CATALOG_CHANNEL = "app-v3"
+PREPARED_PACK_REPORT = Path("docs/verification-0.2.0-app.json")
 LESSON_IDS = {"shahzad2015-q005", "shahzad2015-q054", "shahzad2015-q182"}
 VERSION = re.compile(r"(0|[1-9][0-9]{0,8})\.(0|[1-9][0-9]{0,8})\.(0|[1-9][0-9]{0,8})\Z")
 
@@ -162,6 +163,33 @@ def check_history(checked, records_dir):
         if record["version"] == checked["manifest"]["version"]:
             same_version = record
     return same_version
+
+
+def check_prepared_pack(checked, repo=ROOT):
+    """Reserve the saved manual artifact's version without claiming a release."""
+    try:
+        report = json.loads((Path(repo) / PREPARED_PACK_REPORT).read_text())
+        prepared = report["repairPack"]
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        raise ValueError("The prepared repair-pack verification is missing or unreadable") from error
+    if (not isinstance(prepared, dict) or prepared.get("packId") != PACK_ID
+            or not isinstance(prepared.get("title"), str) or not prepared["title"].strip()
+            or type(prepared.get("bytes")) is not int or prepared["bytes"] <= 0
+            or not isinstance(prepared.get("sha256"), str)
+            or not re.fullmatch(r"[a-f0-9]{64}", prepared["sha256"])):
+        raise ValueError("The prepared repair-pack verification lacks its exact identity and ZIP fingerprint")
+    prepared_version = version_tuple(prepared.get("version"))
+    manifest = checked["manifest"]
+    candidate_version = version_tuple(manifest.get("version"))
+    if candidate_version < prepared_version:
+        raise ValueError("A content version cannot precede the already prepared repair pack")
+    if candidate_version == prepared_version:
+        identifiers = {manifest[key] for key in ("id", "packId") if key in manifest}
+        if identifiers != {prepared["packId"]} or manifest.get("title") != prepared["title"]:
+            raise ValueError("This prepared version has a different pack ID or title; preserve its exact identity or increase the version")
+        if checked["zipBytes"] != prepared["bytes"] or checked["zipSha256"] != prepared["sha256"]:
+            raise ValueError("This prepared version has different ZIP bytes; use the saved verified artifact or increase the version")
+    # A higher explicit version still needs the unchanged source and delivery-history gates.
 
 
 def make_proposal(checked, catalog, retention_days, now=None, prior_delivery=None):
@@ -400,6 +428,7 @@ def main():
             raise ValueError("Keep the legacy catalog packs empty; review unexpected legacy download offers first")
         catalog = load_catalog(args.catalog)
         checked = inspect_pack(args.pack, args.web_root)
+        check_prepared_pack(checked)
         previous = check_history(checked, args.records_dir)
         proposed, delivery = make_proposal(checked, catalog, args.retention_days, prior_delivery=previous)
         delivery.setdefault("sourceCommit", args.source_commit)

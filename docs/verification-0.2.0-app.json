@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-07T18:33:51.320642+00:00",
+  "checkedAt": "2026-11-07T18:39:28.831532+00:00",
   "scope": "App repairs and display-only updates to existing Raja Q5/Q54/Q182. No new lessons, narration or rendered videos.",
   "activeCollection": {
     "books": 1,
@@ -9,7 +9,7 @@
     "newProductionEnabled": false
   },
   "tests": {
-    "publicSnapshotPythonTests": 121,
+    "publicSnapshotPythonTests": 125,
     "javascriptLearningFeedbackTopicTests": 29,
     "browserScenarios": 54,
     "independentGuidanceGeometrySamples": 132,
@@ -21,7 +21,8 @@
       "urlAllowlist": 13,
       "collectionCorrection": 17
     },
-    "mediaRestorationTests": 23
+    "mediaRestorationTests": 23,
+    "temporaryDeliveryTests": 35
   },
   "androidBuild": {
     "file": "InstaAnki-0.2.0-unsigned.apk",
@@ -49,7 +50,11 @@
     "sha256": "2ad35dabeced0bdf320df0a34a315f3d53aa0032ecc4890e257ceabd7a28d801",
     "lessonCount": 3,
     "newLessonCount": 0,
-    "oldAppSupportsNewPlayerFeatures": false
+    "oldAppSupportsNewPlayerFeatures": false,
+    "packId": "instaanki-starter-shahzad2015-v1",
+    "version": "1.2.0",
+    "title": "Raja existing lessons — presentation repair",
+    "canonicalRebuildMatched": true
   },
   "media": {
     "originalBytes": 13337179,

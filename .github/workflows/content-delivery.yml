@@ -13,7 +13,7 @@ on:
           - retire
           - check-retirement
       version:
-        description: Stable content version, for example 1.1.0; never reuse it for different bytes
+        description: Stable content version, for example 1.2.0; never reuse it for different bytes
         type: string
         required: true
       retention_days:
@@ -82,7 +82,7 @@ jobs:
           python3 tools/build_pack.py \
             --pack-id instaanki-starter-shahzad2015-v1 \
             --version "$CONTENT_VERSION" \
-            --title 'Raja: existing lessons update' \
+            --title 'Raja existing lessons — presentation repair' \
             --output "dist/InstaAnki-Raja-Starter-$CONTENT_VERSION.zip"
           python3 tools/prepare_update_release.py prepare \
             --pack "dist/InstaAnki-Raja-Starter-$CONTENT_VERSION.zip" \

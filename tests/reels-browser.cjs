@@ -11,6 +11,8 @@ const { loadRajaStarterFixture, routeRajaStarterFixture } = require('./helpers/r
 const web = path.resolve(__dirname, '../web');
 const output = path.resolve(__dirname, '../test-results/reels');
 const fixture = loadRajaStarterFixture(web);
+const updatesOnly = process.argv.includes('--updates-only');
+const catalogUrl = 'https://raw.githubusercontent.com/blsmohamme972-lab/InstaAnki/main/content/catalog-v2.json';
 const mime = { '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.css': 'text/css', '.mp3': 'audio/mpeg', '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg' };
 const csp = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https:; object-src 'none'; base-uri 'none'";
 const server = http.createServer((request, response) => {
@@ -36,20 +38,20 @@ async function until(page, predicate, arg) {
   while (Date.now() < deadline) { if (await page.evaluate(predicate, arg)) return; await page.waitForTimeout(40); }
   throw new Error('Browser condition timed out: ' + predicate.toString());
 }
-async function fresh(size = { width: 390, height: 844 }, packs = null, content = fixture) {
+async function fresh(size = { width: 390, height: 844 }, packs = null, content = fixture, appVersionCode = 3) {
   const context = await browser.newContext({ viewport: size, hasTouch: size.width < 700, isMobile: size.width < 700, deviceScaleFactor: 1 });
   await context.route('https://**/*', route => route.abort());
   await routeRajaStarterFixture(context, content);
-  await context.addInitScript(packs => {
+  await context.addInitScript(({ packs, appVersionCode }) => {
     localStorage.setItem('instaanki.state.v1', JSON.stringify({ schemaVersion: 1, lessons: {}, reviews: [], settings: { autoPlay: false, autoCheckUpdates: false, reduceMotion: true, newPerDay: 50 } }));
     if (packs) {
-      window.testPacks = packs; window.testImmersive = [];
-      window.AndroidNative = { getItem: key => localStorage.getItem(key), setItem: (key, value) => localStorage.setItem(key, value), removeItem: key => localStorage.removeItem(key), listPacks: () => JSON.stringify(window.testPacks), getAppInfo: () => JSON.stringify({ version: 'test', versionCode: 3 }), setImmersive: value => window.testImmersive.push(value) };
+      window.testPacks = packs; window.testImmersive = []; window.testDownloads = [];
+      window.AndroidNative = { getItem: key => localStorage.getItem(key), setItem: (key, value) => localStorage.setItem(key, value), removeItem: key => localStorage.removeItem(key), listPacks: () => JSON.stringify(window.testPacks), getAppInfo: () => JSON.stringify({ version: 'test', versionCode: appVersionCode }), setImmersive: value => window.testImmersive.push(value), downloadPack: (...args) => window.testDownloads.push({ method: 'legacy', args }), downloadPackVerified: (...args) => window.testDownloads.push({ method: 'verified', args }), downloadPackCompatible: (...args) => window.testDownloads.push({ method: 'compatible', args }) };
     }
     window.testFrames = { scheduled: 0, fired: 0 };
     const raf = window.requestAnimationFrame.bind(window);
     window.requestAnimationFrame = callback => { window.testFrames.scheduled++; return raf(time => { window.testFrames.fired++; callback(time); }); };
-  }, packs);
+  }, { packs, appVersionCode });
   const page = await context.newPage(); page.on('pageerror', error => errors.push(error.message));
   await page.goto(origin);
   await page.waitForSelector('#lesson-card:not([hidden])');
@@ -97,6 +99,78 @@ async function visibleCounts(page) {
   const lessons = await page.locator('[data-practice-lesson]').count();
   return { books, lessons };
 }
+async function updateCompatibilityChecks() {
+  await check('Update catalog enforces explicit app-version requirements before every download path', async () => {
+    const { context, page } = await fresh(undefined, [], fixture, 2);
+    const requests = [];
+    let catalog;
+    const base = { id: 'compatibility-fixture', title: 'Compatibility test package', version: '1.0.0', url: 'https://example.invalid/lesson-pack.zip', sha256: 'a'.repeat(64), sizeBytes: 12345, minAppVersionCode: 3, lessonVersions: { [fixture.lessons[0].id]: fixture.lessons[0].version + 1 } };
+    const show = async packs => {
+      catalog = { schemaVersion: 1, channel: 'app-v3', packs };
+      if (await page.locator('#modal-backdrop').isVisible()) await page.locator('[data-action="close-modal"]').click();
+      await page.locator('#screen-settings [data-action="check-updates"]').click();
+      await until(page, () => !document.querySelector('#modal-body').textContent.includes('Checking the release catalog'));
+    };
+    const bypassButton = async id => page.evaluate(id => {
+      const button = document.createElement('button'); button.dataset.downloadPack = id;
+      document.body.append(button); button.click(); button.remove();
+    }, id);
+    try {
+      page.on('request', request => { if (request.url().includes('/content/catalog')) requests.push(request.url()); });
+      await page.route(catalogUrl, route => route.fulfill({ json: catalog }));
+      await page.locator('[data-tab="settings"]').click();
+      const state = await page.evaluate(() => localStorage.getItem(Learning.storageKey));
+      await show([base]);
+      assert.match(await page.locator('.update-requirement').textContent(), /build 3 or later.*build 2.*Update the app first/);
+      assert.equal(await page.locator('[data-download-pack]').count(), 0);
+      await bypassButton(base.id);
+      assert.match(await page.locator('#toast').textContent(), /Update the app first/);
+      assert.deepEqual(await page.evaluate(() => testDownloads), []);
+      await page.screenshot({ path: path.join(output, 'update-requires-newer-app.png') });
+
+      const invalid = [undefined, null, 0, -1, 2.5, '3', true, 2147483648, Number.MAX_SAFE_INTEGER + 1, [3], { minimum: 3 }];
+      for (const [index, minimum] of invalid.entries()) {
+        const pack = { ...base, id: `invalid-minimum-${index}`, minAppVersionCode: minimum };
+        if (minimum === undefined) delete pack.minAppVersionCode;
+        await show([pack]);
+        assert.match(await page.locator('.update-requirement').textContent(), /missing or invalid app-version requirement/);
+        assert.equal(await page.locator('[data-download-pack]').count(), 0);
+        await bypassButton(pack.id);
+        assert.match(await page.locator('#toast').textContent(), /missing or invalid app-version requirement/);
+        assert.deepEqual(await page.evaluate(() => testDownloads), [], `Invalid minimum reached native bridge: ${JSON.stringify(minimum)}`);
+      }
+
+      // A package already satisfied by lesson versions remains current, even if
+      // its new minimum metadata would block a fresh download on this app.
+      await show([{ ...base, minAppVersionCode: 99, lessonVersions: Object.fromEntries(fixture.lessons.map(lesson => [lesson.id, lesson.version])) }]);
+      assert.equal(await page.locator('[data-update-pack]').count(), 0);
+      assert.match(await page.locator('#modal-body').textContent(), /All published lessons.*already on this device/);
+      await page.evaluate(id => { testPacks = [{ packId: id, manifest: { version: '1.0.0' } }]; }, base.id);
+      const currentByPack = { ...base }; delete currentByPack.lessonVersions; delete currentByPack.minAppVersionCode;
+      await show([currentByPack]);
+      assert.equal(await page.locator('[data-update-pack]').count(), 0, 'Existing native pack-version detection changed');
+      await page.evaluate(() => { testPacks = []; });
+
+      const compatible = { ...base, minAppVersionCode: 2 };
+      await show([compatible]); await page.locator(`[data-download-pack="${base.id}"]`).click();
+      assert.deepEqual(await page.evaluate(() => testDownloads), [{ method: 'compatible', args: [base.url, base.sha256, base.sizeBytes, 2] }]);
+      await page.evaluate(() => { delete AndroidNative.downloadPackCompatible; window.dispatchEvent(new CustomEvent('instaanki:error', { detail: { message: 'Fixture download completed' } })); });
+      await show([{ ...base, minAppVersionCode: 1 }]); await page.locator(`[data-download-pack="${base.id}"]`).click();
+      assert.deepEqual(await page.evaluate(() => testDownloads.at(-1)), { method: 'verified', args: [base.url, base.sha256, base.sizeBytes] });
+      assert.equal(await page.evaluate(() => localStorage.getItem(Learning.storageKey)), state);
+      assert.ok(requests.length >= invalid.length + 4);
+      assert.ok(requests.every(url => url === catalogUrl), 'The repaired app requested the legacy catalog');
+    } finally { await context.close(); }
+
+    const repaired = await fresh(undefined, [], fixture, 3);
+    try {
+      await repaired.page.route(catalogUrl, route => route.fulfill({ json: { schemaVersion: 1, channel: 'app-v3', packs: [base] } }));
+      await repaired.page.locator('[data-tab="settings"]').click(); await repaired.page.locator('#screen-settings [data-action="check-updates"]').click();
+      await repaired.page.locator(`[data-download-pack="${base.id}"]`).click();
+      assert.deepEqual(await repaired.page.evaluate(() => testDownloads), [{ method: 'compatible', args: [base.url, base.sha256, base.sizeBytes, 3] }]);
+    } finally { await repaired.context.close(); }
+  });
+}
 async function main() {
   fs.mkdirSync(output, { recursive: true });
   for (const lesson of fixture.lessons) {
@@ -106,6 +180,12 @@ async function main() {
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   origin = `http://127.0.0.1:${server.address().port}`;
   browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+  await updateCompatibilityChecks();
+  if (updatesOnly) {
+    assert.deepEqual(errors, []);
+    fs.writeFileSync(path.join(output, 'update-compatibility-report.json'), JSON.stringify({ passed: passed.length, tests: passed, invalidMinimumCases: 11, pageErrors: errors, physicalAndroidTested: false }, null, 2) + '\n');
+    await browser.close(); browser = null; await new Promise(resolve => server.close(resolve)); return;
+  }
   for (const size of [{ width: 390, height: 844 }, { width: 320, height: 568 }, { width: 1280, height: 900 }]) {
     await check(`Full media surface, contained images and usable MCQ at ${size.width}×${size.height}`, async () => {
       const { context, page } = await fresh(size);
@@ -286,6 +366,6 @@ async function main() {
 }
 main().catch(async error => {
   console.error(error); fs.mkdirSync(output, { recursive: true });
-  fs.writeFileSync(path.join(output, 'failure.json'), JSON.stringify({ error: error.message, stack: error.stack, passed, pageErrors: errors }, null, 2));
+  fs.writeFileSync(path.join(output, updatesOnly ? 'update-compatibility-failure.json' : 'failure.json'), JSON.stringify({ error: error.message, stack: error.stack, passed, pageErrors: errors }, null, 2));
   if (browser) await browser.close().catch(() => {}); server.close(); process.exitCode = 1;
 });

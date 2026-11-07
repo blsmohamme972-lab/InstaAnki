@@ -65,7 +65,9 @@ The [0.1.1 release notes](docs/RELEASE_NOTES_0.1.1.md) and [verification report]
 
 ## Content updates and current limits
 
-The app can import ZIP lessons and check [the content catalog](content/catalog.json). At verification time, `catalog.packs` is empty and no published GitHub Release download is recorded. The downloader exists, but an end-to-end live Release download has not been verified.
+The repaired app checks [catalog-v2.json](content/catalog-v2.json), which requires explicit minimum app versions for downloadable packages. The existing three-lesson presentation update requires app 0.2.0 (version code 3). Its ending, clinical gallery and recap need the repaired player; a ZIP cannot install that player code. The older app continues reading the separate [legacy catalog](content/catalog.json), whose lesson list stays empty because it cannot enforce a minimum app version.
+
+Both catalogs currently contain no download offers, and no published GitHub Release download is recorded. Temporary publication is queued behind approval and merge of the reviewed workflow; no branch-push publication workaround is used. An end-to-end live Release download has not been verified.
 
 Interface OTA updates and automatic in-app APK installation are **not implemented**. Interface or native-code changes require a new APK signed with the same key, installed through Android. Content-only packs preserve local learning history. Checksums detect changes relative to the catalog; they do not authenticate a publisher.
 

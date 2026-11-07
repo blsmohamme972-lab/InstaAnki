@@ -24,7 +24,7 @@ async function main(){
  const ctx=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,hasTouch:true,isMobile:true});
  await routeRajaStarterFixture(ctx,fixture);
  const page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.route('https://raw.githubusercontent.com/blsmohamme972-lab/InstaAnki/main/content/catalog.json',r=>r.fulfill({json:{schemaVersion:1,packs:[],latestApp:{version:'0.1.0',versionCode:1,url:'https://github.com/blsmohamme972-lab/InstaAnki/releases'}}}));
+ await page.route('https://raw.githubusercontent.com/blsmohamme972-lab/InstaAnki/main/content/catalog-v2.json',r=>r.fulfill({json:{schemaVersion:1,packs:[],latestApp:{version:'0.1.0',versionCode:1,url:'https://github.com/blsmohamme972-lab/InstaAnki/releases'}}}));
  await page.addInitScript(()=>{if(!localStorage.getItem('instaanki.state.v1'))localStorage.setItem('instaanki.state.v1',JSON.stringify({schemaVersion:1,settings:{autoPlay:false,autoCheckUpdates:false},lessons:{},reviews:[]}));});
  await page.goto(origin);await page.waitForSelector('#lesson-card:not([hidden])');
  await check('all three lessons load; real MP3 metadata decodes',async()=>{assert.equal(await page.locator('#lesson-position').textContent(),'01 / 03');await until(page,()=>document.querySelector('audio').readyState>=1);const d=await page.locator('audio').evaluate(a=>a.duration);assert.ok(Math.abs(d-lessons[0].durationSeconds)<.2);});

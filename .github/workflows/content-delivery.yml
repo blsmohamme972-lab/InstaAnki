@@ -86,7 +86,8 @@ jobs:
             --output "dist/InstaAnki-Raja-Starter-$CONTENT_VERSION.zip"
           python3 tools/prepare_update_release.py prepare \
             --pack "dist/InstaAnki-Raja-Starter-$CONTENT_VERSION.zip" \
-            --catalog content/catalog.json \
+            --catalog content/catalog-v2.json \
+            --legacy-catalog content/catalog.json \
             --output-dir dist/update-release \
             --retention-days "$RETENTION_DAYS" \
             --source-commit "$SOURCE_COMMIT"
@@ -129,7 +130,8 @@ jobs:
         run: |
           python3 tools/prepare_update_release.py retire \
             --delivery "content/deliveries/$DELIVERY_TAG.json" \
-            --catalog content/catalog.json \
+            --catalog content/catalog-v2.json \
+            --legacy-catalog content/catalog.json \
             --output-dir dist/update-release
 
       - name: Propose only the catalog and delivery record through a pull request
@@ -151,11 +153,12 @@ jobs:
             exit 1
           fi
           mkdir -p content/deliveries
-          cp dist/update-release/catalog.proposed.json content/catalog.json
+          cp dist/update-release/catalog.proposed.json content/catalog-v2.json
           cp dist/update-release/delivery.json "content/deliveries/$DELIVERY_TAG.json"
           git switch -c "$BRANCH"
           # Exact text allowlist: no media, ZIP, private source, or signing data enters Git.
-          git add -- content/catalog.json "content/deliveries/$DELIVERY_TAG.json"
+          git diff --exit-code -- content/catalog.json
+          git add -- content/catalog-v2.json "content/deliveries/$DELIVERY_TAG.json"
           if git diff --cached --quiet; then
             echo 'The reviewed catalog and delivery record already match. No PR is needed.'
             exit 0
@@ -215,7 +218,8 @@ jobs:
           CURRENT_HEAD="$(gh api "repos/$GH_REPO/commits/$DEFAULT_BRANCH" --jq '.sha')"
           python3 tools/prepare_update_release.py check-retired \
             --delivery "content/deliveries/content-raja-$CONTENT_VERSION.json" \
-            --catalog content/catalog.json \
+            --catalog content/catalog-v2.json \
+            --legacy-catalog content/catalog.json \
             --observed-default-head "$OBSERVED_HEAD" \
             --current-default-head "$CURRENT_HEAD" | tee retirement-check.json
           printf '\nRetirement check passed. No release asset was deleted; any deletion remains a separate manual action after checking the live catalog again.\n' >> "$GITHUB_STEP_SUMMARY"

@@ -22,6 +22,28 @@ final class PackDownloader {
 
     interface Progress { void update(long received, long total); }
 
+    static void requireCompatibleApp(double minimumAppVersionCode, int installedAppVersionCode) throws IOException {
+        if (Double.isNaN(minimumAppVersionCode) || Double.isInfinite(minimumAppVersionCode)
+                || minimumAppVersionCode < 1 || minimumAppVersionCode > Integer.MAX_VALUE
+                || minimumAppVersionCode != Math.rint(minimumAppVersionCode)) {
+            throw new IOException("The update catalog has an invalid minimum app version. Nothing was installed.");
+        }
+        if (installedAppVersionCode < 1) {
+            throw new IOException("The installed app version could not be verified. Nothing was installed.");
+        }
+        if (installedAppVersionCode < minimumAppVersionCode) {
+            throw new IOException("This lesson package needs a newer InstaAnki app. Update the app before downloading. Nothing was installed.");
+        }
+    }
+
+    static File downloadCompatible(String address, String expectedHash, long catalogBytes,
+                                   double minimumAppVersionCode, int installedAppVersionCode,
+                                   File cache, Progress progress) throws Exception {
+        // Check compatibility before URL handling, cache creation, or a network request.
+        requireCompatibleApp(minimumAppVersionCode, installedAppVersionCode);
+        return download(address, expectedHash, catalogBytes, cache, progress);
+    }
+
     static File download(String address, String expectedHash, File cache, Progress progress) throws Exception {
         return download(address, expectedHash, -1, cache, progress);
     }

@@ -20,6 +20,8 @@ Reports record a reason, optional comment, exact lesson ID/version and available
 
 The importer keeps atomic rollback and cold-start recovery. Download checks include the complete ZIP's SHA-256 and catalog byte size. Friendly errors identify incomplete/corrupt downloads without replacing installed content. Backup migrations preserve existing learning and new feedback fields.
 
+The repaired app reads `content/catalog-v2.json` and requires an explicit, valid minimum app version before offering or starting a package download. Android independently checks that requirement before any network request or cache write. These presentation changes require app version code 3. The old app ignores minimum-version fields, so its separate legacy catalog keeps an empty lesson list; it can later announce a verified signed APK. A new content ZIP alone cannot repair an old player.
+
 ## Size and image fidelity
 
 The 12-image set totals 13,337,179 bytes before optimization and 9,983,024 bytes afterward: **25.149% smaller**. Nine PNGs use verified lossless WebP; three JPEG originals remain because tested lossless alternatives were larger. Every decoded RGBA channel, alpha, dimensions, ICC profile and orientation was checked. There is no resizing or lossy fallback.

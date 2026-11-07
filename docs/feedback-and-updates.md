@@ -18,4 +18,6 @@ The original 0.1.1 app requires a full close from Android's recent-apps screen a
 
 If you see an incomplete-ZIP message, download the entire ZIP again and retry. Keep the previous installed app and its data. A lesson package updates content; app features require an APK signed with the same original Android signing identity. An APK signed with a different key cannot safely replace that installation. Until a compatible app update is available, the existing app can continue to use verified lesson-package imports.
 
+The current three-lesson presentation update needs app **0.2.0 (version code 3)** for the new ending, clinical gallery and recap. Its ZIP cannot add that player code to 0.1.1. The repaired app reads a separate update catalog and blocks a package that requires a newer app before downloading; the old app's lesson catalog remains empty because it cannot enforce that requirement. The small Raja-only withdrawal ZIP remains the separate correction for removing the unrelated publication on 0.1.1.
+
 Learning backups include the new feedback and visibility preferences. Older backups without those fields remain supported. Restoring a backup replaces the saved learning snapshot, so export the current snapshot first if you may need to return to it.

@@ -12,6 +12,10 @@ The archive contains `manifest.json`, `lessons.json`, and only referenced public
 
 Content delivery updates lesson data and media. Interface changes, new native feedback export, immersive playback, and other APK features require a compatible APK signed with the original signing identity. A content ZIP does not install those features. Keep the current app installed and retain a learning backup.
 
+The current presentation update requires **InstaAnki 0.2.0, app version code 3**. Earlier apps can understand the ZIP container, but cannot apply the new narration endpoint, multi-image gallery or narrated recap. The delivery tool therefore records `minAppVersionCode: 3` and publishes offers only through `content/catalog-v2.json`, with the `app-v3` channel marker. The repaired player checks that minimum before offering or starting a download, and the native downloader checks it again before network or cache writes.
+
+The old 0.1.1 app does not enforce minimum app versions. Its `content/catalog.json` must keep `packs: []`; changing a minimum-version field in that legacy catalog would not protect the old app. The legacy catalog can later advertise a verified same-key APK through `latestApp`. Both catalogs are currently empty of lesson offers. Importing the new content ZIP into an old app must not be described as installing the player repair.
+
 ## Before the first run
 
 1. Review and merge the app/source-check changes and this workflow through the normal code-review process. A manually dispatched workflow must exist on the default branch. Run it from that branch.
@@ -20,6 +24,8 @@ Content delivery updates lesson data and media. Interface changes, new native fe
 4. Choose a new stable content version when bytes have changed. The currently prepared three-lesson content pack is version `1.2.0`, with integer lesson versions `3`. Use the actual reviewed pack version for its first publication; use a later version for a later changed archive. Never reuse a version to repair a URL, replace bytes, or revive a retired release.
 
 GitHub documents [manual workflow dispatch](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow), [the automatic workflow token](https://docs.github.com/en/actions/concepts/security/github_token), and [repository Actions settings](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository). A PR opened by the normal Actions token may require a repository writer to approve its checks. Review the PR's actual check state before merging.
+
+Publication remains queued until the reviewed merge is approved and completed. Do not add a branch-push publisher or retarget a tag to work around that approval. GitHub also requires workflow-write authority when a release target changes workflow files relative to the default branch; its ordinary `GITHUB_TOKEN` cannot receive that authority. The [release API documentation](https://docs.github.com/en/rest/releases/releases#create-a-release) describes this restriction.
 
 ## Publish a temporary ZIP
 
@@ -37,12 +43,12 @@ The workflow performs these steps:
 2. Compares the archive against current reviewed public lessons, source bindings, truthful publication counts, and every referenced media hash. Extra files, wrong source IDs, another publication, changed unreviewed teaching, and inflated lesson counts stop the run.
 3. Creates a draft GitHub release named `content-raja-VERSION` and uploads one asset, `InstaAnki-Raja-Starter-VERSION.zip`. A content release is not marked as the latest app release. If an asset of that name already exists, the workflow downloads and checks it; it never overwrites it.
 4. Downloads the actual remote asset. Its byte size and whole-file SHA-256 must match the prepared ZIP, and GitHub's asset metadata and reported digest must agree. Only then is the release published.
-5. Creates `delivery/content-raja-VERSION` and opens a reviewable PR. The only committed paths are `content/catalog.json` and `content/deliveries/content-raja-VERSION.json`. Images and ZIPs are never committed to Git history. The PR contains the URL, complete ZIP checksum, byte size, stable IDs, lesson versions, source commit and retention date.
+5. Creates `delivery/content-raja-VERSION` and opens a reviewable PR. The only committed paths are `content/catalog-v2.json` and `content/deliveries/content-raja-VERSION.json`. It verifies that the legacy catalog was not changed. Images and ZIPs are never committed to Git history. The PR contains the URL, complete ZIP checksum, byte size, stable IDs, lesson versions, minimum app version, source commit and retention date.
 6. Retains the proposal, diff, verification metadata and ZIP as a temporary Actions artifact for 30 days. This artifact retention is separate from the release asset's review date.
 
 The workflow does **not** merge its PR or write directly to the default branch. The published release can exist before the catalog PR is merged. If the default branch changes during preparation, the job stops before pushing the proposed catalog; rerun from the new state. If the review branch already exists, review that branch/PR instead of overwriting it. If repository policy prevents token-created PRs, the job explains the block and leaves the branch available for an ordinary manual PR; it does not bypass the policy.
 
-After reviewing the exact catalog diff, remote verification and source checks, merge the PR. Then use **Settings → Check for updates → Download and install** in the Android app. The old 0.1.1 app verifies the complete ZIP hash; the repaired app additionally uses the catalog's exact byte size and avoids offering already-current lesson versions. Actual phone import and playback still need a phone check.
+After reviewing the exact catalog diff, remote verification and source checks, merge the PR. In a compatible same-key app 0.2.0 installation, use **Settings → Check for updates → Download and install**. The repaired app verifies the catalog's minimum app version, exact byte size and complete ZIP hash, and avoids offering already-current lesson versions. A package that needs a later app is shown with an app-update requirement and cannot start downloading. The old app continues reading its separate empty lesson catalog. Actual phone import and playback still need a phone check.
 
 The catalog change leaves `latestApp` alone. Do not advertise an unsigned verification APK or an APK signed by a different key as an installable upgrade.
 
@@ -60,8 +66,8 @@ To retire an older delivery:
 
 1. Run the workflow with `operation: retire` and that older version. It proposes removal of references to that exact asset and changes its delivery record to `status: retired`. It preserves a newer version under the same stable pack ID. Any additional catalog reference to the old asset or release blocks retirement until reviewed.
 2. Review and merge the retirement PR. This changes no installed lesson media or learning records; it removes the download offer from the catalog.
-3. After the retention date has passed, run `operation: check-retirement`. It reads the merged default branch, rechecks its live head, and refuses stale evidence, an active delivery record, unelapsed retention, or remaining asset/release URLs. It checks nested fields, query strings, encoded paths and the asset API URL as well as the normal download URL.
-4. Only a successful current check makes the asset eligible for a **separate manual deletion**. Immediately before doing so, recheck the app's published catalog at [content/catalog.json](https://raw.githubusercontent.com/blsmohamme972-lab/InstaAnki/main/content/catalog.json) and any other place where you published that URL. Do not delete while any active catalog references it. Delete only the named retired asset; avoid deleting a release that contains other needed assets. Keep the small retired delivery record in Git so the version cannot later be reused accidentally.
+3. After the retention date has passed, run `operation: check-retirement`. It reads both catalogs from the merged default branch, rechecks the live head, and refuses stale evidence, an active delivery record, unelapsed retention, or remaining asset/release URLs in either catalog. It checks nested fields, query strings, encoded paths and the asset API URL as well as the normal download URL.
+4. Only a successful current check makes the asset eligible for a **separate manual deletion**. Immediately before doing so, recheck [catalog-v2.json](https://raw.githubusercontent.com/blsmohamme972-lab/InstaAnki/main/content/catalog-v2.json), the [legacy catalog.json](https://raw.githubusercontent.com/blsmohamme972-lab/InstaAnki/main/content/catalog.json), and any other place where you published that URL. Do not delete while any active catalog references it. Delete only the named retired asset; avoid deleting a release that contains other needed assets. Keep the small retired delivery record in Git so the version cannot later be reused accidentally.
 
 The read-only check never deletes a file and cannot predict later catalog changes. Its report identifies the checked default-branch commit and catalog hash so the manual decision is reviewable. If the repository's default branch or the app's catalog URL changes, update and review this delivery procedure before using it again.
 
@@ -80,7 +86,8 @@ python3 tools/build_pack.py \
   --output dist/InstaAnki-Raja-Starter-1.2.0.zip
 python3 tools/prepare_update_release.py prepare \
   --pack dist/InstaAnki-Raja-Starter-1.2.0.zip \
-  --catalog content/catalog.json \
+  --catalog content/catalog-v2.json \
+  --legacy-catalog content/catalog.json \
   --output-dir dist/update-release \
   --retention-days 30 \
   --source-commit "$(git rev-parse HEAD)"

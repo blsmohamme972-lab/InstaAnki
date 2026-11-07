@@ -10,7 +10,7 @@
   const native = window.AndroidNative || null;
   const audio = $('#lesson-audio');
   const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2];
-  const CATALOG_URL = 'https://raw.githubusercontent.com/blsmohamme972-lab/InstaAnki/main/content/catalog.json';
+  const CATALOG_URL = 'https://raw.githubusercontent.com/blsmohamme972-lab/InstaAnki/main/content/catalog-v2.json';
   const app = {
     lessons: [], books: [], feed: [], index: 0, tab: 'feed', feedMode: 'all', specialty: '', tag: '',
     topicModel: null, topicDraft: [],
@@ -919,18 +919,43 @@
     if (native?.listPacks) { try { return JSON.parse(native.listPacks()).some(p => p.packId === pack.id && String(p.manifest.version) === String(pack.version)); } catch (_) {} }
     return false;
   }
+  function packCompatibility(pack) {
+    // The repaired app uses a separate catalog. Every offered package must
+    // state its minimum explicitly; missing/invalid data is not permission to
+    // send a newer content format to an older player.
+    const minimum = pack.minAppVersionCode;
+    if (!Number.isInteger(minimum) || minimum < 1 || minimum > 2147483647) {
+      return { minimum: null, message: 'This package has a missing or invalid app-version requirement. Check for a corrected catalog before downloading.' };
+    }
+    const installed = app.info.versionCode;
+    if (!Number.isInteger(installed) || installed < 1 || installed > 2147483647) {
+      return { minimum, message: 'Your installed app version could not be verified. Reopen InstaAnki before downloading an update.' };
+    }
+    if (installed < minimum) {
+      return { minimum, message: `This package requires InstaAnki app build ${minimum} or later. Your installed app is build ${installed}. Update the app first.` };
+    }
+    return { minimum, message: '' };
+  }
+  function packUpdateCard(pack) {
+    const compatibility = packCompatibility(pack);
+    return `<div class="update-card" data-update-pack="${esc(pack.id)}"><h3>${esc(pack.title)}</h3><p>Version ${esc(pack.version)} · ${amount(Number(pack.sizeBytes) || 0)}</p>${compatibility.message ? `<p class="update-requirement" role="status">${esc(compatibility.message)}</p><button class="secondary-button full-width" type="button" disabled>${compatibility.minimum == null ? 'Package unavailable' : 'App update required'}</button>` : `<button class="secondary-button full-width" type="button" data-download-pack="${esc(pack.id)}" ${app.downloading ? 'disabled' : ''}>Download and install</button>`}</div>`;
+  }
   function renderUpdates() {
     const catalog = app.catalog; if (!catalog) return;
     const availableApp = catalog.latestApp && Number(catalog.latestApp.versionCode) > Number(app.info.versionCode || 1);
     const packs = catalog.packs.filter(pack => !packIsCurrent(pack));
-    $('#modal-body').innerHTML = `<p class="modal-intro">Checked ${esc(dateLabel(app.catalogCheckedAt))}. Content downloads are separate from your installed app.</p>${availableApp ? `<div class="update-card"><h3>InstaAnki ${esc(catalog.latestApp.version)}</h3><p>${esc(catalog.latestApp.notes || 'An updated Android app is available.')}</p><button class="primary-button full-width" type="button" data-action="open-app-update">Open Android update ↗</button></div>` : '<div class="source-block"><h3>No newer app release listed.</h3><p>Your installed version is ' + esc(app.info.version) + '.</p></div>'}<h3>Available lesson packages</h3>${packs.length ? packs.map(pack => `<div class="update-card"><h3>${esc(pack.title)}</h3><p>Version ${esc(pack.version)} · ${amount(Number(pack.sizeBytes) || 0)}</p><button class="secondary-button full-width" type="button" data-download-pack="${esc(pack.id)}" ${app.downloading ? 'disabled' : ''}>Download and install</button></div>`).join('') : `<p class="empty-copy">${catalog.packs.length ? 'All published lessons in this catalog are already on this device.' : 'There are no downloadable packages in this catalog yet. You can still import a personal ZIP from your device.'}</p>`}<div id="download-progress" class="download-progress" ${app.downloading ? '' : 'hidden'}><span>Preparing download…</span><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>`;
+    $('#modal-body').innerHTML = `<p class="modal-intro">Checked ${esc(dateLabel(app.catalogCheckedAt))}. Content downloads are separate from your installed app.</p>${availableApp ? `<div class="update-card"><h3>InstaAnki ${esc(catalog.latestApp.version)}</h3><p>${esc(catalog.latestApp.notes || 'An updated Android app is available.')}</p><button class="primary-button full-width" type="button" data-action="open-app-update">Open Android update ↗</button></div>` : '<div class="source-block"><h3>No newer app release listed.</h3><p>Your installed version is ' + esc(app.info.version) + '.</p></div>'}<h3>Available lesson packages</h3>${packs.length ? packs.map(packUpdateCard).join('') : `<p class="empty-copy">${catalog.packs.length ? 'All published lessons in this catalog are already on this device.' : 'There are no downloadable packages in this catalog yet. You can still import a personal ZIP from your device.'}</p>`}<div id="download-progress" class="download-progress" ${app.downloading ? '' : 'hidden'}><span>Preparing download…</span><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>`;
   }
   function downloadPack(id) {
     const pack = app.catalog?.packs.find(x => x.id === id); if (!pack) return;
-    if (!native?.downloadPack) { toast('Install the Android app to download and install a lesson package.'); return; }
+    const compatibility = packCompatibility(pack);
+    if (compatibility.message) { toast(compatibility.message); return; }
+    if (!native?.downloadPack && !native?.downloadPackVerified && !native?.downloadPackCompatible) { toast('Install the Android app to download and install a lesson package.'); return; }
     if (!/^[a-f0-9]{64}$/i.test(pack.sha256 || '') || !pack.url) { toast('This package is missing a valid download checksum.'); return; }
+    if (native.downloadPackCompatible && (!Number.isSafeInteger(pack.sizeBytes) || pack.sizeBytes < 1)) { toast('This package is missing a valid download size. Check for a corrected catalog before downloading.'); return; }
     app.downloading = true; renderUpdates();
-    if (native.downloadPackVerified && Number.isSafeInteger(pack.sizeBytes) && pack.sizeBytes > 0) native.downloadPackVerified(pack.url, pack.sha256, pack.sizeBytes);
+    if (native.downloadPackCompatible) native.downloadPackCompatible(pack.url, pack.sha256, pack.sizeBytes, compatibility.minimum);
+    else if (native.downloadPackVerified && Number.isSafeInteger(pack.sizeBytes) && pack.sizeBytes > 0) native.downloadPackVerified(pack.url, pack.sha256, pack.sizeBytes);
     else native.downloadPack(pack.url, pack.sha256);
   }
   function downloadJSON(data, filename) {

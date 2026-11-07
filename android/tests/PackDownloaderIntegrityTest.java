@@ -17,6 +17,7 @@ public final class PackDownloaderIntegrityTest {
     private static long declared;
     private static int status = 200;
     private static int passed;
+    private static int connections;
     private static class Response extends HttpURLConnection {
         Response(URL url) { super(url); }
         @Override public void connect() { }
@@ -35,13 +36,32 @@ public final class PackDownloaderIntegrityTest {
         boolean refused = false;try { PackDownloader.download("https://github.com/example/repo/releases/download/v1/pack.zip", hash, bytes, cache, (got, total) -> {}); } catch (Exception expected) { refused = true; }
         ok(refused, label);ok(cache.listFiles().length == 0, label + " removes the partial file");
     }
+    private static void rejectsVersion(File cache, String hash, long bytes, double minimum, int installed, String label) throws Exception {
+        int before = connections;
+        boolean refused = false;
+        try { PackDownloader.downloadCompatible("https://github.com/example/repo/releases/download/v1/pack.zip", hash, bytes,
+                minimum, installed, cache, (got, total) -> {}); }
+        catch (java.io.IOException expected) { refused = expected.getMessage().contains("app version") || expected.getMessage().contains("newer InstaAnki app"); }
+        ok(refused, label);
+        ok(connections == before && !cache.exists(), label + " makes no network request or cache directory");
+    }
     public static void main(String[] args) throws Exception {
         URL.setURLStreamHandlerFactory(protocol -> "https".equals(protocol) ? new URLStreamHandler() {
-            @Override protected URLConnection openConnection(URL url) { return new Response(url); }
+            @Override protected URLConnection openConnection(URL url) { connections++;return new Response(url); }
         } : null);
         File cache = Files.createTempDirectory("instaanki-download-integrity-").toFile();
         byte[] original = "complete fixture download".getBytes(StandardCharsets.UTF_8);String hash = sha(original);
         body = original;declared = original.length;
+        File incompatibleCache = new File(cache, "must-not-create");
+        rejectsVersion(incompatibleCache, hash, original.length, 3, 2, "version 2 cannot download version 3 presentation");
+        rejectsVersion(incompatibleCache, hash, original.length, 4, 3, "current app cannot download future-version presentation");
+        for (double invalid : new double[] {0, -1, 3.5, Double.NaN, Double.POSITIVE_INFINITY, (double)Integer.MAX_VALUE + 1}) {
+            rejectsVersion(incompatibleCache, hash, original.length, invalid, 3, "invalid minimum " + invalid + " rejected");
+        }
+        rejectsVersion(incompatibleCache, hash, original.length, 3, 0, "unknown installed app version rejected");
+        File compatible = PackDownloader.downloadCompatible("https://github.com/example/repo/releases/download/v1/pack.zip", hash,
+                original.length, 3, 3, cache, (got, total) -> {});
+        ok(java.util.Arrays.equals(Files.readAllBytes(compatible.toPath()), original), "matching app version downloads the verified bytes");compatible.delete();
         File received = PackDownloader.download("https://github.com/example/repo/releases/download/v1/pack.zip", hash, original.length, cache, (got, total) -> {});
         ok(java.util.Arrays.equals(Files.readAllBytes(received.toPath()), original), "matching catalog size and checksum return the exact bytes");received.delete();
         rejects(cache, hash, original.length + 1, "catalog/header size mismatch rejected");

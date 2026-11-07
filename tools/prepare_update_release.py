@@ -28,6 +28,8 @@ ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "blsmohamme972-lab/InstaAnki"
 BOOK_ID = "shahzad-raja-2015-200-practice-questions"
 PACK_ID = "instaanki-starter-shahzad2015-v1"
+MIN_APP_VERSION_CODE = 3
+CATALOG_CHANNEL = "app-v3"
 LESSON_IDS = {"shahzad2015-q005", "shahzad2015-q054", "shahzad2015-q182"}
 VERSION = re.compile(r"(0|[1-9][0-9]{0,8})\.(0|[1-9][0-9]{0,8})\.(0|[1-9][0-9]{0,8})\Z")
 
@@ -61,12 +63,14 @@ def version_tuple(value):
     return tuple(map(int, value.split(".")))
 
 
-def load_catalog(path):
+def load_catalog(path, *, legacy=False):
     value = json.loads(Path(path).read_text())
     if not isinstance(value, dict) or type(value.get("schemaVersion")) is not int or value["schemaVersion"] != 1 or not isinstance(value.get("packs"), list):
         raise ValueError("Unsupported update catalog")
     if value.get("repository") != REPOSITORY:
         raise ValueError("Catalog belongs to a different repository")
+    if not legacy and value.get("channel") != CATALOG_CHANNEL:
+        raise ValueError("Use the app-v3 catalog-v2.json channel; the legacy catalog must not offer the new presentation")
     ids = [item.get("id") for item in value["packs"] if isinstance(item, dict)]
     if len(ids) != len(value["packs"]) or any(not isinstance(x, str) or not x for x in ids) or len(set(ids)) != len(ids):
         raise ValueError("Catalog contains invalid or duplicate pack IDs")
@@ -161,6 +165,8 @@ def check_history(checked, records_dir):
 
 
 def make_proposal(checked, catalog, retention_days, now=None, prior_delivery=None):
+    if catalog.get("channel") != CATALOG_CHANNEL:
+        raise ValueError("New presentation delivery requires the app-v3 catalog channel")
     if isinstance(retention_days, bool) or not isinstance(retention_days, int) or not 1 <= retention_days <= 90:
         raise ValueError("Retention must be between 1 and 90 days")
     stamp = utc(now)
@@ -184,6 +190,8 @@ def make_proposal(checked, catalog, retention_days, now=None, prior_delivery=Non
             raise ValueError("A content update cannot roll the stable pack back to an older version")
         if new == old and (previous.get("sha256") != checked["zipSha256"] or previous.get("sizeBytes") != checked["zipBytes"] or previous.get("url") != url):
             raise ValueError("This version already identifies different bytes or a different URL; increase the version")
+        if new == old and (type(previous.get("minAppVersionCode")) is not int or previous["minAppVersionCode"] != MIN_APP_VERSION_CODE):
+            raise ValueError("The existing catalog entry has an incompatible minimum app version; review it before delivery")
         previous_versions = previous.get("lessonVersions", {})
         if not isinstance(previous_versions, dict):
             raise ValueError("The current catalog has invalid lesson versions")
@@ -194,7 +202,7 @@ def make_proposal(checked, catalog, retention_days, now=None, prior_delivery=Non
                 raise ValueError("A content update cannot downgrade an existing lesson version")
     entry = {"id": PACK_ID, "bookId": BOOK_ID, "title": "Raja: existing lessons update", "version": version,
              "url": url, "sha256": checked["zipSha256"], "sizeBytes": checked["zipBytes"], "lessonCount": 3,
-             "lessonVersions": checked["lessonVersions"], "minAppVersionCode": 2, "releaseTag": tag,
+             "lessonVersions": checked["lessonVersions"], "minAppVersionCode": MIN_APP_VERSION_CODE, "releaseTag": tag,
              "temporary": True, "expiresAt": iso(stamp + timedelta(days=retention_days))}
     proposed = copy.deepcopy(catalog)
     if previous and version_tuple(previous["version"]) == version_tuple(version):
@@ -210,6 +218,7 @@ def make_proposal(checked, catalog, retention_days, now=None, prior_delivery=Non
     delivery = {"schemaVersion": 1, "repository": REPOSITORY, "packId": PACK_ID, "bookId": BOOK_ID,
                 "version": version, "releaseTag": tag, "assetName": name, "assetUrl": url,
                 "zipSha256": checked["zipSha256"], "zipBytes": checked["zipBytes"], "lessonCount": 3,
+                "minAppVersionCode": MIN_APP_VERSION_CODE, "catalogChannel": CATALOG_CHANNEL,
                 "lessonVersions": checked["lessonVersions"], "sourceChecked": True, "dataOnly": True,
                 "privateFilesIncluded": False, "createdAt": iso(stamp), "expiresAt": entry["expiresAt"],
                 "retentionDays": retention_days, "status": "active", "retiredAt": None,
@@ -229,7 +238,7 @@ def write_proposal(catalog_path, proposed, delivery, output):
     (output / "delivery.json").write_bytes(json_bytes(delivery))
     before = Path(catalog_path).read_text().splitlines(keepends=True)
     after = json_bytes(proposed).decode().splitlines(keepends=True)
-    (output / "catalog.diff").write_text("".join(difflib.unified_diff(before, after, fromfile="a/content/catalog.json", tofile="b/content/catalog.json")))
+    (output / "catalog.diff").write_text("".join(difflib.unified_diff(before, after, fromfile="a/content/catalog-v2.json", tofile="b/content/catalog-v2.json")))
     if delivery["status"] == "retired":
         body = (f"## Retire temporary Raja delivery {delivery['version']}\n\n"
                 "This change removes references to this exact older ZIP from the current catalog and records its retirement. "
@@ -243,7 +252,9 @@ def write_proposal(catalog_path, proposed, delivery, output):
             f"- Stable pack ID: `{PACK_ID}`\n- ZIP bytes: {delivery['zipBytes']}\n"
             f"- SHA-256: `{delivery['zipSha256']}`\n- Retention review date: {delivery['expiresAt']}\n\n"
             "The asset stays available while any active catalog references it. Expiry does not automatically delete it. "
-            "This is a data-only package; new app features still require a compatible signed APK.\n\n"
+            "This is a data-only package requiring InstaAnki 0.2.0 (version code 3) for its ending, gallery and recap. "
+            "It cannot install those player features; a compatible same-key APK is required. "
+            "The legacy catalog remains empty.\n\n"
             "Review and merge the catalog pull request before expecting Check for updates to offer this package. "
             "No code, source PDF, signing key, review history or private notes are in this ZIP.\n")
     (output / "release-body.md").write_text(body)
@@ -299,10 +310,14 @@ def validate_delivery(delivery):
         raise ValueError("Delivery record must identify exactly the three existing lesson versions")
     if delivery.get("sourceChecked") is not True or delivery.get("dataOnly") is not True or delivery.get("privateFilesIncluded") is not False:
         raise ValueError("Delivery record is missing its source-checked data-only scope")
+    if type(delivery.get("minAppVersionCode")) is not int or delivery["minAppVersionCode"] != MIN_APP_VERSION_CODE or delivery.get("catalogChannel") != CATALOG_CHANNEL:
+        raise ValueError("Delivery record requires app version code 3 and the app-v3 catalog channel")
 
 
-def retire(delivery, catalog, now=None):
+def retire(delivery, catalog, now=None, legacy_catalog=None):
     validate_delivery(delivery)
+    if legacy_catalog is not None and references_delivery(legacy_catalog, delivery):
+        raise ValueError("The legacy catalog still references this asset or release; review it before retirement")
     proposed = copy.deepcopy(catalog)
     proposed["packs"] = [item for item in proposed["packs"] if normalized_url(item.get("url")) != normalized_url(delivery["assetUrl"])]
     if references_delivery(proposed, delivery):
@@ -312,7 +327,7 @@ def retire(delivery, catalog, now=None):
     return proposed, record
 
 
-def check_retired(delivery, catalog, observed_head, current_head, now=None):
+def check_retired(delivery, catalog, observed_head, current_head, now=None, legacy_catalog=None):
     validate_delivery(delivery)
     if not re.fullmatch(r"[a-f0-9]{40}", observed_head or "") or observed_head != current_head:
         raise ValueError("Default-branch evidence is stale or missing; fetch and check the current catalog again")
@@ -322,9 +337,12 @@ def check_retired(delivery, catalog, observed_head, current_head, now=None):
         raise ValueError("The delivery retention period has not elapsed")
     if references_delivery(catalog, delivery):
         raise ValueError("The current catalog still references this asset or release; do not delete it")
+    if legacy_catalog is not None and references_delivery(legacy_catalog, delivery):
+        raise ValueError("The legacy catalog still references this asset or release; do not delete it")
     return {"eligibleForManualDeletion": True, "automaticDeletion": False, "assetUrl": delivery["assetUrl"],
             "releaseTag": delivery["releaseTag"], "assetName": delivery["assetName"], "checkedDefaultBranchHead": current_head,
-            "checkedAt": iso(utc(now)), "catalogSha256": hashlib.sha256(json_bytes(catalog)).hexdigest()}
+            "checkedAt": iso(utc(now)), "catalogSha256": hashlib.sha256(json_bytes(catalog)).hexdigest(),
+            "legacyCatalogSha256": hashlib.sha256(json_bytes(legacy_catalog)).hexdigest() if legacy_catalog is not None else None}
 
 
 def confirm_upload(delivery, downloaded, release):
@@ -353,7 +371,8 @@ def main():
     prepare = commands.add_parser("prepare")
     prepare.add_argument("--pack", type=Path, required=True)
     prepare.add_argument("--web-root", type=Path, default=ROOT / "web")
-    prepare.add_argument("--catalog", type=Path, default=ROOT / "content/catalog.json")
+    prepare.add_argument("--catalog", type=Path, default=ROOT / "content/catalog-v2.json")
+    prepare.add_argument("--legacy-catalog", type=Path, default=ROOT / "content/catalog.json")
     prepare.add_argument("--output-dir", type=Path, required=True)
     prepare.add_argument("--retention-days", type=int, default=30)
     prepare.add_argument("--source-commit", required=True)
@@ -362,6 +381,7 @@ def main():
         command = commands.add_parser(name)
         command.add_argument("--delivery", type=Path, required=True)
         command.add_argument("--catalog", type=Path, required=True)
+        command.add_argument("--legacy-catalog", type=Path, default=ROOT / "content/catalog.json")
         if name == "retire": command.add_argument("--output-dir", type=Path, required=True)
         else:
             command.add_argument("--observed-default-head", required=True)
@@ -373,9 +393,15 @@ def main():
     args = parser.parse_args()
     if args.command == "prepare":
         if not re.fullmatch(r"[a-f0-9]{40}", args.source_commit): raise ValueError("A full source commit SHA is required")
+        if args.catalog.resolve() == args.legacy_catalog.resolve():
+            raise ValueError("The new presentation must never be offered through the legacy catalog")
+        legacy = load_catalog(args.legacy_catalog, legacy=True)
+        if legacy["packs"]:
+            raise ValueError("Keep the legacy catalog packs empty; review unexpected legacy download offers first")
+        catalog = load_catalog(args.catalog)
         checked = inspect_pack(args.pack, args.web_root)
         previous = check_history(checked, args.records_dir)
-        proposed, delivery = make_proposal(checked, load_catalog(args.catalog), args.retention_days, prior_delivery=previous)
+        proposed, delivery = make_proposal(checked, catalog, args.retention_days, prior_delivery=previous)
         delivery.setdefault("sourceCommit", args.source_commit)
         delivery.setdefault("sourcePolicySha256", sha_file(ROOT / "production/source-policy.json"))
         delivery.setdefault("publicLessonsSha256", sha_file(args.web_root / "data/lessons.json"))
@@ -388,11 +414,12 @@ def main():
         args.delivery.write_bytes(json_bytes(result));print(json.dumps({"remoteBytesVerified": True, "assetId": result["assetId"]}))
     else:
         delivery, catalog = json.loads(args.delivery.read_text()), load_catalog(args.catalog)
+        legacy = load_catalog(args.legacy_catalog, legacy=True)
         if args.command == "retire":
-            proposed, record = retire(delivery, catalog)
+            proposed, record = retire(delivery, catalog, legacy_catalog=legacy)
             write_proposal(args.catalog, proposed, record, args.output_dir)
             print(json.dumps({"retirementProposalPrepared": True, "automaticDeletion": False}))
-        else: print(json.dumps(check_retired(delivery, catalog, args.observed_default_head, args.current_default_head), indent=2))
+        else: print(json.dumps(check_retired(delivery, catalog, args.observed_default_head, args.current_default_head, legacy_catalog=legacy), indent=2))
 
 
 if __name__ == "__main__":

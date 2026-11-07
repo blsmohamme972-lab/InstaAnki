@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-07T18:15:58.509778+00:00",
+  "checkedAt": "2026-11-07T18:29:04.971157+00:00",
   "scope": "App repairs and display-only updates to existing Raja Q5/Q54/Q182. No new lessons, narration or rendered videos.",
   "activeCollection": {
     "books": 1,
@@ -9,14 +9,14 @@
     "newProductionEnabled": false
   },
   "tests": {
-    "publicSnapshotPythonTests": 108,
+    "publicSnapshotPythonTests": 112,
     "javascriptLearningFeedbackTopicTests": 29,
-    "browserScenarios": 53,
+    "browserScenarios": 54,
     "independentGuidanceGeometrySamples": 132,
     "nativeJvmAssertions": {
       "feedback": 12,
       "contentImporter": 34,
-      "downloadIntegrity": 13,
+      "downloadIntegrity": 32,
       "backups": 7,
       "urlAllowlist": 13,
       "collectionCorrection": 17
@@ -29,8 +29,8 @@
     "versionCode": 3,
     "minSdk": 26,
     "targetSdk": 35,
-    "bytes": 12727202,
-    "sha256": "c9ad00873440be814b5598e8c9e6e1337efcfbfba4c1d2a756545877764022d7",
+    "bytes": 12728215,
+    "sha256": "843d143b5a3d41c63254492ccc850eb15592a5d0bb6c2547cdaccb6b57c0c014",
     "includesPrivateContent": false,
     "signed": false,
     "installableUpdate": false,
@@ -72,5 +72,15 @@
     "../tests/reels-browser.cjs",
     "../tests/test_update_release.py",
     "../android/tests/FeedbackDataTest.java"
-  ]
+  ],
+  "updateCompatibility": {
+    "requiredAppVersionCode": 3,
+    "catalog": "content/catalog-v2.json",
+    "legacyCatalogLessonOffers": 0,
+    "legacyCatalogUnchanged": true,
+    "explicitMinimumRequired": true,
+    "browserGuardChecked": true,
+    "nativeGuardBeforeNetworkChecked": true,
+    "deliveryAndRetirementCheckBothCatalogs": true
+  }
 }

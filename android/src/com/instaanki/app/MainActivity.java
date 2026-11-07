@@ -152,7 +152,8 @@ public final class MainActivity extends Activity {
                 return new JSONObject().put("name", "InstaAnki").put("packageName", getPackageName())
                     .put("version", info.versionName).put("versionCode", info.versionCode).put("nativeApi", 3)
                     .put("storage", "SQLite").put("offline", true).put("zipImport", true)
-                    .put("feedbackExport", true).put("downloadSizeVerification", true).put("immersiveFeed", true)
+                    .put("feedbackExport", true).put("downloadSizeVerification", true)
+                    .put("downloadCompatibilityVerification", true).put("immersiveFeed", true)
                     .put("platform", "Android").put("androidVersion", Build.VERSION.RELEASE).toString();
             } catch (Exception e) { return "{}"; }
         }
@@ -236,13 +237,28 @@ public final class MainActivity extends Activity {
             startDownload(url, expectedSha256, expectedBytes);
         }
 
+        @JavascriptInterface public void downloadPackCompatible(String url, String expectedSha256, long expectedBytes, double minimumAppVersionCode) {
+            if (expectedBytes <= 0) { failure("The update catalog does not provide a valid package size. Nothing was installed."); return; }
+            startDownload(url, expectedSha256, expectedBytes, minimumAppVersionCode);
+        }
+
         private void startDownload(String url, String expectedSha256, long expectedBytes) {
+            startDownload(url, expectedSha256, expectedBytes, 1);
+        }
+
+        private void startDownload(String url, String expectedSha256, long expectedBytes, double minimumAppVersionCode) {
+            final int installedVersionCode;
+            try {
+                installedVersionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+                PackDownloader.requireCompatibleApp(minimumAppVersionCode, installedVersionCode);
+            } catch (Exception error) { failure(error.getMessage()); return; }
             if (!importing.compareAndSet(false, true)) { failure("A content package is already being installed."); return; }
             emit("instaanki:import-started", new JSONObject());
             io.execute(() -> {
                 File downloaded = null;
                 try {
-                    downloaded = PackDownloader.download(url, expectedSha256, expectedBytes, new File(getCacheDir(), "pack-downloads"), (received, total) -> {
+                    downloaded = PackDownloader.downloadCompatible(url, expectedSha256, expectedBytes, minimumAppVersionCode,
+                            installedVersionCode, new File(getCacheDir(), "pack-downloads"), (received, total) -> {
                         try {
                             emit("instaanki:download-progress", new JSONObject().put("receivedBytes", received)
                                 .put("totalBytes", total > 0 ? total : JSONObject.NULL)

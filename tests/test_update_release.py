@@ -192,7 +192,7 @@ class DeliveryLifecycleTest(unittest.TestCase):
         self.download.write_bytes(self.bytes)
         self.checked = {"manifest": {"version": "1.1.0"}, "zipSha256": hashlib.sha256(self.bytes).hexdigest(),
                         "zipBytes": len(self.bytes), "lessonVersions": {key: 3 for key in delivery.LESSON_IDS}}
-        self.catalog = {"schemaVersion": 1, "repository": delivery.REPOSITORY, "packs": [], "updatedAt": NOW}
+        self.catalog = {"schemaVersion": 1, "channel": delivery.CATALOG_CHANNEL, "repository": delivery.REPOSITORY, "packs": [], "updatedAt": NOW}
         self.proposed, self.record = delivery.make_proposal(self.checked, self.catalog, 30, now=NOW)
 
     def test_proposal_has_complete_zip_fingerprint_stable_ids_and_retention(self):
@@ -200,6 +200,9 @@ class DeliveryLifecycleTest(unittest.TestCase):
         self.assertEqual(entry["id"], delivery.PACK_ID)
         self.assertEqual(entry["bookId"], delivery.BOOK_ID)
         self.assertEqual(entry["lessonCount"], 3)
+        self.assertEqual(entry["minAppVersionCode"], 3)
+        self.assertEqual(self.record["minAppVersionCode"], 3)
+        self.assertEqual(self.record["catalogChannel"], "app-v3")
         self.assertEqual(entry["sha256"], hashlib.sha256(self.bytes).hexdigest())
         self.assertEqual(entry["sizeBytes"], len(self.bytes))
         self.assertEqual(entry["expiresAt"], "2026-12-07T12:00:00Z")
@@ -211,6 +214,30 @@ class DeliveryLifecycleTest(unittest.TestCase):
         self.assertTrue(record["alreadyCurrent"])
         self.assertEqual(record["createdAt"], NOW)
         self.assertEqual(record["expiresAt"], self.record["expiresAt"])
+
+    def test_old_catalog_cannot_offer_new_presentation_even_if_its_schema_matches(self):
+        legacy = {k: v for k, v in self.catalog.items() if k != "channel"}
+        path = self.directory / "catalog.json"
+        write_json(path, legacy)
+        self.assertEqual(delivery.load_catalog(path, legacy=True), legacy)
+        with self.assertRaisesRegex(ValueError, "legacy catalog"):
+            delivery.load_catalog(path)
+        with self.assertRaisesRegex(ValueError, "app-v3 catalog channel"):
+            delivery.make_proposal(self.checked, legacy, 30, now=NOW)
+
+    def test_incorrect_minimum_cannot_survive_an_idempotent_delivery(self):
+        for minimum in (None, 2, True, "3", 3.5):
+            existing = copy.deepcopy(self.proposed)
+            existing["packs"][0]["minAppVersionCode"] = minimum
+            with self.subTest(minimum=minimum), self.assertRaisesRegex(ValueError, "minimum app version"):
+                delivery.make_proposal(self.checked, existing, 30, now=NOW)
+
+    def test_repository_keeps_legacy_downloads_empty_and_new_channel_separate(self):
+        legacy = delivery.load_catalog(ROOT / "content/catalog.json", legacy=True)
+        modern = delivery.load_catalog(ROOT / "content/catalog-v2.json")
+        self.assertEqual(legacy["packs"], [])
+        self.assertEqual(modern["channel"], "app-v3")
+        self.assertNotEqual(legacy, modern)
 
     def test_same_version_different_bytes_or_url_is_rejected(self):
         for field, value in (("sha256", "0" * 64), ("sizeBytes", 999), ("url", "https://example.com/different.zip")):
@@ -310,6 +337,17 @@ class DeliveryLifecycleTest(unittest.TestCase):
         catalog["notes"] = {"fallbackDownload": self.record["assetUrl"] + "?download=1"}
         with self.assertRaisesRegex(ValueError, "still references"):
             delivery.retire(self.record, catalog, now=NOW)
+
+    def test_retirement_checks_the_legacy_reader_catalog_too(self):
+        legacy = {"schemaVersion": 1, "repository": delivery.REPOSITORY, "packs": [], "latestApp": {"notes": self.record["assetUrl"]}}
+        with self.assertRaisesRegex(ValueError, "legacy catalog still references"):
+            delivery.retire(self.record, self.proposed, now=NOW, legacy_catalog=legacy)
+        catalog, record = delivery.retire(self.record, self.proposed, now=NOW)
+        with self.assertRaisesRegex(ValueError, "legacy catalog still references"):
+            delivery.check_retired(record, catalog, HEAD, HEAD, now=LATER, legacy_catalog=legacy)
+        legacy["latestApp"]["notes"] = "A future compatible signed APK can be listed here."
+        allowed = delivery.check_retired(record, catalog, HEAD, HEAD, now=LATER, legacy_catalog=legacy)
+        self.assertEqual(allowed["legacyCatalogSha256"], hashlib.sha256(delivery.json_bytes(legacy)).hexdigest())
 
     def test_manual_deletion_check_requires_merged_retirement_expiry_and_current_head(self):
         catalog, record = delivery.retire(self.record, self.proposed, now=NOW)

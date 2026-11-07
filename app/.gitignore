@@ -1,0 +1,20 @@
+node_modules/
+dist/
+*.log
+# Android build outputs and local files
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/capacitor-cordova-android-plugins/build/
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/app/src/main/res/xml/config.xml
+# never commit signing material
+*.jks
+*.keystore
+*.p12
+*.pem
+!android/app/src/main/res/raw/*.pem
+!android/app/src/test/resources/ota/*.pem

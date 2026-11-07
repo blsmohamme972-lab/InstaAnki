@@ -1,0 +1,82 @@
+name: Release Android shell (APK)
+
+# Builds the signed APK. Needed only for the first install and when native code,
+# plugins or permissions change (bump shellVersion in app/android/app/build.gradle).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-shell
+  cancel-in-progress: false
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Read versions
+        id: v
+        run: |
+          SHELL=$(grep -E '^def shellVersion = [0-9]+' app/android/app/build.gradle | grep -oE '[0-9]+')
+          BUNDLE=$(node -p "require('./app/package.json').version")
+          echo "shell=$SHELL" >> "$GITHUB_OUTPUT"
+          echo "bundle=$BUNDLE" >> "$GITHUB_OUTPUT"
+          echo "shell $SHELL, built-in bundle $BUNDLE"
+
+      - name: Refuse to overwrite an existing shell release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "shell-v${{ steps.v.outputs.shell }}" >/dev/null 2>&1; then
+            echo "::error::shell-v${{ steps.v.outputs.shell }} already exists; bump shellVersion in app/android/app/build.gradle"
+            exit 1
+          fi
+
+      - name: Build web layer and sync
+        working-directory: app
+        run: |
+          npm ci
+          npm test
+          npm run build
+          npx cap sync android
+
+      - name: Build signed release APK
+        working-directory: app/android
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ] || [ -z "$ANDROID_KEYSTORE_PASSWORD" ]; then
+            echo "::error::secrets ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_PASSWORD are missing (see docs/SETUP.md)"; exit 1
+          fi
+          export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/release.p12"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$ANDROID_KEYSTORE_PATH"
+          ./gradlew --no-daemon testReleaseUnitTest assembleRelease
+          rm -f "$ANDROID_KEYSTORE_PATH"
+          APK=app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs "$APK" | head -5 || true
+          cp "$APK" "$RUNNER_TEMP/InstaAnki-shell-${{ steps.v.outputs.shell }}.apk"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "shell-v${{ steps.v.outputs.shell }}" \
+            "$RUNNER_TEMP/InstaAnki-shell-${{ steps.v.outputs.shell }}.apk" \
+            --target "${{ github.sha }}" --latest \
+            --title "InstaAnki shell ${{ steps.v.outputs.shell }}" \
+            --notes "Android app (shell ${{ steps.v.outputs.shell }}) with built-in web layer v${{ steps.v.outputs.bundle }}. Later web updates arrive automatically inside the app."

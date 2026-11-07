@@ -1,0 +1,97 @@
+name: Publish OTA update
+
+# Ships the web layer to installed apps without a new APK.
+# Runs on every push to main that touches the app; it only publishes when
+# app/package.json "version" is newer than what is already on the channel.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'schema/**'
+      - '.github/workflows/release-ota.yml'
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: 'Release notes shown in the update dialog (Arabic is fine)'
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ota-channel
+  cancel-in-progress: false
+
+env:
+  CHANNEL: ota-channel
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      - name: Is this version newer than the published one?
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NEW=$(node -p "require('./package.json').version")
+          OLD=$(gh release download "$CHANNEL" -p latest.json -O - 2>/dev/null | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{console.log(JSON.parse(s).bundleVersion)}catch{console.log('0.0.0')}})")
+          echo "published=$OLD new=$NEW"
+          NEWER=$(node -e "const [a,b]=process.argv.slice(1).map(v=>v.split('.').map(Number));let r=0;for(let i=0;i<3;i++){if(a[i]!==b[i]){r=a[i]>b[i]?1:-1;break}}console.log(r>0)" "$NEW" "$OLD")
+          echo "version=$NEW" >> "$GITHUB_OUTPUT"
+          echo "publish=$NEWER" >> "$GITHUB_OUTPUT"
+          if [ "$NEWER" != "true" ]; then echo "::notice::version $NEW is not newer than $OLD; bump app/package.json to publish"; fi
+
+      - name: Build signed manifest
+        if: steps.decide.outputs.publish == 'true'
+        env:
+          OTA_SIGNING_KEY: ${{ secrets.OTA_SIGNING_KEY }}
+          NOTES_INPUT: ${{ github.event.inputs.notes }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          if [ -z "$OTA_SIGNING_KEY" ]; then echo "::error::secret OTA_SIGNING_KEY is missing (see docs/SETUP.md)"; exit 1; fi
+          NOTES="${NOTES_INPUT:-$(printf '%s' "$COMMIT_MSG" | head -n 1)}"
+          node scripts/ota-publish.mjs --dist dist --out ota-out --notes "$NOTES" \
+            --key-env OTA_SIGNING_KEY --verify-with android/app/src/main/res/raw/ota_public_key.pem
+
+      - name: Upload to the ota-channel release
+        if: steps.decide.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if ! gh release view "$CHANNEL" >/dev/null 2>&1; then
+            gh release create "$CHANNEL" --prerelease --title "OTA update channel" \
+              --notes "Automatic updates for the web layer. Do not delete. Assets are named by SHA-256."
+          fi
+          gh release download "$CHANNEL" -p latest.json -O previous.json 2>/dev/null || echo '{"files":[]}' > previous.json
+          EXISTING=$(gh release view "$CHANNEL" --json assets -q '.assets[].name')
+          # 1) content files first (only the new ones)
+          for f in ota-out/*; do
+            name=$(basename "$f")
+            case "$name" in latest.json|latest.json.sig) continue ;; esac
+            if ! grep -qx "$name" <<<"$EXISTING"; then gh release upload "$CHANNEL" "$f"; fi
+          done
+          # 2) then the manifest and its signature
+          gh release upload "$CHANNEL" ota-out/latest.json ota-out/latest.json.sig --clobber
+          # 3) prune files used by neither the new nor the previous version
+          KEEP=$(jq -r '.files[].sha256' ota-out/latest.json previous.json | sort -u)
+          for name in $EXISTING; do
+            case "$name" in latest.json|latest.json.sig) continue ;; esac
+            if ! grep -qx "$name" <<<"$KEEP"; then gh release delete-asset "$CHANNEL" "$name" -y; fi
+          done
+          echo "::notice::published OTA bundle ${{ steps.decide.outputs.version }}"

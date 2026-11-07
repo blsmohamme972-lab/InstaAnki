@@ -12,6 +12,7 @@
 | الملف | المحتوى |
 |---|---|
 | [`docs/SPEC.md`](docs/SPEC.md) | المواصفات الكاملة: المعمارية، الجدولة، الصيغ، السرعات، التحديث، مراحل البناء |
+| [`docs/SETUP.md`](docs/SETUP.md) | **الإعداد والنشر:** المفاتيح، أول تثبيت، نشر التحديثات |
 | [`docs/PACKAGE_FORMAT.md`](docs/PACKAGE_FORMAT.md) | صيغة الحزم: **العقد الذي يلتزم به GPT** |
 | [`schema/`](schema) | JSON Schemas لـ `pack.json` و`reel.json` و`transcript.json` |
 | [`tools/validate_pack.py`](tools/validate_pack.py) | أداة التحقق من الحزم |
@@ -29,4 +30,24 @@ python3 tools/validate_pack.py cardio-basics-001-v1.zip       # أو ZIP
 
 ## الحالة
 
-مرحلة المواصفات. الخطوة التالية: **المرحلة 0**، وهي القشرة ونظام التحديث وCI (انظر §13 في `docs/SPEC.md`).
+**المرحلة 0 (الأساس) منفّذة:**
+- قشرة أندرويد (Capacitor) مع تحديث تلقائي جزئي وموقّع وتراجع تلقائي.
+- قاعدة بيانات SQLite مع ترحيلات ونسخ احتياطية.
+- استيراد الحزم مع التحقق وتنظيف SVG، بما فيه "مشاركة ← InstaAnki".
+- CI ونشر التحديثات وبناء الـ APK على GitHub Actions.
+
+الخطوة التالية: **المرحلة 1**، وهي المشغّل والفيد والجدولة (§13 في `docs/SPEC.md`).
+
+## البنية
+
+```
+app/                 التطبيق (TypeScript + React + Capacitor)
+  src/               الواجهة والمنطق (تتحدث تلقائياً)
+  android/           القشرة الأصلية (Java)
+  scripts/           أداة نشر التحديثات
+docs/                المواصفات والإعداد وصيغة الحزم
+schema/              JSON Schemas للحزم
+tools/               أداة التحقق من الحزم (Python)
+examples/            حزمة مثال
+.github/workflows/   CI، نشر التحديثات، بناء الـ APK
+```

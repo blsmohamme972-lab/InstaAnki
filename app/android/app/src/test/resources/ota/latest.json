@@ -1,0 +1,23 @@
+{
+  "bundleVersion": "0.2.0",
+  "minShellVersion": 1,
+  "releasedAt": "2026-11-07T13:35:18.823Z",
+  "notes": "fixture",
+  "files": [
+    {
+      "path": "assets/index-AbC_1.js",
+      "sha256": "3879a5d930ae1999b278a3a498f7de3fd83ba8dae59330fcfa2db31c103ac21d",
+      "size": 15
+    },
+    {
+      "path": "bundle-info.json",
+      "sha256": "067567aee8761550e46d5dd3affca742e2956513c772300df13dbf3fe79203ba",
+      "size": 46
+    },
+    {
+      "path": "index.html",
+      "sha256": "b0693dc92f76e08bf1485b3dd9b514a2e31dfd6f39422a6b60edb722671dc98f",
+      "size": 14
+    }
+  ]
+}

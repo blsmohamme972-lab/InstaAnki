@@ -1,0 +1,40 @@
+name: Mnemonic provenance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'web/data/lessons.json'
+      - 'web/media/mnemonic/**'
+      - 'production/qa/mnemonic-generation/**'
+      - 'tools/check_mnemonic_provenance.py'
+      - 'tools/record_image_generation.py'
+      - 'tools/prepare_image_prompt.py'
+      - 'tests/test_mnemonic_provenance.py'
+      - '.github/workflows/mnemonic-provenance.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mnemonic-provenance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the proposed source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install the image decoder used for byte and dimension checks
+        run: python3 -m pip install --disable-pip-version-check 'Pillow==13.0.0'
+      - name: Reject missing, false or mismatched generation evidence
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python3 tools/check_mnemonic_provenance.py --base-ref "$BASE_REF"
+      - name: Exercise the guard with synthetic new, changed and gallery assets
+        run: python3 -m unittest tests/test_mnemonic_provenance.py -v

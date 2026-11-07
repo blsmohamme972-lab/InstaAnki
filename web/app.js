@@ -272,7 +272,9 @@
       app.endingId = lesson.id;
       $('#clinical-gallery').dataset.count = String(gallery.images.length);
       $('#clinical-gallery').style.setProperty('--gallery-rows', String(Math.ceil(gallery.images.length / 2)));
-      $('#clinical-gallery').innerHTML = gallery.images.map((item, index) => `<button type="button" class="clinical-tile" data-clinical-image="${index}" aria-label="Inspect ${esc(item.title || `clinical image ${index + 1}`)} and source"><img src="${esc(asset(item.url, lesson._baseUrl))}" alt="${esc(item.alt || item.title || 'Clinical image')}" decoding="async"><span class="clinical-label">${esc(item.shortLabel || item.title || `Clinical view ${index + 1}`)}</span></button>`).join('');
+      const fit = ['contain', 'cover', 'fill'].includes(gallery.displayMode) ? gallery.displayMode : 'contain';
+      const fitClass = `clinical-fit-${fit}`;
+      $('#clinical-gallery').innerHTML = gallery.images.map((item, index) => `<button type="button" class="clinical-tile" data-clinical-image="${index}" aria-label="Inspect ${esc(item.title || `clinical image ${index + 1}`)} and source"><img class="${fitClass}" src="${esc(asset(item.url, lesson._baseUrl))}" alt="${esc(item.alt || item.title || 'Clinical image')}" decoding="async"><span class="clinical-label">${esc(item.shortLabel || item.title || `Clinical view ${index + 1}`)}</span></button>`).join('');
       const nodes = recap?.nodes || [];
       $('#recap-map').innerHTML = nodes.map((node, index) => `${index && (recap.edges || []).some(edge => edge.from === nodes[index - 1].id && edge.to === node.id) ? '<span class="recap-arrow" aria-hidden="true">→</span>' : ''}<span class="recap-node" data-recap-node="${esc(node.id)}">${esc(node.label)}</span>`).join('');
     }

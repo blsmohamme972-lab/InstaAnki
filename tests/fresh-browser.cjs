@@ -133,7 +133,7 @@ async function main() {
       await page.locator('[data-tab="insights"]').click();
       await page.locator('[data-tab="settings"]').click();
       assert.match(await page.locator('#screen-settings').textContent(), /0 lessons · No account required/);
-      assert.match(await page.locator('.app-version').textContent(), /0\.3\.0/);
+      assert.match(await page.locator('.app-version').textContent(), /0\.3\.1/);
       assert.deepEqual(mediaRequests, []);
     } finally { await context.close(); }
   });

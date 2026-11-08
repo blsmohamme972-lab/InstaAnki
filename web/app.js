@@ -574,12 +574,36 @@
     closeModal(false);
     if (hidden) { rebuildFeed(); if (settings().autoPlay && current()) playAudio(false); }
     syncIndicators();
-    toast(report ? (githubQueued ? 'Report saved and queued for GitHub. Waiting for confirmation.' : 'Report saved on this device. GitHub did not receive it yet.') : hidden ? 'Lesson hidden. Your learning history is kept.' : 'Your lesson preferences were saved.');
+    const connected = githubStatus().connected;
+    toast(report ? (githubQueued ? 'Report queued for GitHub. Waiting for Issue confirmation.' : connected ? 'Report saved locally, but GitHub queue rejected it. Open Settings → GitHub reporting.' : 'Report saved on this phone only. Connect GitHub in Settings to send it.') : hidden ? 'Lesson hidden. Your learning history is kept.' : 'Your lesson preferences were saved.');
+  }
+  function confirmSavedReportSubmission() {
+    if (!native?.queueGithubReport || !githubStatus().connected) {
+      toast('Connect GitHub in Settings before sending saved reports.');
+      return;
+    }
+    const reports = L.getFeedback();
+    if (!reports.length) { toast('No saved reports to send.'); return; }
+    openModal('github-send-saved', 'Send saved reports to GitHub?', 'PUBLIC ISSUES',
+      '<p class="modal-intro">This will submit your previously saved reports to your public GitHub repository. Report comments may be visible to everyone. Only proceed if none contain private or personal information.</p><button class="primary-button full-width" data-action="github-confirm-send-saved" type="button">Confirm: send saved reports</button><button class="quiet-button full-width" data-action="close-modal" type="button">Cancel</button>');
+  }
+  function submitSavedGithubReports() {
+    if (app.modal?.kind !== 'github-send-saved') return;
+    if (!native?.queueGithubReport || !githubStatus().connected) { toast('GitHub is not connected.'); return; }
+    let accepted = 0, rejected = 0;
+    for (const report of L.getFeedback()) {
+      if (native.queueGithubReport(JSON.stringify(report)) === true) accepted++;
+      else rejected++;
+    }
+    closeModal(false);
+    if (app.tab === 'settings') renderSettings();
+    toast(rejected ? `${accepted} accepted for GitHub, ${rejected} not queued. No rejected report was erased.` : `${accepted} reports queued or already sent. Wait for GitHub confirmation.`);
   }
   function showFeedbackHistory() {
     const reports = L.getFeedback();
     const hidden = app.lessons.filter(lesson => L.get(lesson.id).hidden);
-    openModal('feedback-history', 'Your reports & hidden lessons.', 'YOUR FEEDBACK', `<p class="modal-intro">Your reports are saved locally. ${githubStatus().connected ? 'Connected reports are also queued for GitHub when you save them.' : 'Connect GitHub in Settings for future automatic reports.'} Export remains optional.</p><button class="primary-button full-width" type="button" data-action="export-feedback" ${reports.length ? '' : 'disabled'}>${native?.shareFeedback ? 'Share' : 'Export'} ${reports.length} ${reports.length === 1 ? 'report' : 'reports'}</button>${native?.exportFeedback ? `<button class="secondary-button full-width" type="button" data-action="save-feedback-file" ${reports.length ? '' : 'disabled'} style="margin-top:10px">Save feedback file</button>` : ''}<h3>Hidden lessons · ${hidden.length}</h3>${hidden.length ? hidden.map(lesson => `<div class="hidden-lesson-row"><span>${esc(lesson.title)}</span><button class="secondary-button" type="button" data-unhide-lesson="${esc(lesson.id)}">Restore</button></div>`).join('') : '<p class="empty-copy">No lessons are hidden.</p>'}<h3>Saved reports · ${reports.length}</h3>${reports.length ? reports.slice().reverse().map(report => `<div class="feedback-report"><strong>${esc(feedbackReasons.find(([key]) => key === report.reason)?.[1] || report.reason)} · ${esc(byId(report.lessonId)?.title || report.lessonId)}</strong><p>${esc(dateLabel(report.createdAt))} · Version ${esc(report.lessonVersion || 'unknown')}</p>${report.comment ? `<p>${esc(report.comment)}</p>` : ''}</div>`).join('') : '<p class="empty-copy">Use Report on a lesson to save feedback.</p>'}`);
+    const github = githubStatus();
+    openModal('feedback-history', 'Your reports & hidden lessons.', 'YOUR FEEDBACK', `<p class="modal-intro">Your reports are saved locally. ${githubStatus().connected ? 'Connected reports are also queued for GitHub when you save them.' : 'Connect GitHub in Settings for future automatic reports.'} Export remains optional.</p>${reports.length && github.connected ? `<button class="primary-button full-width" type="button" data-action="github-send-saved">Send saved reports to GitHub (public)</button>` : ''}${!github.connected && native?.connectGithubReports ? `<button class="primary-button full-width" type="button" data-action="github-reporting">Connect GitHub to send reports</button>` : ''}<button class="secondary-button full-width" type="button" data-action="export-feedback" ${reports.length ? '' : 'disabled'}>${native?.shareFeedback ? 'Share' : 'Export'} ${reports.length} ${reports.length === 1 ? 'report' : 'reports'}</button>${native?.exportFeedback ? `<button class="secondary-button full-width" type="button" data-action="save-feedback-file" ${reports.length ? '' : 'disabled'} style="margin-top:10px">Save feedback file</button>` : ''}<h3>Hidden lessons · ${hidden.length}</h3>${hidden.length ? hidden.map(lesson => `<div class="hidden-lesson-row"><span>${esc(lesson.title)}</span><button class="secondary-button" type="button" data-unhide-lesson="${esc(lesson.id)}">Restore</button></div>`).join('') : '<p class="empty-copy">No lessons are hidden.</p>'}<h3>Saved reports · ${reports.length}</h3>${reports.length ? reports.slice().reverse().map(report => `<div class="feedback-report"><strong>${esc(feedbackReasons.find(([key]) => key === report.reason)?.[1] || report.reason)} · ${esc(byId(report.lessonId)?.title || report.lessonId)}</strong><p>${esc(dateLabel(report.createdAt))} · Version ${esc(report.lessonVersion || 'unknown')}</p>${report.comment ? `<p>${esc(report.comment)}</p>` : ''}</div>`).join('') : '<p class="empty-copy">Use Report on a lesson to save feedback.</p>'}`);
   }
   async function exportFeedback() {
     if (await L.shareFeedback()) return;
@@ -1048,6 +1072,8 @@
     note: showNote, source: () => showSource(false), 'image-credit': () => showSource(true),
     report: showReport, 'save-feedback': saveFeedback, 'feedback-history': showFeedbackHistory, 'export-feedback': exportFeedback,
     'github-reporting': showGithubReporting,
+    'github-send-saved': confirmSavedReportSubmission,
+    'github-confirm-send-saved': submitSavedGithubReports,
     'github-connect': () => { if (native?.connectGithubReports) native.connectGithubReports(); },
     'github-retry': () => { native?.retryGithubReports?.(); toast('Trying queued GitHub reports. Confirm delivery in reports history.'); },
     'github-disconnect': () => { native?.disconnectGithubReports?.(); closeModal(false); renderSettings(); toast('GitHub disconnected; saved local reports are preserved.'); },

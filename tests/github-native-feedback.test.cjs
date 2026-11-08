@@ -32,7 +32,7 @@ test('Save choices keeps local report first and clearly distinguishes queued fro
   assert.match(web,/GitHub did not receive it yet/);
   assert.match(web,/detail\.status === 'sent'/);
   assert.match(web,/GitHub Issue created successfully/);
-  assert.match(source,/notify\('feedback',id\)/);
+  assert.match(source,/save\('feedback',id\)/);
 });
 test('reported IDs and source references are required; notes and learning history never shared', () => {
   assert.match(native,/source.*bookId/);

@@ -3,7 +3,6 @@ name: Fresh APK candidate
 on:
   push:
     branches: ['release/fresh-0.3.1']
-    paths: ['.github/workflows/fresh-apk-candidate.yml']
   workflow_dispatch:
 
 permissions:

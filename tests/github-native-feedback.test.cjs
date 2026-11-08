@@ -28,8 +28,8 @@ test('only an explicitly paired owner can queue direct GitHub Issue reports', ()
 test('Save choices keeps local report first and clearly distinguishes queued from delivered', () => {
   assert.match(web,/L\.reportFeedback\(lesson\.id/);
   assert.match(web,/native\.queueGithubReport\(JSON\.stringify\(stored\)\)/);
-  assert.match(web,/Report saved and queued for GitHub/);
-  assert.match(web,/GitHub did not receive it yet/);
+  assert.match(web,/Report queued for GitHub\. Waiting for Issue confirmation/);
+  assert.match(web,/Report saved on this phone only\. Connect GitHub in Settings/);
   assert.match(web,/detail\.status === 'sent'/);
   assert.match(web,/GitHub Issue created successfully/);
   assert.match(source,/save\('feedback',id\)/);
@@ -49,4 +49,20 @@ test('pairing and unpairing are available on the native Settings path', () => {
   assert.match(shell,/queueGithubReport\(String reportJson\)/);
   assert.match(web,/github-reporting/);
   assert.match(web,/github-disconnect/);
+});
+
+test('reports saved before pairing can be sent only with an explicit public-Issue confirmation', () => {
+  assert.match(web,/function confirmSavedReportSubmission\(/);
+  assert.match(web,/function submitSavedGithubReports\(/);
+  assert.match(web,/github-send-saved/);
+  assert.match(web,/github-confirm-send-saved/);
+  assert.match(web,/public GitHub repository/);
+  assert.match(web,/for \(const report of L\.getFeedback\(\)\)/);
+  assert.match(web,/native\.queueGithubReport\(JSON\.stringify\(report\)\)/);
+  assert.match(web,/No rejected report was erased/);
+});
+test('unpaired and rejected reports are explained separately and not claimed delivered', () => {
+  assert.match(web,/Report saved on this phone only\. Connect GitHub in Settings/);
+  assert.match(web,/GitHub queue rejected it/);
+  assert.match(web,/Waiting for Issue confirmation/);
 });

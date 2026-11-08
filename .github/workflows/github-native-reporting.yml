@@ -55,8 +55,8 @@ jobs:
       - name: Compile Android APK with GitHub bridge (no signing material)
         run: |
           python3 android/build_apk.py --profile fresh --web-dir build/fresh-web \
-            --sdk-dir /tmp/instaanki-sdk --unsigned --version-code 7 --version-name 0.3.3 \
-            --output dist/InstaAnki-Fresh-0.3.3-unsigned.apk
+            --sdk-dir /tmp/instaanki-sdk --unsigned --version-code 8 --version-name 0.3.4 \
+            --output dist/InstaAnki-Fresh-0.3.4-unsigned.apk
       - name: Verify manifest and create offline signing bundle
         shell: bash
         run: |
@@ -67,26 +67,26 @@ jobs:
           cp "$TOOLS/lib/apksigner.jar" dist/offline-signing-tools/
           cp "$TOOLS/aapt2" "$TOOLS/zipalign" dist/offline-signing-tools/
           if [ -d "$TOOLS/lib64" ]; then cp -a "$TOOLS/lib64/." dist/offline-signing-tools/lib64/; fi
-          "$TOOLS/aapt2" dump badging dist/InstaAnki-Fresh-0.3.3-unsigned.apk > dist/manifest-badging.txt
+          "$TOOLS/aapt2" dump badging dist/InstaAnki-Fresh-0.3.4-unsigned.apk > dist/manifest-badging.txt
           python3 - <<'PY'
           import json, pathlib, zipfile
           root=pathlib.Path('dist')
           badging=(root/'manifest-badging.txt').read_text()
-          assert "package: name='com.instaanki.fresh' versionCode='7' versionName='0.3.3'" in badging
-          with zipfile.ZipFile(root/'InstaAnki-Fresh-0.3.3-unsigned.apk') as z:
+          assert "package: name='com.instaanki.fresh' versionCode='8' versionName='0.3.4'" in badging
+          with zipfile.ZipFile(root/'InstaAnki-Fresh-0.3.4-unsigned.apk') as z:
               names=z.namelist()
               app=json.loads(z.read('assets/www/data/distribution.json'))
-              assert app['app']=={'packageName':'com.instaanki.fresh','version':'0.3.3','versionCode':7}
+              assert app['app']=={'packageName':'com.instaanki.fresh','version':'0.3.4','versionCode':8}
               assert json.loads(z.read('assets/www/data/lessons.json')) == []
               assert not any(n.startswith('assets/www/media/') for n in names)
               assert not any(n.endswith('.mp4') or n.endswith('.p12') for n in names)
           PY
-          sha256sum dist/InstaAnki-Fresh-0.3.3-unsigned.apk > dist/unsigned.sha256
+          sha256sum dist/InstaAnki-Fresh-0.3.4-unsigned.apk > dist/unsigned.sha256
           git rev-parse HEAD > dist/source-commit.txt
       - name: Preserve candidate without private signing material
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: InstaAnki-Fresh-0.3.3-github-reporting-unsigned
+          name: InstaAnki-Fresh-0.3.4-github-reporting-unsigned
           path: dist/
           retention-days: 3
           if-no-files-found: error

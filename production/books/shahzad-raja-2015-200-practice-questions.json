@@ -11,7 +11,7 @@
     54,
     182
   ],
-  "updatedAt": "2026-11-07T15:14:01.520773Z",
+  "updatedAt": "2026-11-08T14:33:00+03:00",
   "source": {
     "extracted": true,
     "originalPdfRetained": false,
@@ -22,9 +22,13 @@
     {
       "number": 1,
       "id": "shahzad-raja-2015-200-practice-questions-q001",
-      "status": "ready",
+      "status": "needs_review",
       "batchId": null,
-      "lessonId": null
+      "lessonId": null,
+      "sourceReviewFlags": [
+        "source_key_anatomy_discrepancy"
+      ],
+      "sourceReviewNotes": "2015 source keys Q1 as C ('neck ... terminates in an anterior articulation'), while standard rib anatomy describes the neck posteriorly between head and tubercle, with anterior connection via costal cartilage. Hold for source/clinical review; do not silently change book key or generate misleading lesson."
     },
     {
       "number": 2,

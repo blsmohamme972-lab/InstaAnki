@@ -67,6 +67,7 @@ jobs:
           git rev-parse HEAD > dist/source-commit.txt
           git archive --format=tar.gz HEAD -o dist/source.tar.gz
           "$TOOLS/aapt2" dump badging dist/InstaAnki-Fresh-0.3.1-unsigned.apk > dist/manifest-inspection.txt
+          grep -q "package: name=\x27com.instaanki.fresh\x27 versionCode=\x275\x27 versionName=\x270.3.1\x27" dist/manifest-inspection.txt
           python3 - <<'PY'
           import hashlib, json, pathlib, zipfile
           root = pathlib.Path('dist')
@@ -74,6 +75,8 @@ jobs:
           with zipfile.ZipFile(apk) as z:
               names = z.namelist()
               assert json.loads(z.read('assets/www/data/lessons.json')) == []
+              distribution = json.loads(z.read('assets/www/data/distribution.json'))
+              assert distribution['app'] == {'packageName':'com.instaanki.fresh','version':'0.3.1','versionCode':5}
               assert not any(n.startswith('assets/www/media/') for n in names)
               assert not any(n.lower().endswith(('.p12', '.jks', '.pem', '.key', '.mp4')) for n in names)
               assert not any('keystore-password' in n for n in names)

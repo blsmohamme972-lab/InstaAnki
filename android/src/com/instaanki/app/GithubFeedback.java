@@ -74,7 +74,8 @@ final class GithubFeedback {
             if(k.startsWith(QUEUED)) waiting++;
             if(k.startsWith(SENT)) sent++;
         }
-        return new JSONObject().put("connected",isPaired()).put("queued",waiting).put("sent",sent).toString();
+        try { return new JSONObject().put("connected",isPaired()).put("queued",waiting).put("sent",sent).toString(); }
+        catch (Exception ignored) { return "{\"connected\":false,\"queued\":0,\"sent\":0}"; }
     }
 
     /** Persist before network access; a failed upload retains the report for a later retry. */

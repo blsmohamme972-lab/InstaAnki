@@ -36,6 +36,7 @@ jobs:
           npm run build:web:fresh
           npm run source:check:fresh
           npm test
+          python3 -m unittest discover -s tests -p 'test_android_fresh_profile.py' -v
       - name: Test actual Fresh browser interaction
         run: |
           npx playwright install --with-deps chromium --only-shell
@@ -45,5 +46,5 @@ jobs:
       - name: Compile Android APK with GitHub bridge (no signing material)
         run: |
           python3 android/build_apk.py --profile fresh --web-dir build/fresh-web \
-            --sdk-dir /tmp/instaanki-sdk --unsigned --version-code 5 --version-name 0.3.1 \
+            --sdk-dir /tmp/instaanki-sdk --unsigned --version-code 6 --version-name 0.3.2 \
             --output /tmp/InstaAnki-feedback-build-unsigned.apk

@@ -6,8 +6,8 @@
       "profile": "fresh",
       "app": {
         "packageName": "com.instaanki.fresh",
-        "version": "0.3.3",
-        "versionCode": 7
+        "version": "0.3.4",
+        "versionCode": 8
       },
       "purpose": "Explicitly requested fresh installation with no bundled lessons",
       "approvedBookId": "shahzad-raja-2015-200-practice-questions",

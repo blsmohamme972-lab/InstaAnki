@@ -68,52 +68,43 @@ The selected private draft lesson must contain its existing `locus`, `mnemonicSy
 
 `symbolActions` must cover every `mnemonicSymbols` entry exactly once with matching symbol names and meanings. The gate binds the complete brief, including additional fields. The snippets in this guide illustrate structure; they are not lesson drafts or approved reviews.
 
-## Final generator prompt template
+## Gold-standard generator prompt: short, source-only, portrait
 
-Replace every `{{...}}` field with the reviewed lesson-specific detail. The gate rejects these explicit unfilled markers. Do not send this unfilled template. Do not copy the websites' particular scenes, characters, logos or artwork; create an original composition using the studied visual mnemonic method.
+**This is the default prompt for any newly authorized mnemonic image.** The medical text supplied to the image generator must come **only** from the approved book question's exact stem and its **full correct-answer statement** (the text of the keyed option, not just the answer letter). Do not send distractors, explanation text, external medical facts, unverified additions, or private source extracts beyond those two fields. Read and check the whole original question, answer key, explanation and referenced figures **privately** before drafting; the image input restriction does not relax the source gate.
+
+The three links below are explicit style references in the prompt. A link in a prompt is **not** proof that the generator has opened or examined the site; the agent must perform the required public-example inspection and record its observations as specified above. Draw an original composition, not copied brand artwork.
+
+Fill the bracketed fields only with text and mnemonic associations grounded in the two verified source fields. Keep any detailed art brief, symbol mapping, stable locus, visual review and approval record in the **private authoring workflow**; they are not extra medical sources for the generator. Do not send unfilled placeholders.
 
 ```text
-Create one original portrait 2D cartoon educational mnemonic illustration.
+Create one original PORTRAIT (not landscape) 2D cartoon medical mnemonic image, inspired by the visual teaching methods of:
 
-VISUAL DIRECTION
-Use the visual mnemonic storytelling approach studied in Pixorize,
-Picmonic and Sketchy: expressive characters, memorable visual puns,
-exaggerated teaching props, purposeful interactions and a coherent setting.
-Draw crisp dark outlines, strong readable silhouettes, bright distinguishable
-local colors and restrained cel-like shading. Keep the background supportive
-and quieter than the teaching symbols. The scene must read clearly on a phone.
+- Pixorize: https://pixorize.com/
+- Picmonic: https://www.picmonic.com/
+- Sketchy: https://www.sketchy.com/
 
-VERIFIED TEACHING OBJECTIVE
-{{Exact approved objective; no additional medical claims.}}
+Study their public examples if accessible. Use their visual-memory and storytelling methods, but create original artwork, not a copy.
 
-ONE COHERENT STORY
-{{Describe the event and how the characters/props interact. Each action must
-support the intended fact or mnemonic association.}}
+Question stem: [Exact question stem from my approved source]
+Correct answer statement: [Exact text of the correct option from my approved source]
 
-SYMBOLS AND ACTIONS
-{{For each symbol: exact appearance; verified fact it represents; recall cue;
-specific action; position; relationship to the other symbols.}}
-Every teaching symbol must remain distinct and easy to locate. Preserve the
-specified relationships and meanings. Do not invent additional teaching props.
+Facts to remember: [Only medical facts supported directly by that question stem and correct answer statement]
 
-STABLE MEMORY LOCATION
-{{Describe the approved locus and its recognizable landmark. Explain the
-setting in concrete visual terms; architecture must not dominate the symbols.}}
+Image instructions:
+Create one clear and memorable 2D cartoon story with expressive characters and visual associations for those facts. Use a PORTRAIT composition only, never landscape. Keep it readable on a phone. Do not introduce other medical facts. Keep precise labels and numbers for controlled app overlays rather than drawing potentially inaccurate text.
 
-PORTRAIT COMPOSITION
-{{Specify the aspect ratio, primary focal target, secondary targets, narrated
-viewing route, separations, margins and app-overlay regions.}}
-Keep meaning-bearing objects and all required interactions fully visible.
-
-OVERLAY SPACE
-{{Describe blank/quiet areas reserved for controlled text, numbers and arrows.}}
-Do not draw letters, words, numbers, captions, labels, arrows, logos or watermarks.
-
-EXCLUDE
-Photorealism, glossy 3D rendering, cinematic depth of field, ornamental palace
-scenery, decorative clutter, generic stock-medical imagery, isolated unrelated
-props, unsupported medical implications, and copies of reference-brand scenes.
+Goal: Make the medical facts easy to remember after seeing the image once.
 ```
+
+### One image at a time: mandatory agent sequence
+
+1. Select **one** source question under the currently authorized production scope. Privately confirm the correct answer and complete the existing per-question source review; if evidence is missing or ambiguous, stop for that question.
+2. Fill and review the short prompt with only the exact source stem, correct-answer statement, and mnemonic interpretation supported by those two fields. Complete the required private `artBrief`, `mnemonicSymbols`, reference inspections and prompt-review checklist.
+3. Run `tools/prepare_image_prompt.py --emit` for **that one lesson** and send **exactly** the emitted approved prompt to the generator. Request **one image** in **portrait orientation**.
+4. **Wait for the current image-generation call to finish.** Actually inspect the result for source fidelity, legibility, composition, style, and unsupported details; revise and repeat the same image as necessary. Do not queue, batch, send or generate the next image during this step.
+5. **Only after the current image is finished and inspected**, proceed to the next separately source-reviewed question and repeat. Preserve each question's identities, files and evidence.
+
+This changes the prompt wording and one-at-a-time agent workflow, **not** the existing source policy, prompt gate, production pause, or authorization scope. No image is approved or generated merely by adding this rule.
 
 ## Required review: every check must pass
 

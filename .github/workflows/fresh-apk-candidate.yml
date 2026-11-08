@@ -44,7 +44,9 @@ jobs:
           npx playwright install --with-deps chromium --only-shell
           npm run test:fresh
           npm run test:imports
-          python3 tools/test_native_import.py
+          mkdir -p build/test-deps
+          curl --fail --location --retry 2 --proto '=https' --proto-redir '=https' --output build/test-deps/json-20240303.jar https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar
+          python3 tools/test_native_import.py --json-jar build/test-deps/json-20240303.jar
       - name: Fetch checksum-pinned official Android SDK
         run: python3 android/bootstrap_sdk.py --sdk-dir "$SDK"
       - name: Compile unsigned candidate for private local signing

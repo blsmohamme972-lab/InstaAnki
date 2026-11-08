@@ -13,11 +13,10 @@ jobs:
       - name: Acknowledge validated one-tap reports without modifying content
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EVENT_FILE: ${{ github.event_path }}
         run: |
           python3 - <<'PY'
           import json, os, pathlib, re, urllib.request
-          event=json.loads(pathlib.Path(os.environ['EVENT_FILE']).read_text())
+          event=json.loads(pathlib.Path(os.environ['GITHUB_EVENT_PATH']).read_text())
           issue=event.get('issue') or {}
           body=issue.get('body') or ''
           match=re.match(r'\A<!-- instaanki-report-id:(feedback-[A-Za-z0-9._-]{1,110}) -->\n', body)

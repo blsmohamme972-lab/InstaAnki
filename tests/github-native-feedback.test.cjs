@@ -66,3 +66,27 @@ test('unpaired and rejected reports are explained separately and not claimed del
   assert.match(web,/GitHub queue rejected it/);
   assert.match(web,/Waiting for Issue confirmation/);
 });
+
+test('delivery errors expose safe HTTP classes and never leak tokens or GitHub error bodies', () => {
+  assert.match(native,/GitHubHttpFailure/);
+  assert.match(native,/status == 401/);
+  assert.match(native,/status == 403/);
+  assert.match(native,/status == 404/);
+  assert.match(native,/SocketTimeoutException/);
+  assert.match(native,/UnknownHostException/);
+  assert.match(native,/LAST_ERROR/);
+  assert.match(web,/Last delivery error:/);
+  assert.match(web,/esc\(status\.lastError\)/);
+  assert.doesNotMatch(native,/getErrorStream\(/);
+});
+test('stored token is distinct from an Issue-verified GitHub connection', () => {
+  assert.match(native,/putBoolean\(VERIFIED,false\)/);
+  assert.match(native,/putBoolean\(VERIFIED,true\)/);
+  assert.match(web,/Token stored · not verified/);
+  assert.match(web,/GitHub delivery verified by a successful Issue response/);
+});
+test('GitHub issue list deduplication uses repo-scoped Issues API not search API', () => {
+  assert.match(native,/issues\?state=all&sort=created&direction=desc&per_page=100/);
+  assert.doesNotMatch(native,/\/search\/issues/);
+  assert.match(native,/new JSONArray\(response\)/);
+});

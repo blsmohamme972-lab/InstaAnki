@@ -133,7 +133,7 @@ async function main() {
       await page.locator('[data-tab="insights"]').click();
       await page.locator('[data-tab="settings"]').click();
       assert.match(await page.locator('#screen-settings').textContent(), /0 lessons · No account required/);
-      assert.match(await page.locator('.app-version').textContent(), /0\.3\.1/);
+      assert.match(await page.locator('.app-version').textContent(), /0\.3\.0/);
       assert.deepEqual(mediaRequests, []);
     } finally { await context.close(); }
   });
@@ -205,7 +205,7 @@ async function main() {
     const { context, page, holder } = await session({ width: 1280, height: 900 }, { native: false });
     try {
       await page.locator('[data-tab="settings"]').click();
-      assert.match(await page.locator('.app-version').textContent(), /0\.3\.0/);
+      assert.match(await page.locator('.app-version').textContent(), /0\.3\.1/);
       await showCatalog(page, holder, { schemaVersion: 1, packs: [pack], latestApp: { versionCode: 99, url: 'https://example.invalid/legacy.apk' } });
       assert.equal(await page.locator('[data-update-pack]').count(), 0);
       assert.equal(await page.locator('[data-action="open-app-update"]').count(), 0);

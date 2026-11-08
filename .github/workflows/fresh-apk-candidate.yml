@@ -1,0 +1,95 @@
+name: Fresh APK candidate
+
+on:
+  push:
+    branches: ['release/fresh-0.3.1']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fresh-apk-candidate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    if: github.repository == 'blsmohamme972-lab/InstaAnki'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SDK: /tmp/instaanki-sdk
+    steps:
+      - name: Check out candidate source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install locked dependencies
+        run: |
+          npm ci
+          python3 -m pip install --disable-pip-version-check 'Pillow==13.0.0'
+      - name: Verify empty Fresh distribution and release safeguards
+        run: |
+          npm run build:web:fresh
+          npm run source:check:fresh
+          for suite in test_fresh_distribution test_android_fresh_profile test_android_build_safety test_android_native_identity test_native_import_runner test_mnemonic_provenance; do
+            python3 -m unittest discover -s tests -p "$suite.py" -v
+          done
+          python3 tools/check_mnemonic_provenance.py --base-ref 8b1617f178113454c66cdc18918debcdeae56322
+          npm test
+      - name: Verify browser behavior and imported-content preservation
+        run: |
+          npx playwright install --with-deps chromium --only-shell
+          npm run test:fresh
+          npm run test:imports
+          mkdir -p build/test-deps
+          curl --fail --location --retry 2 --proto '=https' --proto-redir '=https' --output build/test-deps/json-20240303.jar https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar
+          python3 tools/test_native_import.py --json-jar build/test-deps/json-20240303.jar
+      - name: Fetch checksum-pinned official Android SDK
+        run: python3 android/bootstrap_sdk.py --sdk-dir "$SDK"
+      - name: Compile unsigned candidate for private local signing
+        run: |
+          python3 android/build_apk.py --profile fresh --web-dir build/fresh-web \
+            --sdk-dir "$SDK" --unsigned --version-code 5 --version-name 0.3.1 \
+            --output dist/InstaAnki-Fresh-0.3.1-unsigned.apk
+      - name: Retain public tools and exact source for offline verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOOLS="$SDK/build-tools/android-15"
+          if [ -d "$SDK/build-tools/35.0.0" ]; then TOOLS="$SDK/build-tools/35.0.0"; fi
+          mkdir -p dist/offline-verification/lib64
+          cp "$TOOLS/lib/apksigner.jar" dist/offline-verification/
+          cp "$TOOLS/zipalign" "$TOOLS/aapt2" dist/offline-verification/
+          if [ -d "$TOOLS/lib64" ]; then cp -a "$TOOLS/lib64/." dist/offline-verification/lib64/; fi
+          git rev-parse HEAD > dist/source-commit.txt
+          git archive --format=tar.gz HEAD -o dist/source.tar.gz
+          "$TOOLS/aapt2" dump badging dist/InstaAnki-Fresh-0.3.1-unsigned.apk > dist/manifest-inspection.txt
+          python3 - <<'PY'
+          import hashlib, json, pathlib, zipfile
+          root = pathlib.Path('dist')
+          assert "package: name='com.instaanki.fresh' versionCode='5' versionName='0.3.1'" in (root / 'manifest-inspection.txt').read_text()
+          apk = root / 'InstaAnki-Fresh-0.3.1-unsigned.apk'
+          with zipfile.ZipFile(apk) as z:
+              names = z.namelist()
+              assert json.loads(z.read('assets/www/data/lessons.json')) == []
+              distribution = json.loads(z.read('assets/www/data/distribution.json'))
+              assert distribution['app'] == {'packageName':'com.instaanki.fresh','version':'0.3.1','versionCode':5}
+              assert not any(n.startswith('assets/www/media/') for n in names)
+              assert not any(n.lower().endswith(('.p12', '.jks', '.pem', '.key', '.mp4')) for n in names)
+              assert not any('keystore-password' in n for n in names)
+              app = z.read('assets/www/app.js').decode()
+              assert 'clinical-fit-' in app and 'gallery.displayMode' in app
+          files = {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                   for p in root.rglob('*') if p.is_file()}
+          (root / 'candidate-sha256.json').write_text(json.dumps(files, indent=2) + '\n')
+          PY
+      - name: Retain unsigned candidate, not an installable release
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: InstaAnki-Fresh-0.3.1-offline-signing-candidate
+          path: dist/
+          retention-days: 3
+          if-no-files-found: error
+          compression-level: 6

@@ -1,0 +1,49 @@
+name: GitHub native reporting tests
+
+on:
+  pull_request:
+    paths:
+      - 'android/src/com/instaanki/app/GithubFeedback.java'
+      - 'android/src/com/instaanki/app/MainActivity.java'
+      - 'web/app.js'
+      - 'tests/github-native-feedback.test.cjs'
+      - '.github/workflows/github-native-reporting.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'android/src/com/instaanki/app/GithubFeedback.java'
+      - 'android/src/com/instaanki/app/MainActivity.java'
+      - 'web/app.js'
+      - 'tests/github-native-feedback.test.cjs'
+      - '.github/workflows/github-native-reporting.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  native-feedback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout reviewed code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test feature and compile source bundle
+        run: |
+          node --test tests/github-native-feedback.test.cjs
+          npm ci
+          npm run build:web:fresh
+          npm run source:check:fresh
+          npm test
+      - name: Test actual Fresh browser interaction
+        run: |
+          npx playwright install --with-deps chromium --only-shell
+          npm run test:fresh
+      - name: Get pinned Android toolchain
+        run: python3 android/bootstrap_sdk.py --sdk-dir /tmp/instaanki-sdk
+      - name: Compile Android APK with GitHub bridge (no signing material)
+        run: |
+          python3 android/build_apk.py --profile fresh --web-dir build/fresh-web \
+            --sdk-dir /tmp/instaanki-sdk --unsigned --version-code 5 --version-name 0.3.1 \
+            --output /tmp/InstaAnki-feedback-build-unsigned.apk

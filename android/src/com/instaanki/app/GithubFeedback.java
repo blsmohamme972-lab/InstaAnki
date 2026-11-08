@@ -175,7 +175,8 @@ final class GithubFeedback {
             !s.equals("constructor") && !s.equals("__proto__") && !s.equals("prototype");
     }
     private static JSONObject validate(JSONObject input) throws Exception {
-        String id=input.getString("id"),lesson=input.getString("lessonId"),reason=input.getString("reason");
+        String id=GithubReportId.resolve(input.optString("id", null), input.optString("reportId", null));
+        String lesson=input.getString("lessonId"),reason=input.getString("reason");
         if(!safeId(id)||!id.startsWith("feedback-")||!safeId(lesson)) throw new IOException("Invalid ID");
         if(!java.util.Arrays.asList("bad_images","bad_sound","bad_timing","bad_mcq","wrong_source","other").contains(reason))
             throw new IOException("Invalid category");

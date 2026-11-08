@@ -28,8 +28,8 @@ test('only an explicitly paired owner can queue direct GitHub Issue reports', ()
 test('Save choices keeps local report first and clearly distinguishes queued from delivered', () => {
   assert.match(web,/L\.reportFeedback\(lesson\.id/);
   assert.match(web,/native\.queueGithubReport\(JSON\.stringify\(stored\)\)/);
-  assert.match(web,/Report saved and queued for GitHub/);
-  assert.match(web,/GitHub did not receive it yet/);
+  assert.match(web,/Report queued for GitHub\. Waiting for Issue confirmation/);
+  assert.match(web,/Report saved on this phone only\. Connect GitHub in Settings/);
   assert.match(web,/detail\.status === 'sent'/);
   assert.match(web,/GitHub Issue created successfully/);
   assert.match(source,/save\('feedback',id\)/);

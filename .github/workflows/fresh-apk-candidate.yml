@@ -66,10 +66,10 @@ jobs:
           git rev-parse HEAD > dist/source-commit.txt
           git archive --format=tar.gz HEAD -o dist/source.tar.gz
           "$TOOLS/aapt2" dump badging dist/InstaAnki-Fresh-0.3.1-unsigned.apk > dist/manifest-inspection.txt
-          grep -q "package: name=\x27com.instaanki.fresh\x27 versionCode=\x275\x27 versionName=\x270.3.1\x27" dist/manifest-inspection.txt
           python3 - <<'PY'
           import hashlib, json, pathlib, zipfile
           root = pathlib.Path('dist')
+          assert "package: name='com.instaanki.fresh' versionCode='5' versionName='0.3.1'" in (root / 'manifest-inspection.txt').read_text()
           apk = root / 'InstaAnki-Fresh-0.3.1-unsigned.apk'
           with zipfile.ZipFile(apk) as z:
               names = z.namelist()

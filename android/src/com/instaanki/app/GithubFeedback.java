@@ -33,6 +33,31 @@ final class GithubFeedback {
     private static final String SECRET = "token";
     private static final String QUEUED = "queued:";
     private static final String SENT = "sent:";
+    private static final String LAST_ERROR = "last-error";
+    private static final String VERIFIED = "verified";
+    private static final class GitHubHttpFailure extends IOException {
+        final int status;
+        GitHubHttpFailure(int status) { super("GitHub HTTP failure"); this.status = status; }
+    }
+    /** Only predefined codes enter the web view: no credentials or response bodies. */
+    private static String safeError(Exception error) {
+        if (error instanceof GitHubHttpFailure) {
+            int status = ((GitHubHttpFailure) error).status;
+            if (status == 401) return "GitHub rejected the token (401). Replace it in Settings.";
+            if (status == 403) return "GitHub denied access (403). Check Issues permission and token access.";
+            if (status == 404) return "Repository unavailable to this token (404).";
+            if (status == 422) return "GitHub rejected the report request (422).";
+            if (status == 429) return "GitHub rate limit (429). Try again later.";
+            if (status >= 500) return "GitHub service returned an error (" + status + ").";
+            return "GitHub request failed (HTTP " + status + ").";
+        }
+        if (error instanceof java.net.UnknownHostException) return "Cannot reach api.github.com (DNS/network).";
+        if (error instanceof java.net.SocketTimeoutException) return "Connection to GitHub timed out.";
+        if (error instanceof javax.net.ssl.SSLException) return "Secure connection to GitHub failed.";
+        if ("Stored token cannot be decrypted".equals(error.getMessage())) return "Saved GitHub token cannot be read. Reconnect in Settings.";
+        if ("Invalid local report".equals(error.getMessage())) return "This saved report has invalid source metadata.";
+        return "Network or GitHub request failed. Try Retry pending reports.";
+    }
     private final SharedPreferences prefs;
     private final ExecutorService io;
     private final Listener listener;
@@ -60,21 +85,24 @@ final class GithubFeedback {
             c.init(Cipher.ENCRYPT_MODE, (SecretKey) store.getKey(ALIAS,null));
             String value = Base64.encodeToString(c.getIV(),Base64.NO_WRAP)+":"+Base64.encodeToString(
                 c.doFinal(token.getBytes(StandardCharsets.UTF_8)),Base64.NO_WRAP);
-            boolean saved=prefs.edit().putString(SECRET,value).commit();
+            boolean saved=prefs.edit().putString(SECRET,value).putBoolean(VERIFIED,false).remove(LAST_ERROR).commit();
             if(saved) flush();
             return saved;
         } catch(Exception e) { return false; }
     }
 
     synchronized boolean isPaired() { return prefs.contains(SECRET); }
-    synchronized void unpair() { prefs.edit().remove(SECRET).commit(); }
+    synchronized void unpair() { prefs.edit().remove(SECRET).putBoolean(VERIFIED,false).remove(LAST_ERROR).commit(); }
     synchronized String status() {
         int waiting=0, sent=0;
         for(String k:prefs.getAll().keySet()) {
             if(k.startsWith(QUEUED)) waiting++;
             if(k.startsWith(SENT)) sent++;
         }
-        try { return new JSONObject().put("connected",isPaired()).put("queued",waiting).put("sent",sent).toString(); }
+        try { return new JSONObject().put("connected",isPaired())
+            .put("verified",prefs.getBoolean(VERIFIED,false))
+            .put("lastError",prefs.getString(LAST_ERROR,""))
+            .put("queued",waiting).put("sent",sent).toString(); }
         catch (Exception ignored) { return "{\"connected\":false,\"queued\":0,\"sent\":0}"; }
     }
 
@@ -106,16 +134,20 @@ final class GithubFeedback {
                     if(json==null) continue;
                     String reportId=key.substring(QUEUED.length());
                     try {
-                        JSONObject report=validate(new JSONObject(json));
+                        JSONObject report;
+                        try { report=validate(new JSONObject(json)); }
+                        catch(Exception badReport) { throw new IOException("Invalid local report"); }
                         if(!reportId.equals(report.getString("reportId"))) throw new IOException("Wrong report ID");
                         String token=decrypt();
-                        if(token==null) return;
+                        if(token==null) throw new IOException("Stored token cannot be decrypted");
                         String issue=submit(token,report);
                         if(!issue.startsWith("https://github.com/"+REPO+"/issues/"))
                             throw new IOException("Wrong GitHub response");
-                        if(prefs.edit().putString(SENT+reportId,issue).remove(key).commit())
+                        if(prefs.edit().putString(SENT+reportId,issue).remove(key)
+                                .putBoolean(VERIFIED,true).remove(LAST_ERROR).commit())
                             listener.onStatus(reportId,"sent",issue);
                     } catch(Exception error) {
+                        prefs.edit().putString(LAST_ERROR,safeError(error)).commit();
                         listener.onStatus(reportId,"queued","");
                         return;
                     }
@@ -178,8 +210,10 @@ final class GithubFeedback {
 
     private static String submit(String token, JSONObject report) throws Exception {
         String marker="instaanki-report-id:"+report.getString("reportId");
-        String query="repo:"+REPO+" is:issue in:body "+marker;
-        JSONObject result=call(token,"GET","/search/issues?q="+URLEncoder.encode(query,"UTF-8")+"&per_page=10",null);
+        // GitHub Issues:read/write grants the ordinary repository Issues listing.
+        // Avoid the separate Search API permissions and search-specific throttling.
+        JSONObject result=call(token,"GET","/repos/"+REPO+
+            "/issues?state=all&sort=created&direction=desc&per_page=100",null);
         JSONArray found=result.optJSONArray("items");
         if(found!=null) for(int i=0;i<found.length();i++) {
             JSONObject issue=found.optJSONObject(i);
@@ -229,14 +263,18 @@ final class GithubFeedback {
                 conn.setFixedLengthStreamingMode(bytes.length);
                 try(OutputStream out=conn.getOutputStream()) { out.write(bytes); }
             }
-            if(conn.getResponseCode()!=(payload==null?200:201)) throw new IOException("GitHub rejected report");
+            int responseCode=conn.getResponseCode();
+            if(responseCode!=(payload==null?200:201)) throw new GitHubHttpFailure(responseCode);
             try(InputStream in=conn.getInputStream();ByteArrayOutputStream buf=new ByteArrayOutputStream()) {
                 byte[] chunk=new byte[4096];int count;
                 while((count=in.read(chunk))!=-1) {
                     if(buf.size()+count>256000)throw new IOException("Response too large");
                     buf.write(chunk,0,count);
                 }
-                return new JSONObject(new String(buf.toByteArray(),StandardCharsets.UTF_8));
+                String response=new String(buf.toByteArray(),StandardCharsets.UTF_8);
+                if(payload==null && method.equals("GET") && path.startsWith("/repos/"+REPO+"/issues?"))
+                    return new JSONObject().put("items",new JSONArray(response));
+                return new JSONObject(response);
             }
         } finally { conn.disconnect(); }
     }

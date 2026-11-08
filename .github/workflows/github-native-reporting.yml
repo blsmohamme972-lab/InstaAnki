@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'android/src/com/instaanki/app/GithubFeedback.java'
+      - 'android/src/com/instaanki/app/GithubReportId.java'
+      - 'tests/java/GithubReportIdHarness.java'
       - 'android/src/com/instaanki/app/MainActivity.java'
       - 'web/app.js'
       - 'tests/github-native-feedback.test.cjs'
@@ -12,6 +14,8 @@ on:
     branches: [main]
     paths:
       - 'android/src/com/instaanki/app/GithubFeedback.java'
+      - 'android/src/com/instaanki/app/GithubReportId.java'
+      - 'tests/java/GithubReportIdHarness.java'
       - 'android/src/com/instaanki/app/MainActivity.java'
       - 'web/app.js'
       - 'tests/github-native-feedback.test.cjs'
@@ -29,6 +33,11 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Execute JVM feedback ID round-trip regression
+        run: |
+          mkdir -p build/feedback-id-test
+          javac -d build/feedback-id-test android/src/com/instaanki/app/GithubReportId.java tests/java/GithubReportIdHarness.java
+          java -cp build/feedback-id-test com.instaanki.app.GithubReportIdHarness
       - name: Test feature and compile source bundle
         run: |
           node --test tests/github-native-feedback.test.cjs

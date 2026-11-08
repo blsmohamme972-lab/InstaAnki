@@ -42,7 +42,7 @@ def fresh_distribution(repo, policy):
     marker = document.get("profiles", {}).get("fresh")
     if (document.get("schemaVersion") != 1 or not isinstance(marker, dict)
             or marker.get("schemaVersion") != 1 or marker.get("profile") != "fresh"
-            or marker.get("app") != {"packageName": "com.instaanki.fresh", "version": "0.3.1", "versionCode": 5}
+            or marker.get("app") != {"packageName": "com.instaanki.fresh", "version": "0.3.2", "versionCode": 6}
             or marker.get("approvedBookId") != policy.book_id
             or type(marker.get("bundledLessonCount")) is not int or marker["bundledLessonCount"] != 0
             or marker.get("preserveProductionHistory") is not True

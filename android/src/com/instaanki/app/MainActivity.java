@@ -1,6 +1,9 @@
 package com.instaanki.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.text.InputType;
+import android.widget.EditText;
 import android.content.Intent;
 import android.content.ClipData;
 import android.content.pm.PackageInfo;
@@ -54,6 +57,7 @@ public final class MainActivity extends Activity {
     private final ExecutorService io = Executors.newSingleThreadExecutor();
     private WebView web;
     private LocalStore state;
+    private GithubFeedback githubFeedback;
     private ContentPacks packs;
     private ValueCallback<Uri[]> fileCallback;
     private final AtomicBoolean importing = new AtomicBoolean(false);
@@ -67,6 +71,10 @@ public final class MainActivity extends Activity {
         getWindow().setNavigationBarColor(Color.rgb(8, 19, 29));
         getWindow().getDecorView().setSystemUiVisibility(0);
         state = new LocalStore(this);
+        githubFeedback = new GithubFeedback(this, io, (id, status, url) -> {
+            try { emit("instaanki:github-report", new JSONObject().put("reportId", id).put("status", status).put("issueUrl", url)); }
+            catch (Exception ignored) { }
+        });
         try { packs = new ContentPacks(new File(getFilesDir(), "lesson-packs"), bundledBooks()); }
         catch (Exception e) { throw new IllegalStateException("Unable to open the approved local content collection", e); }
 
@@ -158,6 +166,38 @@ public final class MainActivity extends Activity {
         @JavascriptInterface public void setItem(String key, String value) { state.put(key, value); }
         @JavascriptInterface public void removeItem(String key) { state.remove(key); }
         @JavascriptInterface public String listPacks() { return packs.list().toString(); }
+        @JavascriptInterface public String githubReportStatus() { return githubFeedback.status(); }
+        @JavascriptInterface public boolean queueGithubReport(String reportJson) { return githubFeedback.queue(reportJson); }
+        @JavascriptInterface public void retryGithubReports() { githubFeedback.flush(); }
+        @JavascriptInterface public void disconnectGithubReports() {
+            githubFeedback.unpair();
+            toast("GitHub reporting disconnected. Pending reports remain on your phone.");
+        }
+        @JavascriptInterface public void connectGithubReports() {
+            runOnUiThread(() -> {
+                EditText input = new EditText(MainActivity.this);
+                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                input.setSingleLine(true);
+                input.setHint("github_pat_...");
+                int padding = (int) (24 * getResources().getDisplayMetrics().density);
+                android.widget.LinearLayout container = new android.widget.LinearLayout(MainActivity.this);
+                container.setPadding(padding, padding / 2, padding, 0);
+                container.addView(input, new android.widget.LinearLayout.LayoutParams(-1, -2));
+                new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Connect GitHub reporting")
+                    .setMessage("One-time setup: paste a fine-grained GitHub token limited to InstaAnki / Issues: write. Reports will become public GitHub Issues. Never put your token in a lesson comment or chat. Your credential is encrypted on this device.")
+                    .setView(container)
+                    .setNegativeButton("Cancel", (dialog, which) -> {})
+                    .setPositiveButton("Connect", (dialog, which) -> {
+                        String token = input.getText().toString().trim();
+                        boolean accepted = githubFeedback.pair(token);
+                        input.setText("");
+                        toast(accepted ? "GitHub reporting paired. Reports will be queued and sent when connected." : "Token not accepted. Check fine-grained format and try again.");
+                        try { emit("instaanki:github-pairing", new JSONObject().put("connected", accepted)); }
+                        catch (Exception ignored) { }
+                    }).show();
+            });
+        }
         @JavascriptInterface public void setImmersive(boolean enabled) {
             runOnUiThread(() -> { immersiveRequested = enabled; applyImmersiveMode(); });
         }
@@ -169,7 +209,7 @@ public final class MainActivity extends Activity {
                 return new JSONObject().put("name", applicationLabel).put("packageName", getPackageName())
                     .put("version", info.versionName).put("versionCode", info.versionCode).put("nativeApi", 3)
                     .put("storage", "SQLite").put("offline", true).put("zipImport", true)
-                    .put("feedbackExport", true).put("downloadSizeVerification", true)
+                    .put("feedbackExport", true).put("githubFeedback", true).put("downloadSizeVerification", true)
                     .put("downloadCompatibilityVerification", true).put("immersiveFeed", true)
                     .put("platform", "Android").put("androidVersion", Build.VERSION.RELEASE).toString();
             } catch (Exception e) { return "{}"; }
@@ -515,7 +555,7 @@ public final class MainActivity extends Activity {
         super.onPause();
     }
 
-    @Override protected void onResume() { super.onResume(); if (web != null) web.onResume(); }
+    @Override protected void onResume() { super.onResume(); if (web != null) web.onResume(); if (githubFeedback != null) githubFeedback.flush(); }
 
     @Override public void onBackPressed() {
         web.evaluateJavascript("typeof window.InstaAnkiBack==='function' ? !!window.InstaAnkiBack() : false", handled -> {

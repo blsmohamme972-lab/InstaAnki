@@ -1,0 +1,44 @@
+name: InstaAnki GitHub issue intake
+on:
+  issues:
+    types: [opened]
+permissions:
+  issues: write
+jobs:
+  receipt:
+    if: github.repository == 'blsmohamme972-lab/InstaAnki'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Acknowledge validated one-tap reports without modifying content
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_FILE: ${{ github.event_path }}
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, re, urllib.request
+          event=json.loads(pathlib.Path(os.environ['EVENT_FILE']).read_text())
+          issue=event.get('issue') or {}
+          body=issue.get('body') or ''
+          match=re.match(r'\A<!-- instaanki-report-id:(feedback-[A-Za-z0-9._-]{1,110}) -->\n', body)
+          if not match or len(body)>20000:
+              print('Not an InstaAnki app report; no automated action')
+              raise SystemExit(0)
+          if 'Book: shahzad-raja-2015-200-practice-questions' not in body:
+              print('Unexpected source book; no automated action')
+              raise SystemExit(0)
+          number=issue.get('number')
+          if type(number)!=int or number<1: raise SystemExit('Invalid issue number')
+          payload=json.dumps({'body': 'InstaAnki GitHub intake acknowledged this report. The lesson and source will be checked before any replacement. No images, videos, or answers are changed automatically.'}).encode()
+          request=urllib.request.Request(
+              'https://api.github.com/repos/blsmohamme972-lab/InstaAnki/issues/'+str(number)+'/comments',
+              data=payload,method='POST',headers={
+                  'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+                  'Accept':'application/vnd.github+json',
+                  'X-GitHub-Api-Version':'2022-11-28',
+                  'User-Agent':'InstaAnki-GitHub-Intake',
+                  'Content-Type':'application/json'})
+          with urllib.request.urlopen(request, timeout=20) as response:
+              if response.status!=201: raise SystemExit('GitHub acknowledgement failed')
+          print('Acknowledged issue',number)
+          PY

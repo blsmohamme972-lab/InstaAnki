@@ -1,0 +1,24 @@
+name: One-tap feedback receiver tests
+on:
+  pull_request:
+    paths:
+      - 'api/feedback.js'
+      - 'tests/feedback-api.test.cjs'
+      - '.github/workflows/feedback-receiver.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/feedback.js'
+      - 'tests/feedback-api.test.cjs'
+      - '.github/workflows/feedback-receiver.yml'
+permissions:
+  contents: read
+jobs:
+  test-feedback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test authenticated feedback handler with mocked GitHub
+        run: node --test tests/feedback-api.test.cjs

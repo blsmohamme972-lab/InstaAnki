@@ -39,5 +39,19 @@
   "missingSourceAction": "Stop new production. Restore the verified private archive or review a new original-book extraction before explicitly changing its fingerprint. Never substitute another book or original collection.",
   "sourceChangeRequires": "An explicit user decision and reviewed repository policy change; no runtime override.",
   "newProductionEnabled": false,
-  "currentScope": "App repairs, existing-lesson presentation fixes, and update delivery only. New source-question production is paused by explicit user instruction."
+  "currentScope": "Finite authorized trial only: Q2, Q3, and Q4 (three new lessons maximum), subject to original-book source review, image-prompt approval, media, audio, and playback gates. All other new production remains paused.",
+  "productionTrial": {
+    "schemaVersion": 1,
+    "status": "active",
+    "bookId": "shahzad-raja-2015-200-practice-questions",
+    "batchId": "raja-2026-11-08-q002-q004",
+    "questionNumbers": [
+      2,
+      3,
+      4
+    ],
+    "maxNewLessons": 3,
+    "authorizationText": "Make 3 new lessons as rules",
+    "authorizedAt": "2026-11-08T14:33:00+03:00"
+  }
 }

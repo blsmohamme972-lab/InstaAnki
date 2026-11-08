@@ -33,7 +33,7 @@ PROFILES = {
                "keyFile": "instaanki-release.p12", "keyAlias": "instaanki",
                "keyDirectory": ".instaanki-signing", "outputPrefix": "InstaAnki"},
     "fresh": {"packageName": "com.instaanki.fresh", "label": "InstaAnki Fresh",
-              "versionName": "0.3.3", "versionCode": 7, "minimumVersionCode": 4,
+              "versionName": "0.3.4", "versionCode": 8, "minimumVersionCode": 4,
               "manifest": "AndroidManifest.fresh.xml", "identity": "signing-identity-fresh.json",
               "keyFile": "instaanki-fresh-release.p12", "keyAlias": "instaanki-fresh",
               "keyDirectory": ".instaanki-fresh-signing", "outputPrefix": "InstaAnki-Fresh"},

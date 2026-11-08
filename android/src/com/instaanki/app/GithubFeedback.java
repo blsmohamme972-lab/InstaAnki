@@ -210,8 +210,10 @@ final class GithubFeedback {
 
     private static String submit(String token, JSONObject report) throws Exception {
         String marker="instaanki-report-id:"+report.getString("reportId");
-        String query="repo:"+REPO+" is:issue in:body "+marker;
-        JSONObject result=call(token,"GET","/search/issues?q="+URLEncoder.encode(query,"UTF-8")+"&per_page=10",null);
+        // GitHub Issues:read/write grants the ordinary repository Issues listing.
+        // Avoid the separate Search API permissions and search-specific throttling.
+        JSONObject result=call(token,"GET","/repos/"+REPO+
+            "/issues?state=all&sort=created&direction=desc&per_page=100",null);
         JSONArray found=result.optJSONArray("items");
         if(found!=null) for(int i=0;i<found.length();i++) {
             JSONObject issue=found.optJSONObject(i);
@@ -269,7 +271,10 @@ final class GithubFeedback {
                     if(buf.size()+count>256000)throw new IOException("Response too large");
                     buf.write(chunk,0,count);
                 }
-                return new JSONObject(new String(buf.toByteArray(),StandardCharsets.UTF_8));
+                String response=new String(buf.toByteArray(),StandardCharsets.UTF_8);
+                if(payload==null && method.equals("GET") && path.startsWith("/repos/"+REPO+"/issues?"))
+                    return new JSONObject().put("items",new JSONArray(response));
+                return new JSONObject(response);
             }
         } finally { conn.disconnect(); }
     }

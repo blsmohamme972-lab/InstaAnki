@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      SDK: ${{ runner.temp }}/instaanki-sdk
+      SDK: /tmp/instaanki-sdk
     steps:
       - name: Check out candidate source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
